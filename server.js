@@ -97,21 +97,24 @@ app.get('/common/alumnos-peticiones', (req, res) => {
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // obtener los departamentos
 app.post('/admin/obtener-departamento', (req, res) => {
+  // Obtener los datos de autenticación desde los headers
   const authData = req.headers.authorization ? JSON.parse(req.headers.authorization) : {};
-
   const { usuario, contrasena } = authData;
 
-  // Validar credenciales del administrador
+  // Consulta para validar las credenciales del administrador
   const queryAdmin = `
     SELECT *
     FROM administrador
-    WHERE usuario = ? AND contrasena = ?`;
+    WHERE usuario = ? AND contrasena = ?
+  `;
 
   db.query(queryAdmin, [usuario, contrasena], (error, results) => {
     if (error) {
+      console.error('Error al verificar las credenciales del administrador:', error);
       return res.status(500).json({ error: 'Error al verificar las credenciales del administrador' });
     }
     if (results.length === 0) {
+      console.warn('Credenciales inválidas para administrador');
       return res.status(403).json({ error: 'Credenciales inválidas' });
     }
 
@@ -124,12 +127,15 @@ app.post('/admin/obtener-departamento', (req, res) => {
         contrasena,
         departamento_id,
         fecha_registro
-      FROM departamentos`;
+      FROM departamentos
+    `;
 
     db.query(queryDepartamentos, (error, departamentos) => {
       if (error) {
+        console.error('Error al obtener los departamentos:', error);
         return res.status(500).json({ error: 'Error al obtener los departamentos' });
       }
+      // Retornar los departamentos en formato JSON
       return res.status(200).json({ departamentos });
     });
   });
