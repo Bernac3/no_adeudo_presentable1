@@ -1,0 +1,79 @@
+<div class="container mt-5 home-container">
+  <div class="card">
+    <div class="card-header bg-primary text-white text-center">
+      <h2>Validar Departamento</h2>
+    </div>
+    <div class="card-body">
+      <div class="d-flex gap-2 my-3">
+
+      </div>
+      <div class="table-responsive flex-grow-1" style="overflow-y: auto; height: calc(100vh - 350px);">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Usuario</th>
+
+              <th scope="col">Departamento</th>
+              <th scope="col" class="d-none d-xl-table-cell">Fecha de Registro</th>
+              <th scope="col">Datos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let departamento of departamentos">
+              <td class="p-2">{{ departamento.usuario }}</td>
+
+              <td class="p-2">{{ departamento.nombre_departamento }}</td>
+              <td class="p-2 d-none d-xl-table-cell">{{ departamento.fecha_registro | date:'dd/MM/yyyy' }}</td>
+              <td class="p-2">
+                <button
+                  type="button"
+                  class="btn btn-primary ver-alumno"
+                  data-bs-toggle="modal"
+                  data-bs-target="#alumnoModal"
+                  (click)="verDetalles(departamento.usuario, departamento.contrasena, departamento.nombre_departamento, departamento.fecha_registro, departamento.departamento_id)"
+                >
+                  Ver Datos
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="alumnoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="alumnoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="alumnoModalLabel">Verificar Departamento</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <table class="table table-bordered">
+                  <tbody>
+                    <tr>
+                      <th scope="row">Usuario</th>
+                      <td>{{ usuario }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Contraseña</th>
+                      <td>{{ contrasena }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Departamento</th>
+                      <td>{{ departamento }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Fecha de Registro</th>
+                      <td>{{ fechaRegistro | date:'dd/MM/yyyy' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button type="button" class="btn btn-primary" (click)="permitirDepartamentoAutorizado()">Permitir Cuenta</button>
+        </div>
+    </div>
+  </div>

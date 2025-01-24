@@ -1,0 +1,421 @@
+te pasare codigo, no agas nada de momento:
+html:
+div class="modal fade" id="alumnoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="alumnoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles del Alumno</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <!-- Columna Izquierda -->
+            <div class="col-3">
+              <!-- Imagen -->
+              <div class="mb-3 text-center">
+                <img src="" alt="Foto del alumno" class="img-fluid rounded" id="alumnoFoto" style="width: 250px; height: 250px;">
+              </div>
+
+              <!-- Campos con Input y Botón -->
+              <div class="mb-3">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="alumnoNombre" placeholder="Nombre">
+
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <input type="email" class="form-control" id="alumnoCorreo" placeholder="Correo">
+
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <input type="tel" class="form-control" id="alumnoTelefono" placeholder="Teléfono">
+
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="alumnoNoControl" placeholder="No. Control">
+
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="alumnoFechaRegistro" placeholder="Fecha de Registro">
+
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="alumnoContrasena" placeholder="Contraseña">
+
+                </div>
+              </div>
+              <!-- Botones -->
+              <div class="d-grid gap-2">
+                <button type="button" class="btn btn-primary" id="guardarCambios">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          <!-- Columna Derecha -->
+          <div class="col-9">
+            <!-- Tabla -->
+            <table class="table table-bordered table-hover">
+              <thead class="bg-primary text-white">
+                <tr>
+                  <th>Departamento</th>
+                  <th>Estatus</th>
+                  <th>Comentarios</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                <td class="align-middle">Administración y Finanzas</td>
+
+                  <!-- Dropdown para los estatus -->
+                <td class="align-middle text-center">
+                  <div class="dropdown">
+                    <!-- Botón del Dropdown -->
+                    <button class="btn btn-secondary dropdown-toggle"
+                            [ngClass]="{
+                                'btn-warning': alumnoEstatusAdministracionFinanzas === 'Pendiente',
+                                'btn-danger': alumnoEstatusAdministracionFinanzas === 'Con Adeudo',
+                                'btn-success': alumnoEstatusAdministracionFinanzas === 'Sin Adeudo',
+                                'btn-secondary': alumnoEstatusAdministracionFinanzas === null || alumnoEstatusAdministracionFinanzas === undefined
+                            }"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      {{ alumnoEstatusAdministracionFinanzas || 'Seleccionar Estatus' }}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                      <li><a class="dropdown-item" href="#" (click)="cambiarEstatusAdministracionFinanzas('Pendiente')">Pendiente</a></li>
+                      <li><a class="dropdown-item" href="#" (click)="cambiarEstatusAdministracionFinanzas('Con Adeudo')">Con Adeudo</a></li>
+                      <li><a class="dropdown-item" href="#" (click)="cambiarEstatusAdministracionFinanzas('Sin Adeudo')">Sin Adeudo</a></li>
+                    </ul>
+                  </div>
+                </td>
+                <td>
+                  <div class="textarea-container">
+                    <textarea id="comentarioAdministracionFinanzas" [(ngModel)]="alumnoComentarioAdministracionFinanzas" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                  </div>
+                </tr>
+                <tr>
+                  <td class="align-middle">Centro de Información</td>
+
+                  <td class="align-middle text-center">
+                    <div class="dropdown">
+                      <!-- Botón del Dropdown -->
+                      <button class="btn btn-secondary dropdown-toggle"
+                              [ngClass]="{
+                                  'btn-warning': alumnoEstatusCentroInformacion === 'Pendiente',
+                                  'btn-danger': alumnoEstatusCentroInformacion === 'Con Adeudo',
+                                  'btn-success': alumnoEstatusCentroInformacion === 'Sin Adeudo',
+                                  'btn-secondary': alumnoEstatusCentroInformacion === null || alumnoEstatusCentroInformacion === undefined
+                              }"
+                      type="button" id="estatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ alumnoEstatusCentroInformacion|| 'Seleccionar Estatus' }} <!-- Muestra el estatus seleccionado o el texto por defecto -->
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusCentroInformacion('Pendiente')">Pendiente</a></li>
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusCentroInformacion('Con Adeudo')">Con Adeudo</a></li>
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusCentroInformacion('Sin Adeudo')">Sin Adeudo</a></li>
+                        <!-- Agregar más opciones si es necesario -->
+                      </ul>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="textarea-container">
+                      <textarea id="alumnoEstatusCentroInformacion" [(ngModel)]="alumnoComentarioCentroInformacion" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="align-middle">Centro de Cómputo</td>
+
+                  <td class="align-middle text-center">
+                    <div class="dropdown">
+                      <!-- Botón del Dropdown -->
+                      <button class="btn btn-secondary dropdown-toggle"
+                              [ngClass]="{
+                                  'btn-warning': alumnoEstatusCentroComputo === 'Pendiente',
+                                  'btn-danger': alumnoEstatusCentroComputo === 'Con Adeudo',
+                                  'btn-success': alumnoEstatusCentroComputo === 'Sin Adeudo',
+                                  'btn-secondary': alumnoEstatusCentroComputo === null || alumnoEstatusCentroComputo === undefined
+                              }"
+                      type="button" id="estatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ alumnoEstatusCentroComputo|| 'Seleccionar Estatus' }} <!-- Muestra el estatus seleccionado o el texto por defecto -->
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusCentroComputo('Pendiente')">Pendiente</a></li>
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusCentroComputo('Con Adeudo')">Con Adeudo</a></li>
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusCentroComputo('Sin Adeudo')">Sin Adeudo</a></li>
+                        <!-- Agregar más opciones si es necesario -->
+                      </ul>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="textarea-container">
+                      <textarea id="alumnoEstatusCentroComputo" [(ngModel)]="alumnoComentarioCentroComputo" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="align-middle">Recursos Materiales</td>
+
+                  <td class="align-middle text-center">
+                    <div class="dropdown">
+                      <!-- Botón del Dropdown -->
+                      <button class="btn btn-secondary dropdown-toggle"
+                              [ngClass]="{
+                                  'btn-warning': alumnoEstatusRecursosMateriales === 'Pendiente',
+                                  'btn-danger': alumnoEstatusRecursosMateriales === 'Con Adeudo',
+                                  'btn-success': alumnoEstatusRecursosMateriales === 'Sin Adeudo',
+                                  'btn-secondary': alumnoEstatusRecursosMateriales === null || alumnoEstatusRecursosMateriales === undefined
+                              }"
+                      type="button" id="estatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ alumnoEstatusRecursosMateriales|| 'Seleccionar Estatus' }} <!-- Muestra el estatus seleccionado o el texto por defecto -->
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusRerursosMateriales('Pendiente')">Pendiente</a></li>
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusRerursosMateriales('Con Adeudo')">Con Adeudo</a></li>
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusRerursosMateriales('Sin Adeudo')">Sin Adeudo</a></li>
+                        <!-- Agregar más opciones si es necesario -->
+                      </ul>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="textarea-container">
+                      <textarea id="alumnoEstatusRecursosMateriales" [(ngModel)]="alumnoComentarioRecursosMateriales" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="align-middle">Departamento de Vinculación</td>
+
+
+                  <td class="align-middle text-center">
+                    <div class="dropdown">
+                      <!-- Botón del Dropdown -->
+                      <button class="btn btn-secondary dropdown-toggle"
+                              [ngClass]="{
+                                  'btn-warning': alumnoEstatusDepartamentoVinculacion === 'Pendiente',
+                                  'btn-danger': alumnoEstatusDepartamentoVinculacion === 'Con Adeudo',
+                                  'btn-success': alumnoEstatusDepartamentoVinculacion === 'Sin Adeudo',
+                                  'btn-secondary': alumnoEstatusDepartamentoVinculacion === null || alumnoEstatusDepartamentoVinculacion === undefined
+                              }"
+                      type="button" id="estatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ alumnoEstatusDepartamentoVinculacion || 'Seleccionar Estatus' }} <!-- Muestra el estatus seleccionado o el texto por defecto -->
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusDepartamentoVinculacion('Pendiente')">Pendiente</a></li>
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusDepartamentoVinculacion('Con Adeudo')">Con Adeudo</a></li>
+                        <li><a class="dropdown-item" href="#" (click)="cambiarEstatusDepartamentoVinculacion('Sin Adeudo')">Sin Adeudo</a></li>
+                        <!-- Agregar más opciones si es necesario -->
+                      </ul>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="textarea-container">
+                      <textarea id="alumnoEstatusDepartamentoVinculacion" [(ngModel)]="alumnoComentarioDepartamentoVinculacion" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+ts:
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators';  // Importar el operador debounceTime
+import { AuthService } from '../../../../service/auth.service';
+import { Alumno as Usuario } from '../../../../interfaces/alumno.interface';
+import { PeticionesService } from '../../../../service/peticion.service';
+
+@Component({
+  selector: 'app-lista-admin',
+  templateUrl: './lista-admin.component.html',
+  styleUrls: ['./lista-admin.component.css']
+})
+export class ListaAdminComponent implements OnInit {
+
+  usuario: Usuario | null = null; // estos son los datos del usuario que inicio sesion
+
+  alumnosConPeticiones: any[] = [];
+  alumnosOriginales: any[] = [];
+
+  searchTermControl: FormControl = new FormControl(''); // Crear un FormControl para el input de búsqueda
+
+  adeudoEstado: string | null = null; // Puede ser 'Sin Adeudo', 'Con Adeudo' o null.
+
+  // datos alumno, comentario y peticion
+  alumnoEstatusAdministracionFinanzas: string = '';
+  alumnoEstatusCentroInformacion: string = '';
+  alumnoEstatusCentroComputo: string = '';
+  alumnoEstatusRecursosMateriales: string = '';
+  alumnoEstatusDepartamentoVinculacion: string = '';
+
+  alumnoComentarioAdministracionFinanzas: string = '';
+  alumnoComentarioCentroInformacion: string = '';
+  alumnoComentarioCentroComputo: string = '';
+  alumnoComentarioRecursosMateriales: string = '';
+  alumnoComentarioDepartamentoVinculacion: string = '';
+  alumnoEstatusAdministracionFinanzascolor: string | null = null;
+
+  alumnoFoto: string = '';
+
+  constructor(private authService: AuthService, private peticionesService: PeticionesService) {}
+
+  ngOnInit(): void {
+    this.authService.getAlumnosYPeticiones().subscribe(
+      (data) => {
+        this.alumnosConPeticiones = data;
+        this.alumnosOriginales = [...data];  // Guardamos una copia de los datos completos
+        console.log('Datos de alumnos con peticiones:', this.alumnosConPeticiones);
+      },
+      (error) => {
+        console.error('Error al obtener los datos de los alumnos:', error);
+      }
+    );
+
+    // Aplicar debounceTime al control de búsqueda
+    this.searchTermControl.valueChanges.pipe(
+      debounceTime(1000)  // Esperar 1 segundo después de la última escritura
+    ).subscribe((searchTerm) => {
+      this.buscarAlumnos(searchTerm);  // Ejecutar la búsqueda automáticamente
+    });
+
+    // Obtener los datos del Usuario Departamento
+    this.authService.getUser().subscribe((data) => {
+      this.usuario = data; // Asignamos los datos del alumno
+      console.log(`Datos List.component: User: ${this.usuario?.usuario} Departamento: ${this.usuario?.departamento_id}`);
+    });
+  }
+
+  cargarDatosModal(alumno: any): void {
+    // Asignar estatus
+    this.alumnoEstatusAdministracionFinanzas = alumno.estatus_administracion_y_finanzas || 'Pendiente'; // Valor por defecto
+    this.alumnoEstatusCentroInformacion = alumno.estatus_centro_de_informacion || 'Pendiente';
+    this.alumnoEstatusCentroComputo = alumno.estatus_centro_de_computo || 'Pendiente';
+    this.alumnoEstatusRecursosMateriales = alumno.estatus_recursos_materiales || 'Pendiente';
+    this.alumnoEstatusDepartamentoVinculacion = alumno.estatus_departamento_de_vinculacion || 'Pendiente';
+
+    // Asignar comentarios
+    this.alumnoComentarioAdministracionFinanzas = alumno.comentario_administracion_y_finanzas || '';
+    this.alumnoComentarioCentroInformacion = alumno.comentario_centro_de_informacion || '';
+    this.alumnoComentarioCentroComputo = alumno.comentario_centro_de_computo || '';
+    this.alumnoComentarioRecursosMateriales = alumno.comentario_recursos_materiales || '';
+    this.alumnoComentarioDepartamentoVinculacion = alumno.comentario_departamento_de_vinculacion || '';
+
+
+    // Para otros campos de datos del alumno
+    const alumnoNombre = document.getElementById('alumnoNombre') as HTMLInputElement;
+    const alumnoCorreo = document.getElementById('alumnoCorreo') as HTMLInputElement;
+    const alumnoTelefono = document.getElementById('alumnoTelefono') as HTMLInputElement;
+    const alumnoNoControl = document.getElementById('alumnoNoControl') as HTMLInputElement;
+    const alumnoFechaRegistro = document.getElementById('alumnoFechaRegistro') as HTMLInputElement;
+    const alumnoFoto = document.getElementById('alumnoFoto') as HTMLImageElement;
+    const alumnoContrasena = document.getElementById('alumnoContrasena') as HTMLInputElement;
+
+    if (alumnoNombre) alumnoNombre.value = alumno.nombre_completo;
+    if (alumnoCorreo) alumnoCorreo.value = alumno.correo;
+    if (alumnoTelefono) alumnoTelefono.value = alumno.telefono;
+    if (alumnoNoControl) alumnoNoControl.value = alumno.no_control;
+    if (alumnoFechaRegistro) {
+      const fecha = new Date(alumno.fecha_registro);
+      alumnoFechaRegistro.value = `${fecha.getDate().toString().padStart(2, '0')}/${(fecha.getMonth() + 1).toString().padStart(2, '0')}/${fecha.getFullYear()}`;
+    }
+
+    if (alumnoFoto) {
+      alumnoFoto.src = `http://localhost:3000/uploads/${alumno.foto}`;
+    }
+    if (alumnoContrasena) alumnoContrasena.value = alumno.contrasena;
+  }
+
+
+
+
+  ordenarAlumnos(opcion: string, event: Event): void {
+    event.preventDefault();
+    switch(opcion) {
+      case 'nombre-asc':
+        this.alumnosConPeticiones.sort((a, b) => a.nombre_completo.localeCompare(b.nombre_completo));
+        break;
+      case 'nombre-desc':
+        this.alumnosConPeticiones.sort((a, b) => b.nombre_completo.localeCompare(a.nombre_completo));
+        break;
+      case 'nuevos':
+        this.alumnosConPeticiones.sort((a, b) => new Date(b.fecha_registro).getTime() - new Date(a.fecha_registro).getTime());
+        break;
+      case 'viejos':
+        this.alumnosConPeticiones.sort((a, b) => new Date(a.fecha_registro).getTime() - new Date(b.fecha_registro).getTime());
+        break;
+    }
+  }
+
+  // Función para realizar la búsqueda automática
+  buscarAlumnos(searchTerm: string): void {
+    if (searchTerm) {
+      this.alumnosConPeticiones = this.alumnosOriginales.filter(alumno => {
+        const nombreValido = alumno.nombre_completo ? alumno.nombre_completo.toLowerCase() : '';
+        const noControlValido = alumno.no_control ? alumno.no_control.toLowerCase() : '';
+        const correoValido = alumno.correo ? alumno.correo.toLowerCase() : '';
+
+        return nombreValido.includes(searchTerm.toLowerCase()) ||
+               noControlValido.includes(searchTerm.toLowerCase()) ||
+               correoValido.includes(searchTerm.toLowerCase());
+      });
+    } else {
+      this.alumnosConPeticiones = [...this.alumnosOriginales];
+    }
+  }
+
+  // Función para abrir el modal, puedes agregar el control para abrirlo manualmente si necesitas
+  openModal(): void {
+    const modal = document.getElementById('modalAlumno');
+    if (modal) {
+      modal.style.display = 'block';  // Abre el modal mostrando el contenedor
+    }
+  }
+
+  closeModal(): void {
+    const modal = document.getElementById('modalAlumno');
+    if (modal) {
+      modal.style.display = 'none';  // Cierra el modal
+    }
+  }
+
+  // Función que se ejecuta al seleccionar un estatus del dropdown
+  cambiarEstatusAdministracionFinanzas(nuevoEstatus: string): void {
+    console.log(nuevoEstatus) // Asigna el nuevo valor al modelo
+  }
+  cambiarEstatusCentroInformacion(nuevoEstatus: string): void {
+    console.log(nuevoEstatus) // Asigna el nuevo valor al modelo
+  }
+  cambiarEstatusCentroComputo(nuevoEstatus: string): void {
+    console.log(nuevoEstatus) // Asigna el nuevo valor al modelo
+  }
+  cambiarEstatusRerursosMateriales(nuevoEstatus: string): void {
+    console.log(nuevoEstatus) // Asigna el nuevo valor al modelo
+  }
+  cambiarEstatusDepartamentoVinculacion(nuevoEstatus: string): void {
+    console.log(nuevoEstatus) // Asigna el nuevo valor al modelo
+  }
+
+}
+
+practicamente en el modal se pone implisita la infirmacion del alumno: lo que necesito hacer son dos cosas
+1. en la parte de la imagen (col izquierda) aparecen los dagos generales del alumno, nombre, correo, tel, etc, esos campos son llenados con los datos del alumno, lo que quiero hacer es que cuando el usuario (admin) de click sobre esos campos el contenido se borre ej: si da click en nombre, el nombre se borre y quede listo para escribir, pero Tambien si el usuario da click en el en el campo y no escribe nada y da en guardar, este no cuarde un espacio vacio (''), si no que guarde el dato anterior (el nombre antes de que el diera click)

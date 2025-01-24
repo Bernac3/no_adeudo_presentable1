@@ -1,0 +1,525 @@
+te voy a pasar codigo, no agas nada de momento solo espera
+
+server.js:
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const db = require('./src/app/db/db');
+const multer = require('multer');
+const path = require('path');
+
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+app.post('/api/login', (req, res) => {
+  const { correo, contrasena, tipo_usuario } = req.body;
+
+  let query = '';
+
+  // Lógica condicional basada en el tipo de usuario
+  if (tipo_usuario === 'Alumno') {
+    console.log('Tipo de usuario: Alumno');
+    query = `
+      SELECT
+        a.idalumnos,
+        a.nombre_completo,
+        a.correo,
+        a.telefono,
+        a.no_control,
+        a.foto,
+        a.fecha_registro,
+        p.estatus_administracion_y_finanzas,
+        p.estatus_centro_de_informacion,
+        p.estatus_centro_de_computo,
+        p.estatus_recursos_materiales,
+        p.estatus_departamento_de_vinculacion,
+        p.comentario_administracion_y_finanzas,
+        p.comentario_centro_de_informacion,
+        p.comentario_centro_de_computo,
+        p.comentario_recursos_materiales,
+        p.comentario_departamento_de_vinculacion,
+        p.estatus_peticion
+      FROM
+        alumnos a
+      LEFT JOIN
+        peticiones p ON a.no_control = p.no_control
+      WHERE
+        a.correo = ? AND a.contrasena = ?
+    `;
+  } else if (tipo_usuario === 'Departamento') {
+    query = `
+      SELECT
+        d.iddepartamentos,
+        d.nombre_departamento,
+        d.usuario,
+        d.departamento_id,
+        d.rol
+      FROM
+        departamentos d
+      WHERE
+        d.usuario = ? AND d.contrasena = ?
+    `;
+  } else if (tipo_usuario === 'Admin') {
+    console.log('Tipo de usuario: Admin');
+
+    query = `
+      SELECT
+        a.idalumnos,
+        a.nombre_completo,
+        a.correo,
+        a.telefono,
+        a.no_control,
+        a.foto,
+        a.fecha_registro,
+        p.estatus_administracion_y_finanzas,
+        p.estatus_centro_de_informacion,
+        p.estatus_centro_de_computo,
+        p.estatus_recursos_materiales,
+        p.estatus_departamento_de_vinculacion,
+        p.comentario_administracion_y_finanzas,
+        p.comentario_centro_de_informacion,
+        p.comentario_centro_de_computo,
+        p.comentario_recursos_materiales,
+        p.comentario_departamento_de_vinculacion,
+        p.estatus_peticion,
+        d.nombre_departamento,
+        d.departamento_id
+      FROM
+        alumnos a
+      LEFT JOIN
+        peticiones p ON a.no_control = p.no_control
+      LEFT JOIN
+        departamentos d ON d.departamento_id = a.no_control
+      WHERE
+        a.correo = ? AND a.contrasena = ?
+    `;
+  } else {
+    return res.status(400).json({ error: 'Tipo de usuario no válido' });
+  }
+
+  db.query(query, [correo, contrasena], (err, results) => {
+    if (err) {
+      console.error('Error al verificar usuario:', err);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
+
+    if (results.length === 0) {
+      console.log('Credenciales incorrectas');
+
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
+    console.log('Usuario autenticado:', results[0]);
+    res.status(200).json(results[0]); // Enviamos los datos según el tipo de usuario
+  });
+});
+
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+
+// 📁 Configuración de multer para subir imágenes
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads/'); // Carpeta donde se guardarán las imágenes
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Nombre único para evitar colisiones
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// 🌐 Ruta para registrar alumnos
+app.post('/api/register', upload.single('foto'), (req, res) => {
+  const { nombre_completo, correo, telefono, no_control, contrasena } = req.body;
+  const foto = req.file ? req.file.filename : null; // Nombre de la imagen subida
+
+  const query = `
+    INSERT INTO alumnos (nombre_completo, correo, telefono, no_control, foto, contrasena, fecha_registro)
+    VALUES (?, ?, ?, ?, ?, ?, NOW())
+  `;
+
+  db.query(query, [nombre_completo, correo, telefono, no_control, foto, contrasena], (err, result) => {
+    if (err) {
+      console.error('Error al registrar alumno:', err);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
+    res.status(201).json({ message: 'Alumno registrado exitosamente' });
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+esta es la otra parte: no agas nada de momento
+
+auth.servce.ts:
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Alumno } from '../interfaces/alumno.interface'; // Cambia esto para importar la interfaz general
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  private apiUrl = 'http://localhost:3000/api/login';
+  private userSubject = new BehaviorSubject<Alumno | null>(null);
+
+  constructor(private http: HttpClient) {}
+
+  // 🚀 Método actualizado para iniciar sesión y obtener los datos
+  login(correo: string, contrasena: string, tipo_usuario: string): Observable<Alumno> {
+    console.log('Enviando solicitud de login al servidor...');
+    console.log('Correo:', correo);
+    console.log('Contraseña:', contrasena);
+    console.log('Tipo de usuario:', tipo_usuario);
+    return this.http.post<Alumno>(this.apiUrl, { correo, contrasena, tipo_usuario });
+  }
+
+  setUser(user: Alumno): void {
+    this.userSubject.next(user);
+  }
+
+  isUserAuthenticated(): Observable<boolean> {
+    return this.userSubject.asObservable().pipe(map(user => !!user));
+  }
+
+  getUser(): Observable<Alumno | null> {
+    return this.userSubject.asObservable();
+  }
+
+  logout(): void {
+    this.userSubject.next(null);
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('user');
+  }
+}
+
+login.component.ts:
+
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../service/auth.service';
+import { Alumno } from '../../interfaces/alumno.interface';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
+})
+export class LoginComponent {
+  correo: string = '';
+  contrasena: string = '';
+  tipo_usuario: string = 'Alumno'; // Por defecto es Alumno
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  login(): void {
+
+    console.log('Iniciando login...');
+    console.log('Correo:', this.correo);
+    console.log('Contraseña:', this.contrasena);
+    console.log('Tipo de usuario:', this.tipo_usuario);
+
+    this.authService.login(this.correo, this.contrasena, this.tipo_usuario).subscribe(
+      (user) => {
+
+        console.log('Respuesta del servidor:', user);
+
+        this.authService.setUser(user);
+        // Redirigir según el tipo de usuario
+        if (this.tipo_usuario === 'Alumno') {
+          this.router.navigate(['/alumno/home']);
+        } else if (this.tipo_usuario === 'Departamento') {
+          this.router.navigate(['/departamentos/list']);
+          // this.router.navigate(['/departamentos/verificar/list']);
+        } else if (this.tipo_usuario === 'Admin') {
+          this.router.navigate(['/admin/administrador/components/lista-admin']);
+        }
+      },
+      (error) => {
+        console.error('Error en el login:', error);
+      }
+    );
+  }
+}
+
+login.component.html:
+<div class="bg-main-app">
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+
+      <form (ngSubmit)="login()">
+        <div class="form-group">
+          <label for="correo">Correo</label>
+          <input type="email" id="correo" [(ngModel)]="correo" name="correo" required class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="contrasena">Contraseña</label>
+          <input type="password" id="contrasena" [(ngModel)]="contrasena" name="contrasena" required class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="tipo_usuario">Tipo de Usuario</label>
+          <select id="tipo_usuario" [(ngModel)]="tipo_usuario" name="tipo_usuario" class="form-control">
+            <option value="Alumno">Alumno</option>
+            <option value="Departamento">Departamento</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+      </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+esta es la otra parte: no agas nada de momento
+
+list.component.html: aqui aparte de htmo del list tambien esta el Modal, este usa bootstrap para funcionar
+
+<div class="container mt-5 home-container">
+  <div class="card">
+      <div class="card-header bg-primary text-white text-center">
+          <h2>Formato No-Adeudo</h2>
+      </div>
+      <div class="card-body">
+          <div class="d-flex gap-2 my-3">
+
+              <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Ordenar por:
+                  </button>
+                  <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#">Nombre A-Z</a></li>
+                      <li><a class="dropdown-item" href="#">Nombre Z-A</a></li>
+                      <li><a class="dropdown-item" href="#">Nuevos Alumnos</a></li>
+                      <li><a class="dropdown-item" href="#">Viejos Alumnos</a></li>
+                  </ul>
+              </div>
+
+              <form class="d-flex" style="width: 50%;" role="search">
+                  <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Search">
+                  <button class="btn btn-outline-success" type="submit">Buscar</button>
+              </form>
+
+          </div>
+
+          <table class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th scope="col">NOMBRE</th>
+                      <th scope="col">CORREO ELECTRÓNICO</th>
+                      <th scope="col">TEL</th>
+                      <th scope="col">No. DE CONTROL</th>
+                      <th scope="col">Fecha de Registro</th>
+                      <th scope="col">Información</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td class="p-2">Juan Pérez</td>
+                      <td class="p-2">juanperezexample.com</td>
+                      <td class="p-2">1234567890</td>
+                      <td class="p-2">12345678</td>
+                      <td class="p-2">2024-12-17</td>
+                      <td class="p-2">
+                          <button type="button" class="btn btn-primary ver-alumno" data-bs-toggle="modal" data-bs-target="#alumnoModal"
+                                  data-nombre="Juan Pérez"
+                                  data-correo="juanperez@example.com"
+                                  data-telefono="1234567890"
+                                  data-no-control="12345678"
+                                  data-fecha-registro="2024-12-17"
+                                  data-foto="https://via.placeholder.com/150">
+                              Ver Alumno
+                          </button>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="alumnoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="alumnoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="alumnoModalLabel">Información del Alumno</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="text-center mb-3">
+                  <img id="alumnoFoto" src="https://via.placeholder.com/150" alt="Foto del alumno" class="img-fluid rounded" width="150">
+              </div>
+
+              <table class="table table-bordered">
+                  <tbody>
+                      <tr>
+                          <th scope="row">Nombre</th>
+                          <td id="alumnoNombre"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Correo</th>
+                          <td id="alumnoCorreo"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Teléfono</th>
+                          <td id="alumnoTelefono"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">No. de Control</th>
+                          <td id="alumnoNoControl"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Fecha de Registro</th>
+                          <td id="alumnoFechaRegistro"></td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <div class="text-center mt-3">
+                  <button class="btn btn-success me-2">Sin Adeudos</button>
+                  <button class="btn btn-danger">Con Adeudos</button>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+list.component.ts:
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-list',
+  templateUrl: './list.component.html',
+  styleUrl: './list.component.css'
+})
+export class ListComponent {
+
+}
+
+
+
+
+
+
+
+
+
+esta es la otra parte: no agas nada de momento
+
+a base de datos se llama "no_adeudo", esta tiene 4 tablas, administrador, alumnos, peticiones y departamentos:
+
+administrador:
+Columns:
+idadministrador int AI PK
+usuario varchar(45)
+contrasena varchar(45)
+rol varchar(20)
+
+alumnos:
+Columns:
+idalumnos int AI PK NN
+nombre_completo varchar(100)
+correo varchar(45)
+telefono varchar(45)
+no_control varchar(45) UQ
+foto varchar(45)
+contrasena varchar(45)
+fecha_registro date
+rol varchar(20)
+
+departamentos:
+Columns:
+iddepartamentos int AI PK
+nombre_departamento varchar(45)
+usuario varchar(45)
+contrasena varchar(45)
+departamento_id varchar(45)
+rol varchar(20)
+
+
+
+
+
+
+
+analiza bien el proyecto, lo que quero hacer es algo simple
+lo que actualmente pasa en el proyecto es que cuando un usuario, en este caso de Departamento inicia sesion este es redirigido a
+un modulo en espesifico,mi pagina tiene tres tipos de usuario: alumno, departamento y admin: de momento trabajaremos con departamento
+
+cuando departamento inicia sesion este manda una paticion a la db por medo de un query y este le retorna algunos datos, datos que son usados
+en el verificar.component de ese componente los paso a otros componentes hijos, com en este caso list.component (que esta mas arriba en el codigo)
+
+quiero que cuando el departamento inicie sesion este se traiga los datos de todos los alumnos, usa los querys que ya existen para hacer esa tarea
+esos alumnos que te traigas guardalos en un arreglo de objetos, ya que los voya anecesitar para mostrarlos en el componente list.component.html
+
+taraete todos alumnos y
+oviamente los datos de la tabla peticiones donde
+el
+no_control de
+alumnos sea ugual al no_control de peticiones
+
+algo mas cuando el usuario(departamento)
+de click en
+ver alumno y habra el modal los cambios que se agan en ese modal se tienen que guardar en la base de datos. crea los querys necesarios para eso
+
+resumen:
+El usuario quiere que cuando un usuario de tipo 'Departamento' inicie sesión, se traigan todos los datos de la tabla 'alumnos' junto con los datos
+relacionados de la tabla 'peticiones' (vinculados por el campo 'no_control'). Estos datos se deben guardar en un arreglo de objetos para utilizarlos
+en el componente 'list.component.html' dentro del módulo 'departamentos/verificar/components/list'. También desea que cuando el usuario de tipo
+'Departamento' haga clic en 'Ver alumno' y se abra un modal, los cambios realizados en dicho modal se guarden en la base de datos.
+
+el Modal es parte del html de list.component.html
+
+
+esto es lo que vas a hacer:
+cuando un usuario de 'Departamento' inicie sesión, se traigan todos los datos de la tabla 'alumnos' junto con los datos
+relacionados de la tabla 'peticiones' (vinculados por el campo 'no_control'). Estos datos se deben guardar en un arreglo de objetos para utilizarlos
+en el componente 'list.component.html', no modifiques lo que ya existe, toma lo que existe como ejemplo para el codigo ya que el codigo actual finciona,
+ese arreglo de objetos de alumnos quiero que los muestres en la tabla que existe en el html de lista.component.html

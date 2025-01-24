@@ -1,0 +1,168 @@
+<div class="container mt-5 home-container">
+  <div class="card">
+    <div class="card-header bg-primary text-white text-center">
+      <h2>Lista de Alumnos.</h2>
+    </div>
+    <div class="card-body">
+      <div class="d-flex gap-2 my-3">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Ordenar por:
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('nombre-asc', $event)">Nombre A-Z</a></li>
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('nombre-desc', $event)">Nombre Z-A</a></li>
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('nuevos', $event)">Nuevas Peticiones</a></li>
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('viejos', $event)">Antiguas Peticiones</a></li>
+          </ul>
+        </div>
+
+        <form class="d-flex" style="width: 50%;" role="search">
+          <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Search" [formControl]="searchTermControl">
+          <button class="btn btn-outline-success d-none d-xl-block" type="submit">Buscar</button>
+        </form>
+      </div>
+
+      <!-- Contenedor para aplicar el scroll solo a la tabla -->
+      <div class="table-responsive flex-grow-1" style="overflow-y: auto; height: calc(100vh - 350px);">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">NOMBRE</th>
+              <th scope="col" class="d-none d-xl-table-cell">CORREO ELECTRÓNICO</th>
+              <th scope="col" class="d-none d-xl-table-cell">TEL</th>
+              <th scope="col">No. DE CONTROL</th>
+              <th scope="col" class="d-none d-xl-table-cell">Fecha de Registro</th>
+              <th scope="col" class="d-none d-xl-table-cell">Adeudo Actual</th>
+              <th scope="col">Ventana</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let alumno of alumnosConPeticiones">
+              <td class="p-2">{{ alumno.nombre_completo }}</td>
+              <td class="p-2 d-none d-xl-table-cell">{{ alumno.correo }}</td>
+              <td class="p-2 d-none d-xl-table-cell">{{ alumno.telefono }}</td>
+              <td class="p-2">{{ alumno.no_control }}</td>
+              <td class="p-2 d-none d-xl-table-cell">{{ alumno.fecha_registro | date:'dd/MM/yyyy' }}</td>
+              <td class="p-2 d-none d-xl-table-cell">{{ alumno.estatus_administracion_y_finanzas }}</td>
+              <td class="p-2">
+                <button type="button" class="btn btn-primary ver-alumno"
+                        data-bs-toggle="modal" data-bs-target="#alumnoModal"
+                        (click)="cargarDatosModal(alumno)">
+                  Ver Alumno
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast position-fixed top-0 end-0 m-3" role="alert" id="toastMessage" aria-live="assertive" aria-atomic="true" style="z-index: 1050; display: none;">
+    <div class="toast-header">
+      <strong class="me-auto text-success">Éxito</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Datos guardados con éxito.
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="alumnoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="alumnoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="alumnoModalLabel">Información del Alumno</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="text-center mb-3">
+                  <img id="alumnoFoto" src="https://via.placeholder.com/150" alt="Foto del alumno" class="img-fluid rounded" width="150">
+              </div>
+
+              <table class="table table-bordered">
+                  <tbody>
+                      <tr>
+                          <th scope="row">Nombre</th>
+                          <td id="alumnoNombre"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Correo</th>
+                          <td id="alumnoCorreo"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Teléfono</th>
+                          <td id="alumnoTelefono"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">No. de Control</th>
+                          <td id="alumnoNoControl"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Fecha de Registro</th>
+                          <td id="alumnoFechaRegistro"></td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <div class="text-center mt-3">
+                <button
+                  class="btn me-2"
+                  [ngClass]="{
+                    'btn-success': adeudoEstado === 'Sin Adeudo',
+                    'btn-outline-success': adeudoEstado !== 'Sin Adeudo'
+                  }"
+                  (click)="setSinAdeudoAlumno()"
+                >
+                  Sin Adeudos
+                </button>
+                <button
+                  class="btn"
+                  [ngClass]="{
+                    'btn-danger': adeudoEstado === 'Con Adeudo',
+                    'btn-outline-danger': adeudoEstado !== 'Con Adeudo'
+                  }"
+                  (click)="setConAdeudoAlumno()"
+                >
+                  Con Adeudos
+                </button>
+
+                <div class="mb-3">
+                  <label for="message-text" class="col-form-label">Agregar Nota:</label>
+                  <textarea
+                    class="form-control"
+                    id="alumnoComentario"
+                    [(ngModel)]="alumnoComentario"
+                    placeholder="Agregar una nota (Opcional)"
+                    rows="5"
+                    (focus)="clearComment()"
+                  ></textarea>
+                </div>
+
+
+
+              </div>
+              <div class="modal-footer d-flex justify-content-between">
+                <!-- Contenedor para el mensaje alineado a la izquierda -->
+                <div class="d-flex align-items-center">
+                  <p id="etiquetaEstado" class="d-none alert m-0 p-0 text-center">
+                    Adeudo Actual de Alumno:
+                    <span id="etiquetaEstadoSpan" class="fs-5"></span>
+                  </p>
+
+                </div>
+
+                <!-- Contenedor para los botones -->
+                <div class="d-flex">
+                  <button class="btn btn-primary mx-2" (click)="setEstadoAdeudoAlumno()" [disabled]="!adeudoEstado">Guardar</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+              </div>
+
+      </div>
+  </div>
+</div>

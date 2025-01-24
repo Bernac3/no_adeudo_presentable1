@@ -1,0 +1,58 @@
+<div class="bg-main-app">
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="p-4 bg-white border rounded shadow" style="width: 100%; max-width: 500px;">
+      <h3 class="text-center mb-4">Registro Alumno</h3>
+
+      <!-- Campo: Nombre Completo -->
+      <div class="form-group mb-3">
+        <label for="nombre_completo" class="form-label">Nombre Completo</label>
+        <input type="text" class="form-control" id="nombre_completo" formControlName="nombre_completo" placeholder="Ingresa tu nombre completo" required />
+      </div>
+
+      <!-- Campo: Correo -->
+      <div class="form-group mb-3">
+        <label for="correo" class="form-label">Correo Institucional</label>
+        <input type="email" class="form-control" id="correo" formControlName="correo" placeholder="ejemplo@institucion.edu" required />
+      </div>
+
+      <!-- Campo: Teléfono -->
+      <div class="form-group mb-3">
+        <label for="telefono" class="form-label">Teléfono</label>
+        <input type="tel" class="form-control" id="telefono" formControlName="telefono" placeholder="Ingresa tu número de teléfono" required />
+      </div>
+
+      <!-- Campo: Número de Control -->
+      <div class="form-group mb-3">
+        <label for="no_control" class="form-label">Número de Control</label>
+        <input type="text" class="form-control" id="no_control" formControlName="no_control" placeholder="Ingresa tu número de control" required />
+      </div>
+
+      <!-- Campo: Contraseña -->
+      <div class="form-group mb-3">
+        <label for="contrasena" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="contrasena" formControlName="contrasena" placeholder="Ingresa tu contraseña" required />
+      </div>
+
+      <!-- Campo: Confirmar Contraseña -->
+      <div class="form-group mb-3">
+        <label for="confirmarContrasena" class="form-label">Confirmar Contraseña</label>
+        <input type="password" class="form-control" id="confirmarContrasena" formControlName="confirmarContrasena" placeholder="Confirma tu contraseña" required />
+      </div>
+
+      <!-- Campo: Subir Imagen -->
+      <div class="form-group mb-4">
+        <label for="foto" class="form-label">Subir Imagen</label>
+        <input type="file" class="form-control" id="foto" formControlName="foto" (change)="onFileChange($event)" required />
+      </div>
+
+      <!-- Botones -->
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-success w-100 me-2" [disabled]="registerForm.invalid">Registrarse</button>
+        <button type="button" class="btn btn-secondary w-100" (click)="goToLogin()">Login</button>
+        <button type="button" class="btn btn-warning w-100 ms-2" (click)="goToRegisterDepartamento()">Departamento</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+

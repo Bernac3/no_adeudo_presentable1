@@ -1,0 +1,30 @@
+<div class="bg-main-app">
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <form (ngSubmit)="login()" class="p-4 bg-white border rounded shadow" style="width: 100%; max-width: 400px;">
+      <h3 class="text-center mb-4">Iniciar Sesión</h3>
+
+      <!-- Mensaje de error -->
+      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Campo de correo -->
+      <div class="form-group mb-3">
+        <label for="correo" class="form-label">Correo</label>
+        <input type="email" id="correo" [(ngModel)]="correo" name="correo" required class="form-control" placeholder="Ingresa tu correo" />
+      </div>
+
+      <!-- Campo de contraseña -->
+      <div class="form-group mb-3">
+        <label for="contrasena" class="form-label">Contraseña</label>
+        <input type="password" id="contrasena" [(ngModel)]="contrasena" name="contrasena" required class="form-control" placeholder="Ingresa tu contraseña" />
+      </div>
+
+      <!-- Botones -->
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary w-100 me-2">Iniciar Sesión</button>
+        <button type="button" class="btn btn-secondary w-100" (click)="goToRagister()">Registrar</button>
+      </div>
+    </form>
+  </div>
+</div>

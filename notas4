@@ -1,0 +1,199 @@
+login.component.html y ts
+
+<div class="bg-main-app">
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+
+        <form (ngSubmit)="onLogin()">
+
+            <div class="form-group">
+                <label for="correo">Correo:</label>
+                <input type="email" class="form-control"  id="correo" [(ngModel)]="correo" name="correo" placeholder="alumno.17@tecsanpedro.edu.mx" required />
+            </div>
+
+            <div  class="form-group">
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" class="form-control" id="contrasena" [(ngModel)]="contrasena" name="contrasena" placeholder="contraseña" required />
+            </div>
+           <div class="m-0">
+            <button class="btn btn-success btn-block m-2" type="submit">Iniciar Sesión</button>
+            <button class="btn btn-success btn-block m-2" type="button" (click)="goToRegister()">Registrarse</button>
+           </div>
+           <div *ngIf="error" style="color: red;">{{ error }}</div>
+        </form>
+
+    </div>
+</div>
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../service/auth.service';
+import { Alumno } from '../../interfaces/alumno.interface';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
+})
+export class LoginComponent {
+  correo: string = '';
+  contrasena: string = '';
+  error: string | null = null;
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  onLogin(): void {
+    this.authService.login(this.correo, this.contrasena).subscribe({
+      next: (alumno: Alumno) => {
+        this.authService.setAlumno(alumno); // 🚀 Guardar datos del alumno
+        console.log('Inicio de sesión exitoso:', alumno);
+        // 🚀 Redirección a la página de inicio
+        this.router.navigateByUrl('/alumno/home').then(() => {
+          console.log('Redirección exitosa a /alumno/home');
+        }).catch(err => console.error('Error al redirigir:', err));
+      },
+      error: (err) => {
+        this.error = 'Usuario o Contraseña incorrecto';
+        console.error(err);
+      },
+    });
+  }
+  goToRegister(): void {
+    this.router.navigate(['/auth/register']);
+  }
+}
+
+server.js
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const db = require('./src/app/db/db');
+const multer = require('multer');
+const path = require('path');
+
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+app.post('/api/login', (req, res) => {
+  const { correo, contrasena } = req.body;
+
+  const query = `
+    SELECT
+      a.idalumnos,
+      a.nombre_completo,
+      a.correo,
+      a.telefono,
+      a.no_control,
+      a.foto,
+      a.fecha_registro,
+      p.estatus_administracion_y_finanzas,
+      p.estatus_centro_de_informacion,
+      p.estatus_centro_de_computo,
+      p.estatus_recursos_materiales,
+      p.estatus_departamento_de_vinculacion,
+      p.comentario_administracion_y_finanzas,
+      p.comentario_centro_de_informacion,
+      p.comentario_centro_de_computo,
+      p.comentario_recursos_materiales,
+      p.comentario_departamento_de_vinculacion,
+      p.estatus_peticion
+    FROM
+      alumnos a
+    LEFT JOIN
+      peticiones p ON a.no_control = p.no_control
+    WHERE
+      a.correo = ? AND a.contrasena = ?
+  `;
+
+  db.query(query, [correo, contrasena], (err, results) => {
+    if (err) {
+      console.error('Error al verificar alumno:', err);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
+
+    res.status(200).json(results[0]); // 🚀 Enviamos los datos del alumno + peticiones
+  });
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+
+// 📁 Configuración de multer para subir imágenes
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads/'); // Carpeta donde se guardarán las imágenes
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Nombre único para evitar colisiones
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// 🌐 Ruta para registrar alumnos
+app.post('/api/register', upload.single('foto'), (req, res) => {
+  const { nombre_completo, correo, telefono, no_control, contrasena } = req.body;
+  const foto = req.file ? req.file.filename : null; // Nombre de la imagen subida
+
+  const query = `
+    INSERT INTO alumnos (nombre_completo, correo, telefono, no_control, foto, contrasena, fecha_registro)
+    VALUES (?, ?, ?, ?, ?, ?, NOW())
+  `;
+
+  db.query(query, [nombre_completo, correo, telefono, no_control, foto, contrasena], (err, result) => {
+    if (err) {
+      console.error('Error al registrar alumno:', err);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
+    res.status(201).json({ message: 'Alumno registrado exitosamente' });
+  });
+});
+
+auth.service.ts
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { Alumno } from '../interfaces/alumno.interface';
+import { map } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  private apiUrl = 'http://localhost:3000/api/login';
+  private alumnoSubject = new BehaviorSubject<Alumno | null>(null);
+
+  constructor(private http: HttpClient) {}
+
+  // 🚀 Método actualizado para iniciar sesión y obtener los datos de 'alumnos' + 'peticiones'
+  login(correo: string, contrasena: string): Observable<Alumno> {
+    return this.http.post<Alumno>(this.apiUrl, { correo, contrasena });
+  }
+
+  setAlumno(alumno: Alumno): void {
+    this.alumnoSubject.next(alumno);
+  }
+
+  isAlumnoAuthenticated(): Observable<boolean> {
+    return this.alumnoSubject.asObservable().pipe(map(alumno => !!alumno));
+  }
+
+  getAlumno(): Observable<Alumno | null> {
+    return this.alumnoSubject.asObservable();
+  }
+
+  logout(): void {
+    this.alumnoSubject.next(null);
+    localStorage.removeItem('alumno');
+    sessionStorage.removeItem('alumno');
+  }
+
+  // 🚀 Método para registrar alumnos en la db
+}

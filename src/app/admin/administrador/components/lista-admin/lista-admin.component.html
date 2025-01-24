@@ -1,0 +1,324 @@
+<div class="container mt-5 home-container">
+  <div class="card">
+    <div class="card-header bg-primary text-white text-center">
+      <h2>Lista Alumnos</h2>
+    </div>
+    <div class="card-body">
+      <div class="d-flex gap-2 my-3">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Ordenar por:
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('nombre-asc', $event)">Nombre A-Z</a></li>
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('nombre-desc', $event)">Nombre Z-A</a></li>
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('nuevos', $event)">Nuevas Peticiones</a></li>
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('viejos', $event)">Antiguas Peticiones</a></li>
+          </ul>
+        </div>
+
+        <form class="d-flex" style="width: 50%;" role="search">
+          <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Search" [formControl]="searchTermControl">
+          <button class="btn btn-outline-success d-none d-xl-block" type="submit">Buscar</button>
+        </form>
+      </div>
+
+      <!-- Contenedor para aplicar el scroll solo a la tabla -->
+      <div class="table-responsive flex-grow-1" style="overflow-y: auto; height: calc(100vh - 350px);">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">NOMBRE</th>
+              <th scope="col" class="d-none d-xl-table-cell">CORREO ELECTRÓNICO</th>
+              <th scope="col" class="d-none d-xl-table-cell">TEL</th>
+              <th scope="col">No. DE CONTROL</th>
+              <th scope="col" class="d-none d-xl-table-cell">Fecha de Registro</th>
+              <th scope="col">Detalles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let alumno of alumnosConPeticiones">
+              <td class="p-2">{{ alumno.nombre_completo }}</td>
+              <td class="p-2 d-none d-xl-table-cell">{{ alumno.correo }}</td>
+              <td class="p-2 d-none d-xl-table-cell">{{ alumno.telefono }}</td>
+              <td class="p-2">{{ alumno.no_control }}</td>
+              <td class="p-2 d-none d-xl-table-cell">{{ alumno.fecha_registro | date:'dd/MM/yyyy' }}</td>
+              <td class="p-2">
+                <button type="button" class="btn btn-primary ver-alumno"
+                        data-bs-toggle="modal" data-bs-target="#alumnoModal"
+                        (click)="cargarDatosModal(alumno)">
+                  Ver Alumno
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast position-fixed top-0 end-0 m-3" role="alert" id="toastMessage" aria-live="assertive" aria-atomic="true" style="z-index: 1050; display: none;">
+    <div class="toast-header">
+      <strong class="me-auto text-success">Éxito</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Datos guardados con éxito.
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="alumnoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="alumnoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles del Alumno</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row d-flex flex-column flex-xl-row">
+          <!-- Columna Izquierda -->
+            <div class="col-12 col-xl-3 mb-4 mb-xl-0">
+              <!-- Imagen -->
+              <div class="mb-3 text-center">
+                <img src="" alt="Foto del alumno" class="img-fluid rounded" id="alumnoFoto" style="width: 250px; height: 250px;">
+              </div>
+
+              <!-- Campos con Input y Botón -->
+              <div class="mb-3">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="alumnoNombre" placeholder="Nombre">
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <input type="email" class="form-control" id="alumnoCorreo" placeholder="Correo">
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <input type="tel" class="form-control" id="alumnoTelefono" placeholder="Teléfono">
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="alumnoNoControl"
+                    placeholder="No. Control"
+                    readonly>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="alumnoFechaRegistro"
+                    placeholder="Fecha de Registro"
+                    readonly>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="input-group">
+                  <!-- Campo de contraseña -->
+                  <input type="password" class="form-control" id="alumnoContrasena" placeholder="Contraseña">
+                  <!-- Botón para mostrar/ocultar la contraseña -->
+                  <button class="btn btn-primary border-start-0" type="button" id="mostrarContrasena" (click)="togglePasswordVisibility()" style="border-top-right-radius: .375rem; border-bottom-right-radius: .375rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                      <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+
+              <!-- Botones -->
+              <div class="d-grid gap-2">
+                <button type="button" class="btn btn-primary" id="guardarCambios" (click)="guardarCambiosModal()">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-danger" id="eliminarAlumno" (click)="eliminarAlumnoAdminModal()">Eliminar Alumno</button>
+              </div>
+            </div>
+          <!-- Columna Derecha -->
+          <div class="col-12 col-xl-9">
+            <!-- Tabla -->
+            <table class="table table-bordered table-hover">
+              <thead class="bg-primary text-white">
+                <tr>
+                  <th>Departamento</th>
+                  <th>Estatus</th>
+                  <th>Comentarios</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                <td class="align-middle">Administración y Finanzas</td>
+
+                  <!-- Dropdown para los estatus -->
+                <td class="align-middle text-center">
+                  <div class="dropdown">
+                    <!-- Botón del Dropdown -->
+                    <button class="btn btn-secondary dropdown-toggle"
+                            [ngClass]="{
+                                'btn-warning': alumnoEstatusAdministracionFinanzas === 'Pendiente',
+                                'btn-danger': alumnoEstatusAdministracionFinanzas === 'Con Adeudo',
+                                'btn-success': alumnoEstatusAdministracionFinanzas === 'Sin Adeudo',
+                                'btn-secondary': !alumnoEstatusAdministracionFinanzas
+                            }"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      {{ alumnoEstatusAdministracionFinanzas || 'Seleccionar Estatus' }}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                      <li><a class="dropdown-item" (click)="cambiarEstatusAdministracionFinanzas('Pendiente')">Pendiente</a></li>
+                      <li><a class="dropdown-item" (click)="cambiarEstatusAdministracionFinanzas('Con Adeudo')">Con Adeudo</a></li>
+                      <li><a class="dropdown-item" (click)="cambiarEstatusAdministracionFinanzas('Sin Adeudo')">Sin Adeudo</a></li>
+                    </ul>
+                  </div>
+
+
+                </td>
+                <td>
+                  <div class="textarea-container">
+                    <textarea id="comentarioAdministracionFinanzas" [(ngModel)]="alumnoComentarioAdministracionFinanzas" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                  </div>
+                </tr>
+                <tr>
+                  <td class="align-middle">Centro de Información</td>
+
+                  <td class="align-middle text-center">
+                    <div class="dropdown">
+                      <!-- Botón del Dropdown -->
+                      <button class="btn btn-secondary dropdown-toggle"
+                              [ngClass]="{
+                                  'btn-warning': alumnoEstatusCentroInformacion === 'Pendiente',
+                                  'btn-danger': alumnoEstatusCentroInformacion === 'Con Adeudo',
+                                  'btn-success': alumnoEstatusCentroInformacion === 'Sin Adeudo',
+                                  'btn-secondary': alumnoEstatusCentroInformacion === null || alumnoEstatusCentroInformacion === undefined
+                              }"
+                      type="button" id="estatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ alumnoEstatusCentroInformacion|| 'Seleccionar Estatus' }} <!-- Muestra el estatus seleccionado o el texto por defecto -->
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                        <li><a class="dropdown-item" (click)="cambiarEstatusCentroInformacion('Pendiente')">Pendiente</a></li>
+                        <li><a class="dropdown-item" (click)="cambiarEstatusCentroInformacion('Con Adeudo')">Con Adeudo</a></li>
+                        <li><a class="dropdown-item" (click)="cambiarEstatusCentroInformacion('Sin Adeudo')">Sin Adeudo</a></li>
+                        <!-- Agregar más opciones si es necesario -->
+                      </ul>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="textarea-container">
+                      <textarea id="alumnoComentarioCentroInformacion" [(ngModel)]="alumnoComentarioCentroInformacion" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="align-middle">Centro de Cómputo</td>
+
+                  <td class="align-middle text-center">
+                    <div class="dropdown">
+                      <!-- Botón del Dropdown -->
+                      <button class="btn btn-secondary dropdown-toggle"
+                              [ngClass]="{
+                                  'btn-warning': alumnoEstatusCentroComputo === 'Pendiente',
+                                  'btn-danger': alumnoEstatusCentroComputo === 'Con Adeudo',
+                                  'btn-success': alumnoEstatusCentroComputo === 'Sin Adeudo',
+                                  'btn-secondary': alumnoEstatusCentroComputo === null || alumnoEstatusCentroComputo === undefined
+                              }"
+                      type="button" id="estatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ alumnoEstatusCentroComputo|| 'Seleccionar Estatus' }} <!-- Muestra el estatus seleccionado o el texto por defecto -->
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                        <li><a class="dropdown-item" (click)="cambiarEstatusCentroComputo('Pendiente')">Pendiente</a></li>
+                        <li><a class="dropdown-item" (click)="cambiarEstatusCentroComputo('Con Adeudo')">Con Adeudo</a></li>
+                        <li><a class="dropdown-item" (click)="cambiarEstatusCentroComputo('Sin Adeudo')">Sin Adeudo</a></li>
+                        <!-- Agregar más opciones si es necesario -->
+                      </ul>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="textarea-container">
+                      <textarea id="alumnoEstatusCentroComputo" [(ngModel)]="alumnoComentarioCentroComputo" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="align-middle">Recursos Materiales</td>
+
+                  <td class="align-middle text-center">
+                    <div class="dropdown">
+                      <!-- Botón del Dropdown -->
+                      <button class="btn btn-secondary dropdown-toggle"
+                              [ngClass]="{
+                                  'btn-warning': alumnoEstatusRecursosMateriales === 'Pendiente',
+                                  'btn-danger': alumnoEstatusRecursosMateriales === 'Con Adeudo',
+                                  'btn-success': alumnoEstatusRecursosMateriales === 'Sin Adeudo',
+                                  'btn-secondary': alumnoEstatusRecursosMateriales === null || alumnoEstatusRecursosMateriales === undefined
+                              }"
+                      type="button" id="estatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ alumnoEstatusRecursosMateriales|| 'Seleccionar Estatus' }} <!-- Muestra el estatus seleccionado o el texto por defecto -->
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                        <li><a class="dropdown-item" (click)="cambiarEstatusRerursosMateriales('Pendiente')">Pendiente</a></li>
+                        <li><a class="dropdown-item" (click)="cambiarEstatusRerursosMateriales('Con Adeudo')">Con Adeudo</a></li>
+                        <li><a class="dropdown-item" (click)="cambiarEstatusRerursosMateriales('Sin Adeudo')">Sin Adeudo</a></li>
+                        <!-- Agregar más opciones si es necesario -->
+                      </ul>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="textarea-container">
+                      <textarea id="alumnoEstatusRecursosMateriales" [(ngModel)]="alumnoComentarioRecursosMateriales" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="align-middle">Departamento de Vinculación</td>
+
+
+                  <td class="align-middle text-center">
+                    <div class="dropdown">
+                      <!-- Botón del Dropdown -->
+                      <button class="btn btn-secondary dropdown-toggle"
+                              [ngClass]="{
+                                  'btn-warning': alumnoEstatusDepartamentoVinculacion === 'Pendiente',
+                                  'btn-danger': alumnoEstatusDepartamentoVinculacion === 'Con Adeudo',
+                                  'btn-success': alumnoEstatusDepartamentoVinculacion === 'Sin Adeudo',
+                                  'btn-secondary': alumnoEstatusDepartamentoVinculacion === null || alumnoEstatusDepartamentoVinculacion === undefined
+                              }"
+                      type="button" id="estatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ alumnoEstatusDepartamentoVinculacion || 'Seleccionar Estatus' }} <!-- Muestra el estatus seleccionado o el texto por defecto -->
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="estatusDropdown">
+                        <li><a class="dropdown-item" (click)="cambiarEstatusDepartamentoVinculacion('Pendiente')">Pendiente</a></li>
+                        <li><a class="dropdown-item" (click)="cambiarEstatusDepartamentoVinculacion('Con Adeudo')">Con Adeudo</a></li>
+                        <li><a class="dropdown-item" (click)="cambiarEstatusDepartamentoVinculacion('Sin Adeudo')">Sin Adeudo</a></li>
+                        <!-- Agregar más opciones si es necesario -->
+                      </ul>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="textarea-container">
+                      <textarea id="alumnoEstatusDepartamentoVinculacion" [(ngModel)]="alumnoComentarioDepartamentoVinculacion" class="form-control shadow-sm" rows="2" placeholder="Sin Comentario..."></textarea>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

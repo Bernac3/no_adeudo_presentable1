@@ -1,0 +1,19 @@
+<div class="container-fluid h-100 d-flex flex-column p-0">
+  <div class="text-bg-dark">
+      <shared-nav [usuario]="usuario"></shared-nav>
+
+  </div>
+  <div class="row flex-grow-1 h-100 m-0">
+    <!-- Sidebar -->
+    <div class="col-12 col-md-2 text-bg-dark p-0 d-flex flex-column">
+      <shared-sidebar [menuOptions]="menuOptions"></shared-sidebar>
+    </div>
+
+    <!-- Router Outlet -->
+    <div class="col-12 col-md-10 h-100 bg-main-app">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+</div>
+

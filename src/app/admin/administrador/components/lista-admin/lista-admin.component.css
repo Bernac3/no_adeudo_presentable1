@@ -1,0 +1,24 @@
+.textarea-container {
+  padding: 5px 0;
+}
+.textarea-container textarea {
+  resize: none; /* Evita que el usuario cambie el tamaño del textarea */
+  border-radius: 0.5rem;
+}
+/* Asegura que el cursor sea tipo puntero en el botón */
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+/* Asegura que el cursor sea tipo puntero en los elementos de la lista */
+.dropdown-menu .dropdown-item {
+  cursor: pointer;
+}
+.input-group .btn {
+  width: 20%; /* El botón ocupa el 20% del input */
+  border-radius: 0; /* Mantener el borde recto */
+}
+
+.input-group .form-control {
+  width: 80%; /* El input ocupa el 80% del contenedor */
+}

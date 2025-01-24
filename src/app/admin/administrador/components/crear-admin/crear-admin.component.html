@@ -1,0 +1,146 @@
+<div class="container mt-5 home-container">
+  <div class="card">
+    <div class="card-header bg-primary text-white text-center">
+      <h2 class="text-center">Crear Admin</h2>
+    </div>
+    <div class="card-body">
+      <div class="container mt-5">
+        <form [formGroup]="departamentoForm" (ngSubmit)="confirmarCredenciales()">
+          <!-- Usuario -->
+          <div class="mb-3">
+            <label for="usuario" class="form-label">Usuario</label>
+            <input
+              type="text"
+              id="usuario"
+              class="form-control"
+              formControlName="usuario"
+              placeholder="Ingrese un nombre de usuario o correo electrónico"
+            />
+            <div
+              *ngIf="
+                departamentoForm.get('usuario')?.touched &&
+                departamentoForm.get('usuario')?.invalid
+              "
+              class="text-danger"
+            >
+              Por favor ingrese un usuario válido.
+            </div>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="mb-3">
+            <label for="contrasena" class="form-label">Contraseña</label>
+            <input
+              type="password"
+              id="contrasena"
+              class="form-control"
+              formControlName="contrasena"
+              placeholder="Ingrese una contraseña"
+            />
+            <div
+              *ngIf="
+                departamentoForm.get('contrasena')?.touched &&
+                departamentoForm.get('contrasena')?.invalid
+              "
+              class="text-danger"
+            >
+              La contraseña debe tener al menos 6 caracteres.
+            </div>
+          </div>
+
+          <!-- Confirmar Contraseña -->
+          <div class="mb-3">
+            <label for="confirmarContrasena" class="form-label">Confirmar Contraseña</label>
+            <input
+              type="password"
+              id="confirmarContrasena"
+              class="form-control"
+              formControlName="confirmarContrasena"
+              placeholder="Confirme su contraseña"
+            />
+            <div
+              *ngIf="
+                departamentoForm.get('confirmarContrasena')?.touched &&
+                departamentoForm.hasError('passwordMismatch')
+              "
+              class="text-danger"
+            >
+              Las contraseñas no coinciden.
+            </div>
+          </div>
+
+          <!-- Botón Crear Administrador -->
+          <button
+            type="button"
+            class="btn btn-primary w-100"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal"
+            [disabled]="departamentoForm.invalid"
+          >
+            Crear Administrador
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmación de Credenciales</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Usuario -->
+        <div class="mb-3">
+          <label for="adminUsuario" class="form-label">Usuario del Administrador</label>
+          <input
+            type="text"
+            id="adminUsuario"
+            class="form-control"
+            [(ngModel)]="authModal.usuario"
+            placeholder="Ingrese su usuario"
+          />
+        </div>
+        <!-- Contraseña -->
+        <div class="mb-3">
+          <label for="adminContrasena" class="form-label">Contraseña del Administrador</label>
+          <div class="input-group">
+            <input
+              [type]="mostrarContrasena ? 'text' : 'password'"
+              class="form-control"
+              id="adminContrasena"
+              [(ngModel)]="authModal.contrasena"
+              placeholder="Ingrese su contraseña"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="confirmarCredenciales()"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

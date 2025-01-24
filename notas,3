@@ -1,0 +1,212 @@
+lo que quiero hacer es registrar alumnos, por medio del register.component.html y el register.component.ts:
+
+<div class="bg-main-app">
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+      <form>
+        <div class="form-group">
+          <label for="nombre">Nombre Completo</label>
+          <input type="text" class="form-control" id="nombre" formControlName="nombre" placeholder="Ingresa tu nombre completo" required>
+        </div>
+
+        <div class="form-group">
+          <label for="correo">Correo Institucional</label>
+          <input type="email" class="form-control" id="correo" formControlName="correo" placeholder="ejemplo@institucion.edu" required>
+        </div>
+
+        <div class="form-group">
+          <label for="telefono">Teléfono</label>
+          <input type="tel" class="form-control" id="telefono" formControlName="telefono" placeholder="Ingresa tu número de teléfono" required>
+        </div>
+
+        <div class="form-group">
+          <label for="control">Número de Control</label>
+          <input type="text" class="form-control" id="control" formControlName="control" placeholder="Ingresa tu número de control" required>
+        </div>
+        <div class="form-group">
+          <label for="control">Contraseña</label>
+          <input type="text" class="form-control" id="control" formControlName="control" placeholder="Ingresa contraseña" required>
+        </div>
+        <div class="form-group">
+          <label for="control">Confirmar Contraseña</label>
+          <input type="text" class="form-control" id="control" formControlName="control" placeholder="Ingresa contraseña" required>
+        </div>
+        <div class="form-group">
+          <label for="imagen">Subir Imagen</label>
+          <input type="file" class="form-control-file" id="imagen" formControlName="imagen" required>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block m-2">Registrarse</button>
+        <button type="button" class="btn btn-success btn-block m-2" (click)="goToLogin()">Login</button>
+      </form>
+  </div>
+</div>
+
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
+
+@Component({
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.css'
+})
+export class RegisterComponent {
+
+  constructor(private router: Router){}
+
+  goToLogin(): void {
+    this.router.navigate(['/auth/login']);
+  }
+}
+la base de datos se llama "no_adeudo", esta tiene 4 tablas, administrador, alumnos, peticiones y departamentos:
+
+administrador:
+Columns:
+idadministrador int AI PK
+usuario varchar(45)
+contrasena varchar(45)
+rol varchar(20)
+
+alumnos:
+Columns:
+idalumnos int AI PK NN
+nombre_completo varchar(100)
+correo varchar(45)
+telefono varchar(45)
+no_control varchar(45) UQ
+foto varchar(45)
+contrasena varchar(45)
+fecha_registro date
+rol varchar(20)
+
+departamentos:
+Columns:
+iddepartamentos int AI PK
+nombre_departamento varchar(45)
+usuario varchar(45)
+contrasena varchar(45)
+departamento_id varchar(45)
+rol varchar(20)
+
+todos los datos que mandaras del
+register.component, se guardarna en si en la tabla alumnos y usaras una interfaz guardada en
+interfaces/alumno-register.interface.ts:
+
+export interface Alumno {
+  idalumnos: number;
+  nombre_completo: string;
+  correo: string;
+  telefono: string;
+  no_control: string;
+  foto: string;
+  contrasena: string;
+  fecha_registro: string; // Formato ISO
+}
+
+la foto sera la imagen que que se manda en el register, esta quiero que la
+guardes en el uploads que eseta en la raiz del proyecto,
+
+este es el server.js:
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const db = require('./src/app/db/db');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+app.post('/api/login', (req, res) => {
+  const { correo, contrasena } = req.body;
+
+  const query = `
+    SELECT
+      a.idalumnos,
+      a.nombre_completo,
+      a.correo,
+      a.telefono,
+      a.no_control,
+      a.foto,
+      a.fecha_registro,
+      p.estatus_administracion_y_finanzas,
+      p.estatus_centro_de_informacion,
+      p.estatus_centro_de_computo,
+      p.estatus_recursos_materiales,
+      p.estatus_departamento_de_vinculacion,
+      p.comentario_administracion_y_finanzas,
+      p.comentario_centro_de_informacion,
+      p.comentario_centro_de_computo,
+      p.comentario_recursos_materiales,
+      p.comentario_departamento_de_vinculacion,
+      p.estatus_peticion
+    FROM
+      alumnos a
+    LEFT JOIN
+      peticiones p ON a.no_control = p.no_control
+    WHERE
+      a.correo = ? AND a.contrasena = ?
+  `;
+
+  db.query(query, [correo, contrasena], (err, results) => {
+    if (err) {
+      console.error('Error al verificar alumno:', err);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
+
+    res.status(200).json(results[0]); // 🚀 Enviamos los datos del alumno + peticiones
+  });
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+
+auth.service.ts:
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { Alumno } from '../interfaces/alumno.interface';
+import { map } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  private apiUrl = 'http://localhost:3000/api/login';
+  private alumnoSubject = new BehaviorSubject<Alumno | null>(null);
+
+  constructor(private http: HttpClient) {}
+
+  // 🚀 Método actualizado para iniciar sesión y obtener los datos de 'alumnos' + 'peticiones'
+  login(correo: string, contrasena: string): Observable<Alumno> {
+    return this.http.post<Alumno>(this.apiUrl, { correo, contrasena });
+  }
+
+  setAlumno(alumno: Alumno): void {
+    this.alumnoSubject.next(alumno);
+  }
+
+  isAlumnoAuthenticated(): Observable<boolean> {
+    return this.alumnoSubject.asObservable().pipe(map(alumno => !!alumno));
+  }
+
+  getAlumno(): Observable<Alumno | null> {
+    return this.alumnoSubject.asObservable();
+  }
+
+  logout(): void {
+    this.alumnoSubject.next(null);
+    localStorage.removeItem('alumno');
+    sessionStorage.removeItem('alumno');
+  }
+
+  // 🚀 Método para registrar alumnos en la db
+}
+
+usa los documentos existentes y crea todo lo necesario para registrar a los alumnos, estoy usando angular, Node.js, ts y bootsrrap

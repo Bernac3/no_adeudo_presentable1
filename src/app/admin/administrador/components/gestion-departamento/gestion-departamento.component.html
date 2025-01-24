@@ -1,0 +1,155 @@
+<div class="container mt-5 home-container">
+  <div class="card">
+    <div class="card-header bg-primary text-white text-center">
+      <h2>Gestion De Departamentos</h2>
+    </div>
+    <div class="card-body">
+      <div class="d-flex gap-2 my-3"></div>
+
+      <!-- Contenedor para aplicar el scroll solo a la tabla -->
+      <div class="table-responsive flex-grow-1" style="overflow-y: auto; height: calc(100vh - 350px);">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">USUARIO</th>
+              <th scope="col">DEPARTAMENTO</th>
+              <th scope="col" class="d-none d-xl-table-cell">FECHA DE REGISTRO</th>
+              <th scope="col">Detalles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let depto of departamentos">
+              <td class="p-2">{{ depto.usuario }}</td>
+              <td class="p-2">{{ depto.nombre_departamento }}</td>
+              <td class="p-2 text-muted d-none d-xl-table-cell">
+                {{ depto.fecha_registro | date: 'dd/MM/yyyy' }}
+              </td>
+
+              <td class="p-2">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal"
+                  (click)="mostrarDetalles(depto)">
+                  Ver Detalles
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Departamento</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="">
+          <!-- Campos con Input y Botón -->
+          <div class="mb-3">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="departamentoNombre"
+                placeholder="Usuario"
+                [value]="departamentoSeleccionado?.usuario">
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="departamento"
+                placeholder="Departamento"
+                [value]="departamentoSeleccionado?.nombre_departamento" disabled>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="departamentoFecha"
+                placeholder="Fecha"
+                [value]="departamentoSeleccionado?.fecha_registro | date: 'dd/MM/yyyy'"
+                disabled>
+            </div>
+          </div>
+
+
+
+          <div class="mb-3">
+            <div class="input-group">
+              <!-- Campo de contraseña -->
+              <input
+                [type]="mostrarContrasena ? 'text' : 'password'"
+                class="form-control"
+                id="alumnoContrasena"
+                placeholder="Contraseña"
+                [value]="departamentoSeleccionado?.contrasena">
+
+              <!-- Botón para mostrar/ocultar la contraseña -->
+              <button
+                class="btn btn-primary border-start-0"
+                type="button"
+                id="mostrarContrasena"
+                (click)="toggleMostrarContrasena()"
+                style="border-top-right-radius: .375rem; border-bottom-right-radius: .375rem;">
+                <svg
+                  *ngIf="!mostrarContrasena"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-eye"
+                  viewBox="0 0 16 16">
+                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                </svg>
+                <svg
+                  *ngIf="mostrarContrasena"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-eye-slash"
+                  viewBox="0 0 16 16">
+                  <path d="M13.359 11.238 15.408 14.38c.213.285.173.68-.1.894a.658.658 0 0 1-.418.156h-.058a.678.678 0 0 1-.468-.195L11.76 12.615C10.828 13.095 9.758 13.5 8 13.5c-3.866 0-7-3.5-7-3.5a15.823 15.823 0 0 1 2.632-3.057L1.646 3.646a.5.5 0 0 1 .708-.708l12 12a.5.5 0 0 1-.708.708l-2.287-2.287ZM11.322 10.2l-1.636-1.636a3 3 0 0 1-4.118-4.118L3.119 2.427A15.735 15.735 0 0 0 1.171 8s3.026 5.5 6.829 5.5c1.198 0 2.3-.365 3.292-.87l-.97-.97ZM8 10.5a2.5 2.5 0 0 0 1.966-4.065l-3.53-3.53a2.5 2.5 0 0 0 3.32 3.32L9.435 8.065 8 9.5a2.5 2.5 0 0 0 0 1Z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control d-none"
+                id="departamentoid"
+                placeholder="Fecha"
+                [value]="departamentoSeleccionado?.iddepartamentos"
+                disabled>
+            </div>
+          </div>
+
+
+          <!-- Botones -->
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary" id="guardarCambios" (click)="guardarDepartamentoAdmin()">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-danger" id="eliminar" (click)="eliminarDepartamentoAdmin()">Eliminar Departamento</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

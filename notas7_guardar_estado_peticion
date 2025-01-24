@@ -1,0 +1,775 @@
+te voy a pasar codigo, no agas nada de momento.
+
+list.component.html:
+
+<div class="container mt-5 home-container">
+  <div class="card">
+    <div class="card-header bg-primary text-white text-center">
+      <h2>Formato No-Adeudo</h2>
+    </div>
+    <div class="card-body">
+      <div class="d-flex gap-2 my-3">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Ordenar por:
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('nombre-asc', $event)">Nombre A-Z</a></li>
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('nombre-desc', $event)">Nombre Z-A</a></li>
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('nuevos', $event)">Nuevos Alumnos</a></li>
+            <li><a class="dropdown-item" href="#" (click)="ordenarAlumnos('viejos', $event)">Viejos Alumnos</a></li>
+          </ul>
+        </div>
+
+        <form class="d-flex" style="width: 50%;" role="search">
+          <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Search" [formControl]="searchTermControl">
+          <button class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
+
+      </div>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">NOMBRE</th>
+            <th scope="col">CORREO ELECTRÓNICO</th>
+            <th scope="col">TEL</th>
+            <th scope="col">No. DE CONTROL</th>
+            <th scope="col">Fecha de Registro</th>
+            <th scope="col">Información</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let alumno of alumnosConPeticiones">
+            <td class="p-2">{{ alumno.nombre_completo }}</td>
+            <td class="p-2">{{ alumno.correo }}</td>
+            <td class="p-2">{{ alumno.telefono }}</td>
+            <td class="p-2">{{ alumno.no_control }}</td>
+            <td class="p-2">{{ alumno.fecha_registro | date:'dd/MM/yyyy' }}</td>
+            <td class="p-2">
+              <button type="button" class="btn btn-primary ver-alumno"
+                      data-bs-toggle="modal" data-bs-target="#alumnoModal"
+                      (click)="cargarDatosModal(alumno)">
+                Ver Alumno
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="alumnoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="alumnoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="alumnoModalLabel">Información del Alumno</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="text-center mb-3">
+                  <img id="alumnoFoto" src="https://via.placeholder.com/150" alt="Foto del alumno" class="img-fluid rounded" width="150">
+              </div>
+
+              <table class="table table-bordered">
+                  <tbody>
+                      <tr>
+                          <th scope="row">Nombre</th>
+                          <td id="alumnoNombre"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Correo</th>
+                          <td id="alumnoCorreo"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Teléfono</th>
+                          <td id="alumnoTelefono"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">No. de Control</th>
+                          <td id="alumnoNoControl"></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Fecha de Registro</th>
+                          <td id="alumnoFechaRegistro"></td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <div class="text-center mt-3">
+                  <button class="btn btn-success me-2">Sin Adeudos</button>
+                  <button class="btn btn-danger">Con Adeudos</button>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+te voy a pasar codigo, no agas nada de momento, este archivo, mantenlo original funciona al 100%, agrega las funcionalidad al final del codigo ya echo
+
+list.component.ts:
+
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators';  // Importar el operador debounceTime
+import { AuthService } from '../../../../service/auth.service';
+
+@Component({
+  selector: 'app-list',
+  templateUrl: './list.component.html',
+  styleUrls: ['./list.component.css']
+})
+export class ListComponent implements OnInit {
+  alumnosConPeticiones: any[] = [];
+  alumnosOriginales: any[] = [];
+  searchTermControl: FormControl = new FormControl(''); // Crear un FormControl para el input de búsqueda
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.authService.getAlumnosYPeticiones().subscribe(
+      (data) => {
+        this.alumnosConPeticiones = data;
+        this.alumnosOriginales = [...data];  // Guardamos una copia de los datos completos
+        console.log('Datos de alumnos con peticiones:', this.alumnosConPeticiones);
+      },
+      (error) => {
+        console.error('Error al obtener los datos de los alumnos:', error);
+      }
+    );
+
+    // Aplicar debounceTime al control de búsqueda
+    this.searchTermControl.valueChanges.pipe(
+      debounceTime(1000)  // Esperar 1 segundo después de la última escritura
+    ).subscribe((searchTerm) => {
+      this.buscarAlumnos(searchTerm);  // Ejecutar la búsqueda automáticamente
+    });
+  }
+
+  cargarDatosModal(alumno: any): void {
+    const alumnoNombre = document.getElementById('alumnoNombre');
+    const alumnoCorreo = document.getElementById('alumnoCorreo');
+    const alumnoTelefono = document.getElementById('alumnoTelefono');
+    const alumnoNoControl = document.getElementById('alumnoNoControl');
+    const alumnoFechaRegistro = document.getElementById('alumnoFechaRegistro');
+    const alumnoFoto = document.getElementById('alumnoFoto') as HTMLImageElement;
+
+    if (alumnoNombre) alumnoNombre.textContent = alumno.nombre_completo;
+    if (alumnoCorreo) alumnoCorreo.textContent = alumno.correo;
+    if (alumnoTelefono) alumnoTelefono.textContent = alumno.telefono;
+    if (alumnoNoControl) alumnoNoControl.textContent = alumno.no_control;
+    if (alumnoFechaRegistro) {
+      const fecha = new Date(alumno.fecha_registro);
+      alumnoFechaRegistro.textContent = `${fecha.getDate().toString().padStart(2, '0')}/${(fecha.getMonth() + 1).toString().padStart(2, '0')}/${fecha.getFullYear()}`;
+    }
+
+    if (alumnoFoto) {
+      alumnoFoto.src = `http://localhost:3000/uploads/${alumno.foto}`;
+    }
+  }
+
+  ordenarAlumnos(opcion: string, event: Event): void {
+    event.preventDefault();
+    switch(opcion) {
+      case 'nombre-asc':
+        this.alumnosConPeticiones.sort((a, b) => a.nombre_completo.localeCompare(b.nombre_completo));
+        break;
+      case 'nombre-desc':
+        this.alumnosConPeticiones.sort((a, b) => b.nombre_completo.localeCompare(a.nombre_completo));
+        break;
+      case 'nuevos':
+        this.alumnosConPeticiones.sort((a, b) => new Date(b.fecha_registro).getTime() - new Date(a.fecha_registro).getTime());
+        break;
+      case 'viejos':
+        this.alumnosConPeticiones.sort((a, b) => new Date(a.fecha_registro).getTime() - new Date(b.fecha_registro).getTime());
+        break;
+    }
+  }
+
+  // Función para realizar la búsqueda automática
+  buscarAlumnos(searchTerm: string): void {
+    if (searchTerm) {
+      this.alumnosConPeticiones = this.alumnosOriginales.filter(alumno => {
+        const nombreValido = alumno.nombre_completo ? alumno.nombre_completo.toLowerCase() : '';
+        const noControlValido = alumno.no_control ? alumno.no_control.toLowerCase() : '';
+        const correoValido = alumno.correo ? alumno.correo.toLowerCase() : '';
+
+        return nombreValido.includes(searchTerm.toLowerCase()) ||
+               noControlValido.includes(searchTerm.toLowerCase()) ||
+               correoValido.includes(searchTerm.toLowerCase());
+      });
+    } else {
+      this.alumnosConPeticiones = [...this.alumnosOriginales];
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+no agas nada, te voy a pasar mas codigo
+
+verificar.component.html:
+
+<div class="container-fluid h-100 d-flex flex-column p-0">
+  <div class="text-bg-dark">
+      <shared-nav [usuario]="usuario"></shared-nav>
+
+  </div>
+  <div class="row flex-grow-1 h-100 m-0">
+      <div class="col-2 text-bg-dark p-0 h-100 d-flex flex-column ">
+          <shared-sidebar [menuOptions]="menuOptions"></shared-sidebar>
+      </div>
+
+      <div class="col-10 h-100 bg-main-app">
+          <router-outlet></router-outlet>
+      </div>
+  </div>
+</div>
+
+verificar.component.ts:
+
+import { Component } from '@angular/core';
+import { Departamento } from '../../interfaces/departamento.intarface';
+import { AuthService } from '../../service/auth.service';
+import { Alumno } from '../../interfaces/alumno.interface';
+
+@Component({
+  selector: 'app-verificar',
+  templateUrl: './verificar.component.html',
+  styleUrl: './verificar.component.css'
+})
+export class VerificarComponent {
+  menuOptions = [
+    {
+      click: 'list',
+      routerLink: 'list',
+      selectedClass: 'bg-primary text-white',
+      iconPath: 'M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5',
+      label: 'Lista Alumnos',
+    },
+
+    {
+      click: 'info',
+      routerLink: 'info',
+      selectedClass: 'bg-primary text-white',
+      iconPath: 'M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2',
+      label: 'Info',
+    },
+  ];
+
+
+  usuario: Alumno | null = null; // Variable para almacenar los datos del alumno
+
+    constructor(private authService: AuthService) {}
+
+    ngOnInit(): void {
+      // Obtenemos los datos del alumno desde el AuthService
+      this.authService.getUser().subscribe((data) => {
+        this.usuario = data; // Asignamos los datos del alumno
+      });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+te voy a pasar codigo, no agas nada de momento.
+
+auth.server.js:
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Alumno } from '../interfaces/alumno.interface'; // Cambia esto para importar la interfaz general
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  private apiUrl = 'http://localhost:3000/api/login';
+  private userSubject = new BehaviorSubject<Alumno | null>(null);
+
+  constructor(private http: HttpClient) {}
+
+  // 🚀 Método actualizado para iniciar sesión y obtener los datos
+  login(correo: string, contrasena: string, tipo_usuario: string): Observable<Alumno> {
+    console.log('Enviando solicitud de login al servidor...');
+    console.log('Correo:', correo);
+    console.log('Contraseña:', contrasena);
+    console.log('Tipo de usuario:', tipo_usuario);
+    return this.http.post<Alumno>(this.apiUrl, { correo, contrasena, tipo_usuario });
+  }
+
+  setUser(user: Alumno): void {
+    this.userSubject.next(user);
+  }
+
+  isUserAuthenticated(): Observable<boolean> {
+    return this.userSubject.asObservable().pipe(map(user => !!user));
+  }
+
+  getUser(): Observable<Alumno | null> {
+    return this.userSubject.asObservable();
+  }
+
+  logout(): void {
+    this.userSubject.next(null);
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('user');
+  }
+
+  getAlumnosYPeticiones(): Observable<any[]> {
+    const url = 'http://localhost:3000/api/alumnos-peticiones'; // Asegúrate de que este endpoint exista en el servidor
+    return this.http.get<any[]>(url); // Obtiene los datos combinados de alumnos y peticiones
+  }
+}
+
+a base de datos se llama "no_adeudo", esta tiene 4 tablas, administrador, alumnos, peticiones y departamentos:
+
+administrador:
+Columns:
+idadministrador int AI PK
+usuario varchar(45)
+contrasena varchar(45)
+rol varchar(20)
+
+alumnos:
+Columns:
+idalumnos int AI PK NN
+nombre_completo varchar(100)
+correo varchar(45)
+telefono varchar(45)
+no_control varchar(45) UQ
+foto varchar(45)
+contrasena varchar(45)
+fecha_registro date
+rol varchar(20)
+
+departamentos:
+Columns:
+iddepartamentos int AI PK
+nombre_departamento varchar(45)
+usuario varchar(45)
+contrasena varchar(45)
+departamento_id varchar(45)
+rol varchar(20)
+
+peticiones:
+Columns:
+no_control varchar(10) PK
+estatus_administracion_y_finanzas varchar(10)
+estatus_centro_de_informacion varchar(10)
+estatus_centro_de_computo varchar(10)
+estatus_recursos_materiales varchar(10)
+estatus_departamento_de_vinculacion varchar(10)
+comentario_administracion_y_finanzas varchar(100)
+comentario_centro_de_informacion varchar(100)
+comentario_centro_de_computo varchar(100)
+comentario_recursos_materiales varchar(100)
+comentario_departamento_de_vinculacion varchar(100)
+estatus_peticion varchar(10)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+te voy a pasar codigo, no agas nada de momento.
+
+server.js:
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const db = require('./src/app/db/db');
+const multer = require('multer');
+const app = express();
+const path = require('path');
+
+
+app.use(cors());
+app.use(bodyParser.json());
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+app.post('/api/login', (req, res) => {
+  const { correo, contrasena, tipo_usuario } = req.body;
+
+  let query = '';
+
+  // Lógica condicional basada en el tipo de usuario
+  if (tipo_usuario === 'Alumno') {
+    console.log('Tipo de usuario: Alumno');
+    query = `
+      SELECT
+        a.idalumnos,
+        a.nombre_completo,
+        a.correo,
+        a.telefono,
+        a.no_control,
+        a.foto,
+        a.fecha_registro,
+        p.estatus_administracion_y_finanzas,
+        p.estatus_centro_de_informacion,
+        p.estatus_centro_de_computo,
+        p.estatus_recursos_materiales,
+        p.estatus_departamento_de_vinculacion,
+        p.comentario_administracion_y_finanzas,
+        p.comentario_centro_de_informacion,
+        p.comentario_centro_de_computo,
+        p.comentario_recursos_materiales,
+        p.comentario_departamento_de_vinculacion,
+        p.estatus_peticion
+      FROM
+        alumnos a
+      LEFT JOIN
+        peticiones p ON a.no_control = p.no_control
+      WHERE
+        a.correo = ? AND a.contrasena = ?
+    `;
+  } else if (tipo_usuario === 'Departamento') {
+    query = `
+      SELECT
+        d.iddepartamentos,
+        d.nombre_departamento,
+        d.usuario,
+        d.departamento_id,
+        d.rol
+      FROM
+        departamentos d
+      WHERE
+        d.usuario = ? AND d.contrasena = ?
+    `;
+  } else if (tipo_usuario === 'Admin') {
+    console.log('Tipo de usuario: Admin');
+
+    query = `
+      SELECT
+        a.idalumnos,
+        a.nombre_completo,
+        a.correo,
+        a.telefono,
+        a.no_control,
+        a.foto,
+        a.fecha_registro,
+        p.estatus_administracion_y_finanzas,
+        p.estatus_centro_de_informacion,
+        p.estatus_centro_de_computo,
+        p.estatus_recursos_materiales,
+        p.estatus_departamento_de_vinculacion,
+        p.comentario_administracion_y_finanzas,
+        p.comentario_centro_de_informacion,
+        p.comentario_centro_de_computo,
+        p.comentario_recursos_materiales,
+        p.comentario_departamento_de_vinculacion,
+        p.estatus_peticion,
+        d.nombre_departamento,
+        d.departamento_id
+      FROM
+        alumnos a
+      LEFT JOIN
+        peticiones p ON a.no_control = p.no_control
+      LEFT JOIN
+        departamentos d ON d.departamento_id = a.no_control
+      WHERE
+        a.correo = ? AND a.contrasena = ?
+    `;
+  } else {
+    return res.status(400).json({ error: 'Tipo de usuario no válido' });
+  }
+
+  db.query(query, [correo, contrasena], (err, results) => {
+    if (err) {
+      console.error('Error al verificar usuario:', err);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
+
+    if (results.length === 0) {
+      console.log('Credenciales incorrectas');
+
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
+    console.log('Usuario autenticado:', results[0]);
+    res.status(200).json(results[0]); // Enviamos los datos según el tipo de usuario
+  });
+});
+
+// Suponiendo que estás utilizando Express
+app.get('/api/alumnos-peticiones', (req, res) => {
+  const query = `
+    SELECT alumnos.*, peticiones.*
+    FROM alumnos
+    LEFT JOIN peticiones ON alumnos.no_control = peticiones.no_control;
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al obtener los datos:', err);
+      return res.status(500).json({ error: 'Error al obtener los datos' });
+    }
+    res.json(results); // Retorna los resultados como un arreglo de objetos
+  });
+});
+
+
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+
+// 📁 Configuración de multer para subir imágenes
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads/'); // Carpeta donde se guardarán las imágenes
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Nombre único para evitar colisiones
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// 🌐 Ruta para registrar alumnos
+app.post('/api/register', upload.single('foto'), (req, res) => {
+  const { nombre_completo, correo, telefono, no_control, contrasena } = req.body;
+  const foto = req.file ? req.file.filename : null; // Nombre de la imagen subida
+
+  const query = `
+    INSERT INTO alumnos (nombre_completo, correo, telefono, no_control, foto, contrasena, fecha_registro)
+    VALUES (?, ?, ?, ?, ?, ?, NOW())
+  `;
+
+  db.query(query, [nombre_completo, correo, telefono, no_control, foto, contrasena], (err, result) => {
+    if (err) {
+      console.error('Error al registrar alumno:', err);
+      return res.status(500).json({ error: 'Error en el servidor' });
+    }
+    res.status(201).json({ message: 'Alumno registrado exitosamente' });
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Lo que quiero hacer es lo siguiente, primero quiero que analices perfectamente el codigo,
+ahora el list.component es un componente que se carga cuando navegas en el sidebar,
+verificar.component. tanto el html como el ts tienen en si el codigo del
+sidebar y donde llegan los datos de alumno.
+
+lo que hace el componente list.component. en si es mostrar una tabla al usuario y de esta forma mostrar los datos de alumno
+en el html tiene un modal que salta cuendo le damos al boton de ver alumno, este modal tiene en si los datos de ese alumno seleccionado en la tabla
+ahora ese modal tiene 2 botines que me interesan "Sin Adeudo" y "Con Adeudo", quiero que cuando el usuario de click en cualquiera de los dos botones
+este se desabilite o de alguna manera muestre que ese boton fue presionado,ademas que guarde los datos en la talbla peticiones:
+vas a guardar los datos de la siguiente manera
+
+el usuario que inicio sesion en este caso usuario de departamentos(el inicia sesion como departamento), tiene en los datos que se trae despues de logearse lo sig:
+nombre_departamento, usuario, departamento_id y rol.
+
+si el usuario que esta logeado su departamento_id es ej: administracion_finanzas, cuando el de click en cualquiera de los botones del modal
+este modificara el campo en la base de datos donde el no_control(pk) de  la tabla: peticiones es igual al no_control(pk) de la tabla alumnos
+entonces el usuario modificara el espacio de la tabla en este caso seria estatus_administracion_y_finanzas de la tabla peticiones
+
+la tabla alumos tiene como pk no_control y ese dato es el mismo pk no_control que el de la tabla peticiones,
+
+ej
+usuario: luis
+departamento_id: administracion_finanzas:
+
+este usuario de departamento al darle click en cualquier boton del modal este modificara el campo de estatus_administracion_y_finanzas de la tabla peticiones
+
+
+jaime
+centro_informacion
+
+diego
+centro_computo
+
+linda
+recursos_materiales
+
+beto
+departamento_vinculacion
+
+ese es el ejemplo de los departamentos_id, el nombre solo es ej, entendiste bien?
+
+una cosa mas, en el list.component.ts: existe una funcion llamada  setEstadoAdeudoAlumno, esta funcion tiene los datos del Alumno y del Usuario
+lo que vas a hacer con esa funcion es lo siguiente: toma los datos del Usuario, con ellos determinaras que campos seran los que se modificaran en la db, en la tabla peticiones, despues con los datos del Alumno
+sabras que peticion modificar, ej: si alumnoNoControl = 123, y usuarioDepartamento = luis y su usuarioDepartamentoId = administracion_finanzas entonces:
+
+el usuario luis al dar click en el boton "Sin Adeudos", la tabla peticiones donde el no_control es igual al del alumno al que luis le dio click, modificara el campo en esa tabla de estatus_administracion_y_finanzas
+asi con el resto de los usuarios, mira la tabla y crea el codigo necesario
+
+
+has que fincione todo, tanto el html y el ts, tambien crea el query en el server.js, usa la funcion que te deje en el auth.service.ts
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+generado por chatgtp
+
+Objetivo principal
+Cuando un usuario de Departamento inicie sesión y acceda al list.component, verá una tabla con los datos de los alumnos. Al hacer clic en Ver Alumno, se abrirá un modal con la información de ese alumno. Dentro del modal, hay dos botones:
+
+Sin Adeudo
+Con Adeudo
+
+Dependiendo del botón que se presione, se deberá actualizar la tabla peticiones en la columna específica del departamento correspondiente.
+
+Lógica de actualización
+Identificación del usuario de departamento:
+Cuando un usuario de tipo Departamento inicia sesión, sus datos incluyen:
+
+nombre_departamento
+usuario
+departamento_id → Este es clave para saber qué campo de la tabla peticiones se debe modificar.
+rol
+
+Acción en el modal:
+Cuando se haga clic en "Sin Adeudo" o "Con Adeudo", se actualizará el campo correspondiente en la tabla peticiones para ese alumno.
+
+La columna que se debe modificar en la tabla peticiones se determina por el valor de departamento_id.
+
+administracion_finanzas → estatus_administracion_y_finanzas
+
+  centro_informacion → estatus_centro_de_informacion
+  centro_computo → estatus_centro_de_computo
+  recursos_materiales → estatus_recursos_materiales
+  departamento_vinculacion → estatus_departamento_de_vinculacion
+
+Modificación de la tabla peticiones:
+
+La actualización se hace sobre la fila donde no_control de la tabla peticiones coincide con el no_control del alumno que se está visualizando.
+El valor que se actualiza en la columna correspondiente será:
+"Sin Adeudo" → Se registra con un valor de 'sin adeudo'.
+"Con Adeudo" → Se registra con un valor de 'con adeudo'.
+Ejemplo práctico
+Usuario logeado:
+
+Nombre: Luis
+departamento_id: administracion_finanzas
+Acción en la interfaz:
+
+Luis abre el list.component y ve la lista de alumnos.
+Luis selecciona un alumno con no_control: 12345678 y se abre el modal con los datos del alumno.
+Luis hace clic en "Sin Adeudo".
+
+una cosa mas, en el list.component.ts: existe una funcion llamada cargarDatosModal, esa funcion tiene ya los datos del alumno en el modal,
+modifica esa funcion para obtener los datos del alumno y hacer la insercion de los datos.
