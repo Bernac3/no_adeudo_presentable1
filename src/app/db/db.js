@@ -1,21 +1,24 @@
 const mysql = require('mysql2');
 
-// Configuración de la conexión a la base de datos 'no_adeudo'
-const db = mysql.createConnection({
+// Configuración del pool de conexiones
+const pool = mysql.createPool({
   host: 'bftd73dzubltvd6c1lvb-mysql.services.clever-cloud.com',
-  user: 'uwakgxle52lw2nyo', // Tu usuario de MySQL
-  password: 'gdm124nqpjiYAiWo0m4l', // Tu contraseña de MySQL
-  database: 'bftd73dzubltvd6c1lvb', // Nombre de la base de datos
+  user: 'uwakgxle52lw2nyo',
+  password: 'gdm124nqpjiYAiWo0m4l',
+  database: 'bftd73dzubltvd6c1lvb',
+  waitForConnections: true,  // Espera si no hay conexiones disponibles
+  connectionLimit: 10,      // Número máximo de conexiones en el pool
+  queueLimit: 0            // Sin límite en la cola
 });
 
-// Conexión
-db.connect((err) => {
+// Obtener una conexión del pool y realizar una consulta
+pool.query('SELECT * FROM alumnos', (err, results) => {
   if (err) {
-    console.error('Error de conexión a la base de datos: ' + err.stack);
+    console.error('Error en la consulta:', err);
     return;
   }
-  console.log('Conexión exitosa a la base de datos');
+  console.log('Resultados:', results);
 });
 
-module.exports = db;
-
+// Exportar el pool para usarlo en otros archivos
+module.exports = pool;
