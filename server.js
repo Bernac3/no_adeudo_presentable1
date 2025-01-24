@@ -10,7 +10,23 @@ const uploads = multer();
 app.use(cors());
 app.use(bodyParser.json());
 
+// Servir archivos estáticos de la carpeta 'uploads' (fotos de alumnos)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Sirve los archivos estáticos generados por Angular
+app.use(express.static(path.join(__dirname, 'dist/<nombre-del-proyecto>')));
+
+// Redirige todas las rutas al archivo index.html
+app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist/<nombre-del-proyecto>/index.html'));
+});
+
+// Vincula al puerto proporcionado por Render
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
+
 
 
 app.post('/api/login', (req, res) => {
@@ -134,11 +150,6 @@ app.get('/api/alumnos-peticiones', (req, res) => {
 });
 
 
-
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
 
 // 📁 Configuración de multer para subir imágenes
 const storage = multer.diskStorage({
