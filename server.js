@@ -25,7 +25,7 @@ app.listen(PORT, () => {
 });
 
 
-app.post('/api/login', (req, res) => {
+app.post('/auth/login', (req, res) => {
   const { correo, contrasena } = req.body;
 
   // Primero buscamos en la tabla de administradores
