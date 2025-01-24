@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AlumnoService {
-  private apiUrl = 'http://localhost:3000/api/register';
+  private apiUrl = 'https://no-adeudo-repositorio-1.onrender.com/alumno/register';
 
   constructor(private http: HttpClient) {}
 

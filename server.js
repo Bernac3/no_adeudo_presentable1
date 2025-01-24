@@ -130,7 +130,7 @@ app.post('/auth/login', (req, res) => {
 
 
 // Suponiendo que estás utilizando Express
-app.get('/api/alumnos-peticiones', (req, res) => {
+app.get('/alumno/alumnos-peticiones', (req, res) => {
   const query = `
     SELECT alumnos.*, peticiones.*
     FROM alumnos
@@ -162,7 +162,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // 🌐 Ruta para registrar alumnos
-app.post('/api/register', upload.single('foto'), (req, res) => {
+app.post('/alumno/register', upload.single('foto'), (req, res) => {
   const { nombre_completo, correo, telefono, no_control, contrasena } = req.body;
   const foto = req.file ? req.file.filename : null; // Nombre de la imagen subida
 
@@ -244,7 +244,7 @@ app.post('/api/register', upload.single('foto'), (req, res) => {
 
 // Ruta para insertar la petición (actualizar el estatus de la petición)
 
-app.post('/api/insertar-peticion', (req, res) => {
+app.post('/departamento/insertar-peticion', (req, res) => {
   const {
     alumnoNoControl,
     peticionEstatus,
@@ -323,7 +323,7 @@ app.post('/api/insertar-peticion', (req, res) => {
 
 
 // Petición para actualizar datos de un alumno (solo administradores)
-app.post('/api/actualizar-peticion-Adm', (req, res) => {
+app.post('/admin/actualizar-peticion-Adm', (req, res) => {
   // Recuperamos los datos del cuerpo de la solicitud
   const datosAlumnoModalAdmin = req.body;
 
@@ -525,7 +525,7 @@ app.post('/api/register-departamento', uploads.none(), (req, res) => {
 
 
 // Ruta para obtener los departamentos no autorizados
-app.get('/api/departamentos-no-autorizados', (req, res) => {
+app.get('/admin/departamentos-no-autorizados', (req, res) => {
   const query = `
     SELECT nombre_departamento, usuario, contrasena, departamento_id, fecha_registro
     FROM departamentos_no_autorizados
@@ -544,7 +544,7 @@ app.get('/api/departamentos-no-autorizados', (req, res) => {
 
 
 // Insertar departamentos no autorizados y eliminar de la tabla de no autorizados
-app.post('/api/insertar-departamentos-no-autorizados', async (req, res) => {
+app.post('/admin/insertar-departamentos-no-autorizados', async (req, res) => {
   const { correo, contrasena, tipo_usuario } = JSON.parse(req.headers.authorization);
 
   console.log('Auth Headers desde server.js:', { correo, contrasena, tipo_usuario }); // Verifica los datos recibidos
@@ -615,7 +615,7 @@ app.post('/api/insertar-departamentos-no-autorizados', async (req, res) => {
 
 
 // Ruta para crear un nuevo departamento
-app.post('/api/crear-departamento-admin', (req, res) => {
+app.post('/admin/crear-departamento-admin', (req, res) => {
   console.log('Datos recibidos en el cuerpo de la solicitud (req.body):', req.body); // Verifica qué llega al backend
 
   // Desestructuramos los valores del cuerpo de la solicitud
@@ -697,7 +697,7 @@ app.post('/api/crear-departamento-admin', (req, res) => {
 
 
 
-app.post('/api/obtener-departamento', (req, res) => {
+app.post('/admin/obtener-departamento', (req, res) => {
   const authData = req.headers.authorization ? JSON.parse(req.headers.authorization) : {};
 
   const { usuario, contrasena } = authData;
@@ -737,7 +737,7 @@ app.post('/api/obtener-departamento', (req, res) => {
 });
 
 
-app.post('/api/verificar-administrador', (req, res) => {
+app.post('/admin/verificar-administrador', (req, res) => {
   const authData = req.headers.authorization ? JSON.parse(req.headers.authorization) : {};
 
   const { correo, contrasena } = authData;
@@ -764,7 +764,7 @@ app.post('/api/verificar-administrador', (req, res) => {
 
 // guardar departamento desde admin
 
-app.post('/api/guardar-departamento-adm', (req, res) => {
+app.post('/admin/guardar-departamento-adm', (req, res) => {
   const departamento = req.body;
   const authData = req.headers.authorization ? JSON.parse(req.headers.authorization) : {};
 
@@ -823,7 +823,7 @@ app.post('/api/guardar-departamento-adm', (req, res) => {
 
 
 // eliminar departamento admin by id
-app.post('/api/eliminar-departamento-adm', (req, res) => {
+app.post('/admin/eliminar-departamento-adm', (req, res) => {
   const departamentoId = req.body.departamentoId; // Acceder al valor directamente
   const authData = req.headers.authorization ? JSON.parse(req.headers.authorization) : {}; // Recuperamos los datos de autenticación desde los headers
 
@@ -881,7 +881,7 @@ app.post('/api/eliminar-departamento-adm', (req, res) => {
 
 
 // eliminar alumno admin by id
-app.post('/api/eliminar-alumno-adm', (req, res) => {
+app.post('/admin/eliminar-alumno-adm', (req, res) => {
   const alumnoId = req.body.alumnoId; // ID del alumno (no_control)
   const authData = req.headers.authorization ? JSON.parse(req.headers.authorization) : null;
 
@@ -939,7 +939,7 @@ app.post('/api/eliminar-alumno-adm', (req, res) => {
 
 
 // Crear administrador desde admin
-app.post('/api/insertar-admin', (req, res) => {
+app.post('/admin/insertar-admin', (req, res) => {
   const { usuario, contrasena } = req.body;
   const authData = req.headers.authorization
     ? JSON.parse(req.headers.authorization)
