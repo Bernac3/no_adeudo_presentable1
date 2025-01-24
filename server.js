@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const db = require('./src/app/db/db'); // Asegúrate de que este archivo apunta correctamente a tu conexión con la base de datos
 const path = require('path');
+const multer = require('multer');
 
 const app = express();
 
@@ -94,22 +95,7 @@ app.get('/common/alumnos-peticiones', (req, res) => {
 });
 
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
-
-
-
-// 📁 Configuración de multer para subir imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, './uploads/'); // Carpeta donde se guardarán las imágenes
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Nombre único para evitar colisiones
-  }
-});
-
-//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
-
+// obtener los departamentos
 app.post('/admin/obtener-departamento', (req, res) => {
   const authData = req.headers.authorization ? JSON.parse(req.headers.authorization) : {};
 
@@ -150,7 +136,16 @@ app.post('/admin/obtener-departamento', (req, res) => {
 });
 
 
-//------------------------------------------------------------Archivos Estaticos------------------------------------------------------------//
+// 📁 Configuración de multer para subir imágenes
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads/'); // Carpeta donde se guardarán las imágenes
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Nombre único para evitar colisiones
+  }
+});
 
 // Sirve los archivos estáticos del proyecto Angular
 app.use(express.static(path.join(__dirname, 'dist/no_adeudo/browser')));
