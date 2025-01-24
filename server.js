@@ -126,10 +126,25 @@ app.post('/auth/login', (req, res) => {
 });
 
 
+// Middleware de autenticación
+function isAuthenticated(req, res, next) {
+  const user = req.session?.user; // Suponiendo que el usuario autenticado está guardado en la sesión
 
-// Suponiendo que estás utilizando Express
-// Rutas específicas de API
-app.get('/admin/list', (req, res) => {
+  if (!user) {
+    return res.status(401).json({ error: 'Usuario no autenticado' });
+  }
+  // Puedes agregar más verificaciones si es necesario
+  req.user = user; // Añades la información del usuario a la solicitud para usarla en la ruta
+  next();
+}
+
+// Ruta para obtener los datos de alumnos y peticiones, protegida por el middleware
+app.get('/admin/list', isAuthenticated, (req, res) => {
+  // Verificar si el usuario es administrador
+  if (req.user.rol !== 'admin') {
+    return res.status(403).json({ error: 'Acceso no autorizado' });
+  }
+
   const query = `
     SELECT alumnos.*, peticiones.*
     FROM alumnos
@@ -144,6 +159,7 @@ app.get('/admin/list', (req, res) => {
     res.json(results);
   });
 });
+
 
 // Middleware para servir el frontend
 app.use((req, res) => {
