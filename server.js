@@ -1,39 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const db = require('./src/app/db/db'); // Asegúrate de que este archivo apunta correctamente a tu conexión con la base de datos
 const path = require('path');
 
-// Inicialización de Express
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Rutas de la API
-app.use('/auth', require('./src/app/routes/auth')); // Rutas para autenticación
-app.use('/api', require('./src/app/routes/api')); // Rutas para otras consultas
-
-// Sirve los archivos estáticos del proyecto Angular
-app.use(express.static(path.join(__dirname, 'dist/no_adeudo/browser')));
-
-// Redirige todas las rutas que no sean API al index.html de Angular
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/no_adeudo/browser/index.html'));
-});
-
-// Inicia el servidor en el puerto proporcionado (Render o local)
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
-
-
-const router = express.Router();
-const db = require('../db/db');
-
-// Ruta para iniciar sesión
-router.post('/login', (req, res) => {
+// Ruta para el login
+app.post('/auth/login', (req, res) => {
   const { correo, contrasena } = req.body;
 
   // Consulta para administradores
@@ -94,4 +72,34 @@ router.post('/login', (req, res) => {
   });
 });
 
-module.exports = router;
+// Ruta para obtener alumnos y peticiones
+app.get('/api/alumnos-peticiones', (req, res) => {
+  const query = `
+    SELECT alumnos.*, peticiones.*
+    FROM alumnos
+    LEFT JOIN peticiones ON alumnos.no_control = peticiones.no_control;
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al obtener los datos:', err);
+      return res.status(500).json({ error: 'Error al obtener los datos' });
+    }
+
+    res.json(results); // Retorna los resultados como un arreglo de objetos
+  });
+});
+
+// Sirve los archivos estáticos del proyecto Angular
+app.use(express.static(path.join(__dirname, 'dist/no_adeudo/browser')));
+
+// Redirige todas las rutas que no sean API al index.html de Angular
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/no_adeudo/browser/index.html'));
+});
+
+// Inicia el servidor en el puerto proporcionado (Render o local)
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
