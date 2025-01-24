@@ -127,8 +127,9 @@ app.post('/auth/login', (req, res) => {
 
 
 
-// Get alumnos y peticiones
-app.get('/admin/list', (req, res) => {
+// Get alumnos y peticiones: de momento no funciona
+// app.get('/admin/list', (req, res) => {
+app.get('/asdfasdf asdfa sdf t', (req, res) => {
   // Suponiendo que el usuario autenticado está en la sesión
   const user = req.session.user;
 
