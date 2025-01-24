@@ -127,60 +127,23 @@ app.post('/auth/login', (req, res) => {
 
 
 
-// Get alumnos y peticiones: de momento no funciona
-// app.get('/admin/list', (req, res) => {
-app.get('/asdfasdf asdfa sdf t', (req, res) => {
-  // Suponiendo que el usuario autenticado está en la sesión
-  const user = req.session.user;
-
-  // Verificar si el usuario es administrador
-  if (!user || user.rol !== 'admin') {
-    return res.status(403).json({ error: 'Acceso no autorizado' });
-  }
-
-  // Consulta para obtener los datos de alumnos y sus peticiones
+// Suponiendo que estás utilizando Express
+app.get('/api/alumnos-peticiones', (req, res) => {
   const query = `
-    SELECT
-      a.idalumnos AS id,
-      a.nombre_completo,
-      a.correo,
-      a.telefono,
-      a.no_control,
-      a.foto,
-      a.fecha_registro,
-      a.rol,
-      p.estatus_administracion_y_finanzas,
-      p.estatus_centro_de_informacion,
-      p.estatus_centro_de_computo,
-      p.estatus_recursos_materiales,
-      p.estatus_departamento_de_vinculacion,
-      p.comentario_administracion_y_finanzas,
-      p.comentario_centro_de_informacion,
-      p.comentario_centro_de_computo,
-      p.comentario_recursos_materiales,
-      p.comentario_departamento_de_vinculacion,
-      p.estatus_peticion
-    FROM
-      alumnos a
-    LEFT JOIN
-      peticiones p ON a.no_control = p.no_control
+    SELECT alumnos.*, peticiones.*
+    FROM alumnos
+    LEFT JOIN peticiones ON alumnos.no_control = peticiones.no_control;
   `;
 
   db.query(query, (err, results) => {
     if (err) {
-      console.error('Error al obtener los datos:', err.message);
+      console.error('Error al obtener los datos:', err);
       return res.status(500).json({ error: 'Error al obtener los datos' });
     }
-    res.setHeader('Content-Type', 'application/json');
-    res.json(results);
+    res.json(results); // Retorna los resultados como un arreglo de objetos
   });
 });
 
-
-// Middleware para servir el frontend
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 
 
