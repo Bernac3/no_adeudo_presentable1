@@ -11,11 +11,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Sirve los archivos estáticos de la carpeta 'dist'
-app.use(express.static(path.join(__dirname, 'dist/contry-app3')));
+app.use(express.static(path.join(__dirname, 'dist/no_adeudo')));
 
 // Redirige todas las rutas a index.html para que Angular maneje las rutas
 app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/contry-app3/index.html'));
+    res.sendFile(path.join(__dirname, 'dist/no_adeudo/index.html'));
 });
 
 // Inicia el servidor en el puerto proporcionado por Render
