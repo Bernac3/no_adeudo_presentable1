@@ -10,23 +10,19 @@ const uploads = multer();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Servir archivos estáticos de la carpeta 'uploads' (fotos de alumnos)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Sirve los archivos estáticos de la carpeta 'dist'
+app.use(express.static(path.join(__dirname, 'dist/contry-app3')));
 
-// Sirve los archivos estáticos generados por Angular
-app.use(express.static(path.join(__dirname, 'dist/<nombre-del-proyecto>')));
-
-// Redirige todas las rutas al archivo index.html
+// Redirige todas las rutas a index.html para que Angular maneje las rutas
 app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/<nombre-del-proyecto>/index.html'));
+    res.sendFile(path.join(__dirname, 'dist/contry-app3/index.html'));
 });
 
-// Vincula al puerto proporcionado por Render
+// Inicia el servidor en el puerto proporcionado por Render
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
-
 
 
 app.post('/api/login', (req, res) => {
