@@ -10,6 +10,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // Ruta para el login
 app.post('/auth/login', (req, res) => {
   const { correo, contrasena } = req.body;
@@ -72,8 +74,9 @@ app.post('/auth/login', (req, res) => {
   });
 });
 
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // Ruta para obtener alumnos y peticiones
-app.get('/api/alumnos-peticiones', (req, res) => {
+app.get('/common/alumnos-peticiones', (req, res) => {
   const query = `
     SELECT alumnos.*, peticiones.*
     FROM alumnos
@@ -89,6 +92,65 @@ app.get('/api/alumnos-peticiones', (req, res) => {
     res.json(results); // Retorna los resultados como un arreglo de objetos
   });
 });
+
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+
+
+
+// 📁 Configuración de multer para subir imágenes
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads/'); // Carpeta donde se guardarán las imágenes
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Nombre único para evitar colisiones
+  }
+});
+
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+
+app.post('/admin/obtener-departamento', (req, res) => {
+  const authData = req.headers.authorization ? JSON.parse(req.headers.authorization) : {};
+
+  const { usuario, contrasena } = authData;
+
+  // Validar credenciales del administrador
+  const queryAdmin = `
+    SELECT *
+    FROM administrador
+    WHERE usuario = ? AND contrasena = ?`;
+
+  db.query(queryAdmin, [usuario, contrasena], (error, results) => {
+    if (error) {
+      return res.status(500).json({ error: 'Error al verificar las credenciales del administrador' });
+    }
+    if (results.length === 0) {
+      return res.status(403).json({ error: 'Credenciales inválidas' });
+    }
+
+    // Si las credenciales son válidas, obtener los datos de los departamentos
+    const queryDepartamentos = `
+      SELECT
+        iddepartamentos,
+        nombre_departamento,
+        usuario,
+        contrasena,
+        departamento_id,
+        fecha_registro
+      FROM departamentos`;
+
+    db.query(queryDepartamentos, (error, departamentos) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error al obtener los departamentos' });
+      }
+      return res.status(200).json({ departamentos });
+    });
+  });
+});
+
+
+//------------------------------------------------------------Archivos Estaticos------------------------------------------------------------//
 
 // Sirve los archivos estáticos del proyecto Angular
 app.use(express.static(path.join(__dirname, 'dist/no_adeudo/browser')));

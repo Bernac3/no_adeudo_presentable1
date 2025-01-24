@@ -96,7 +96,7 @@ export class AuthService {
    */
   getAlumnosYPeticiones(): Observable<Alumno[]> {
     //problema aqui
-    const urlAlumnosypeticiones = 'https://no-adeudo.onrender.com/api/alumnos-peticiones';
+    const urlAlumnosypeticiones = 'https://no-adeudo.onrender.com/common/alumnos-peticiones';
     // const url = 'https://no-adeudo-repositorio-1.onrender.com/alumno/alumnos-peticiones';
     return this.http.get<Alumno[]>(urlAlumnosypeticiones, { responseType: 'json' }).pipe(
       catchError((error: HttpErrorResponse) => {

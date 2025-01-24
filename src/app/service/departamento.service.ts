@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
 })
 export class DepartamentoService {
   private apiUrl = 'https://no-adeudo-repositorio-1.onrender.com/departamento/register-departamento';
-  private apiUrlObtenerDepartamentos = 'https://no-adeudo-repositorio-1.onrender.com/departamento/obtener-departamento'
+  
+  private apiUrlObtenerDepartamentos = 'https://no-adeudo.onrender.com/admin/obtener-departamento'
 
   private apiUrlGuardarDepartamentoAdmin = 'https://no-adeudo-repositorio-1.onrender.com/admin/guardar-departamento-adm'
   private apiUrlEliminarDepartamentoAdmin = 'https://no-adeudo-repositorio-1.onrender.com/admin/eliminar-departamento-adm'
