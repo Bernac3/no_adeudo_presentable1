@@ -10,7 +10,7 @@ export class PeticionesService {
 
   private apiUrlAdmin = 'https://no-adeudo-repositorio-1.onrender.com/admin/actualizar-peticion-Adm';  // API de inserción de peticiones
 
-  private apiUrlDepartamentosNoAutorizados = 'https://no-adeudo-repositorio-1.onrender.com/departamento/departamentos-no-autorizados';
+  private apiUrlDepartamentosNoAutorizados = 'https://no-adeudo-repositorio-1.onrender.com/admin/departamentos-no-autorizados';
 
   private apiUrlInsertarDepartamentosNoAutorizados = 'http://localhost:3000/api/insertar-departamentos-no-autorizados';
   private apiUrlInsertarAdmn = 'http://localhost:3000/api/insertar-admin'
