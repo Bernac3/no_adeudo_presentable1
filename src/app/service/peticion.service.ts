@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { DepartamentosResponse } from '../interfaces/departamentos-no-autorizados-interfade';
 
 @Injectable({
   providedIn: 'root'
@@ -34,10 +35,10 @@ export class PeticionesService {
     return this.http.post(`${this.apiUrlAdmin}`, datosAlumno, { headers });
   }
 
-  obtenerDepartamentosNoAutorizados(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrlDepartamentosNoAutorizados); // Hace una solicitud GET al backend
-  }
 
+  obtenerDepartamentosNoAutorizados(): Observable<DepartamentosResponse> {
+    return this.http.get<DepartamentosResponse>(this.apiUrlDepartamentosNoAutorizados);
+  }
   insertarDepartamentoAutorizado(datosDepartamento: any, authData: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

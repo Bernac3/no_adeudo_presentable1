@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PeticionesService } from '../../../../service/peticion.service';
+import { DepartamentosResponse } from '../../../../interfaces/departamentos-no-autorizados-interfade';
+
 
 @Component({
   selector: 'app-departamentos',
@@ -7,7 +9,6 @@ import { PeticionesService } from '../../../../service/peticion.service';
   styleUrls: ['./departamentos.component.css']
 })
 export class DepartamentosComponent implements OnInit {
-  // Datos por defecto para evitar errores mientras se cargan los datos
   departamentos: any[] = [];
   usuario: string = '';
   contrasena: string = '';
@@ -15,7 +16,6 @@ export class DepartamentosComponent implements OnInit {
   departamentoId: string = '';
   fechaRegistro: string = '';
 
-  // Objeto inicial vacío para asegurar que no se generen errores
   departamentoSeleccionado: any = {
     usuario: '',
     contrasena: '',
@@ -32,8 +32,9 @@ export class DepartamentosComponent implements OnInit {
 
   obtenerDepartamentosNoAutorizados(): void {
     this.peticionesService.obtenerDepartamentosNoAutorizados().subscribe(
-      (data) => {
-        this.departamentos = data || []; // Aseguramos que siempre sea un array
+      (response: DepartamentosResponse) => {
+        // Extrae la propiedad "departamentosNoAutorizados"
+        this.departamentos = response.departamentosNoAutorizados || [];
         console.log('Departamentos actualizados:', this.departamentos);
       },
       (error) => {
@@ -50,12 +51,6 @@ export class DepartamentosComponent implements OnInit {
       departamento_id: departamentoId,
       fecha_registro: fechaRegistro
     };
-
-    this.usuario = usuario;
-    this.contrasena = contrasena;
-    this.departamento = departamento;
-    this.fechaRegistro = fechaRegistro;
-    this.departamentoId = departamentoId;
   }
 
   permitirDepartamentoAutorizado(): void {
