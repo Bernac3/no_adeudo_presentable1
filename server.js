@@ -128,20 +128,26 @@ app.post('/auth/login', (req, res) => {
 
 
 // Suponiendo que estás utilizando Express
+// Rutas específicas de API
 app.get('/alumno/alumnos-peticiones', (req, res) => {
   const query = `
     SELECT alumnos.*, peticiones.*
     FROM alumnos
     LEFT JOIN peticiones ON alumnos.no_control = peticiones.no_control;
   `;
-
   db.query(query, (err, results) => {
     if (err) {
-      console.error('Error al obtener los datos:', err);
+      console.error('Error al obtener los datos:', err.message);
       return res.status(500).json({ error: 'Error al obtener los datos' });
     }
-    res.json(results); // Retorna los resultados como un arreglo de objetos
+    res.setHeader('Content-Type', 'application/json');
+    res.json(results);
   });
+});
+
+// Middleware para servir el frontend
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 

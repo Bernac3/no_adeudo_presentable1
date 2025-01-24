@@ -108,7 +108,7 @@ export class ListaAdminComponent implements OnInit {
     }
 
     if (alumnoFoto) {
-      alumnoFoto.src = `http://localhost:3000/uploads/${alumno.foto}`;
+      alumnoFoto.src = `https://no-adeudo-repositorio-1.onrender.com//uploads/${alumno.foto}`;
     }
     if (alumnoContrasena) alumnoContrasena.value = alumno.contrasena;
   }
@@ -266,7 +266,7 @@ export class ListaAdminComponent implements OnInit {
 
     this.departamentoService.eliminarAlumnoAdminModal(alumnoIdModal, authData).subscribe(
       (res) => {
-       
+
 
         // Actualizar la lista de alumnos
         this.actualizarListaAlumnos();

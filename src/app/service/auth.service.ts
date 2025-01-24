@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Alumno } from '../interfaces/alumno.interface';
 
 @Injectable({
@@ -95,8 +95,13 @@ export class AuthService {
    * @returns Observable con un arreglo de alumnos y peticiones.
    */
   getAlumnosYPeticiones(): Observable<Alumno[]> {
-    // const url = 'https://no-adeudo-repositorio-1.onrender.com/alumno/alumnos-peticiones'; // Asegúrate de que este endpoint exista en el servidor
-    const url = 'https://no-adeudo-repositorio-1.onrender.com/alumno/alumnos-peticiones'; // Asegúrate de que este endpoint exista en el servidor
-    return this.http.get<Alumno[]>(url); // Obtiene los datos combinados de alumnos y peticiones
+    const url = 'https://no-adeudo-repositorio-1.onrender.com/alumno/alumnos-peticiones';
+    return this.http.get<Alumno[]>(url, { responseType: 'json' }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener los datos:', error);
+        return throwError(() => new Error('Error al obtener los datos. Intenta nuevamente.'));
+      })
+    );
   }
+
 }
