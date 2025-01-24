@@ -127,16 +127,6 @@ app.post('/auth/login', (req, res) => {
 
 
 
-
-// obtener alumnos y peticiones.
-const isAuthenticated = (req, res, next) => {
-  const user = req.session?.user; // O usa JWT o cualquier sistema de autenticación
-  if (!user) {
-    return res.status(401).json({ error: 'No autenticado' });
-  }
-  next();
-};
-
 app.get('/api/alumnos-peticiones', isAuthenticated, (req, res) => {
   // Solo usuarios autenticados pueden acceder
   const query = `
@@ -153,14 +143,3 @@ app.get('/api/alumnos-peticiones', isAuthenticated, (req, res) => {
   });
 });
 
-
-app.get('/api/alumnos-peticiones', (req, res) => {
-  // Lógica de la consulta
-  res.json({ message: 'Ruta de API funcionando correctamente' });
-});
-
-
-
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Esto debe ir al final
-});
