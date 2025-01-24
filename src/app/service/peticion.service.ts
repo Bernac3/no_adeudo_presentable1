@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -35,8 +35,15 @@ export class PeticionesService {
   }
 
   obtenerDepartamentosNoAutorizados(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrlDepartamentosNoAutorizados); // Hace una solicitud GET al backend
+    return this.http.get<any[]>(this.apiUrlDepartamentosNoAutorizados).pipe(
+      map((data) => data || []), // Si data es null/undefined, retorna un array vacío
+      catchError((error) => {
+        console.error('Error al obtener departamentos:', error);
+        return of([]); // Retorna un array vacío en caso de error
+      })
+    );
   }
+
 
   insertarDepartamentoAutorizado(datosDepartamento: any, authData: any): Observable<any> {
     const headers = new HttpHeaders({
