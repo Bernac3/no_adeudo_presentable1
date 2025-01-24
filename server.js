@@ -24,13 +24,14 @@ app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
 
+
 // iniciar session.
 app.post('/auth/login', (req, res) => {
   const { correo, contrasena } = req.body;
   console.log('Datos recibidos en el servidor:', req.body);
 
-  // Primero buscamos en la tabla de administradores
-  let query = `
+  // Consulta para administradores
+  const queryAdmin = `
     SELECT
       idadministrador AS id,
       usuario,
@@ -39,20 +40,19 @@ app.post('/auth/login', (req, res) => {
     WHERE usuario = ? AND contrasena = ?
   `;
 
-  db.query(query, [correo, contrasena], (err, results) => {
+  db.query(queryAdmin, [correo, contrasena], (err, results) => {
     if (err) {
       console.error('Error al verificar administrador:', err);
-      return res.status(500).json({ error: 'Error en el servidor' });
+      return res.status(500).json({ error: 'Error en el servidor al verificar administrador' });
     }
 
     if (results.length > 0) {
-      // Si se encuentra en la tabla de administradores, enviamos los datos
       console.log('Administrador autenticado:', results[0]);
-      return res.status(200).json(results[0]); // Enviar los datos del administrador
+      return res.status(200).json(results[0]);
     }
 
-    // Si no encontramos el administrador, buscamos en los alumnos
-    query = `
+    // Consulta para alumnos
+    const queryAlumno = `
       SELECT
         a.idalumnos AS id,
         a.nombre_completo,
@@ -81,20 +81,19 @@ app.post('/auth/login', (req, res) => {
         a.correo = ? AND a.contrasena = ?
     `;
 
-    db.query(query, [correo, contrasena], (err, results) => {
+    db.query(queryAlumno, [correo, contrasena], (err, results) => {
       if (err) {
         console.error('Error al verificar alumno:', err);
-        return res.status(500).json({ error: 'Error en el servidor' });
+        return res.status(500).json({ error: 'Error en el servidor al verificar alumno' });
       }
 
       if (results.length > 0) {
-        // Si se encuentra en la tabla de alumnos, enviamos los datos
         console.log('Alumno autenticado:', results[0]);
-        return res.status(200).json(results[0]); // Enviar los datos del alumno
+        return res.status(200).json(results[0]);
       }
 
-      // Si no encontramos el alumno, buscamos en los departamentos
-      query = `
+      // Consulta para departamentos
+      const queryDepartamento = `
         SELECT
           d.iddepartamentos AS id,
           d.nombre_departamento,
@@ -107,19 +106,18 @@ app.post('/auth/login', (req, res) => {
           d.usuario = ? AND d.contrasena = ?
       `;
 
-      db.query(query, [correo, contrasena], (err, results) => {
+      db.query(queryDepartamento, [correo, contrasena], (err, results) => {
         if (err) {
           console.error('Error al verificar departamento:', err);
-          return res.status(500).json({ error: 'Error en el servidor' });
+          return res.status(500).json({ error: 'Error en el servidor al verificar departamento' });
         }
 
         if (results.length > 0) {
-          // Si se encuentra en la tabla de departamentos, enviamos los datos
           console.log('Departamento autenticado:', results[0]);
-          return res.status(200).json(results[0]); // Enviar los datos del departamento
+          return res.status(200).json(results[0]);
         }
 
-        // Si no encontramos el usuario en ninguna de las tablas
+        // Credenciales incorrectas
         console.log('Credenciales incorrectas');
         return res.status(401).json({ error: 'Credenciales incorrectas' });
       });
