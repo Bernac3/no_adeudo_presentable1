@@ -24,9 +24,10 @@ app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
 
-
+// iniciar session
 app.post('/auth/login', (req, res) => {
   const { correo, contrasena } = req.body;
+  console.log('Datos recibidos en el servidor:', req.body);
 
   // Primero buscamos en la tabla de administradores
   let query = `
