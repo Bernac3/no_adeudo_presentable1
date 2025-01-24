@@ -108,7 +108,7 @@ export class ListaAdminComponent implements OnInit {
     }
 
     if (alumnoFoto) {
-      alumnoFoto.src = `https://no-adeudo-repositorio-1.onrender.com//uploads/${alumno.foto}`;
+      alumnoFoto.src = `https://no-adeudo.onrender.com/uploads/${alumno.foto}`;
     }
     if (alumnoContrasena) alumnoContrasena.value = alumno.contrasena;
   }
