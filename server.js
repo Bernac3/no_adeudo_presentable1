@@ -25,10 +25,6 @@ app.listen(PORT, () => {
 });
 
 
-const express = require('express');
-const path = require('path');
-const db = require('./db'); // Conexión a la base de datos
-
 app.use(express.json());
 
 // Ruta de inicio de sesión
