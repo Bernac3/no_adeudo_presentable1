@@ -7,12 +7,22 @@ import { PeticionesService } from '../../../../service/peticion.service';
   styleUrls: ['./departamentos.component.css']
 })
 export class DepartamentosComponent implements OnInit {
-  departamentos: any[] = []; // Variable para almacenar los departamentos
+  // Datos por defecto para evitar errores mientras se cargan los datos
+  departamentos: any[] = [];
   usuario: string = '';
   contrasena: string = '';
   departamento: string = '';
   departamentoId: string = '';
   fechaRegistro: string = '';
+
+  // Objeto inicial vacío para asegurar que no se generen errores
+  departamentoSeleccionado: any = {
+    usuario: '',
+    contrasena: '',
+    nombre_departamento: '',
+    departamento_id: '',
+    fecha_registro: ''
+  };
 
   constructor(private peticionesService: PeticionesService) {}
 
@@ -21,10 +31,9 @@ export class DepartamentosComponent implements OnInit {
   }
 
   obtenerDepartamentosNoAutorizados(): void {
-    // Llamamos al servicio para obtener los departamentos
     this.peticionesService.obtenerDepartamentosNoAutorizados().subscribe(
       (data) => {
-        this.departamentos = data; // Guardamos los datos obtenidos
+        this.departamentos = data || []; // Aseguramos que siempre sea un array
         console.log('Departamentos actualizados:', this.departamentos);
       },
       (error) => {
@@ -34,6 +43,14 @@ export class DepartamentosComponent implements OnInit {
   }
 
   verDetalles(usuario: string, contrasena: string, departamento: string, fechaRegistro: string, departamentoId: string): void {
+    this.departamentoSeleccionado = {
+      usuario,
+      contrasena,
+      nombre_departamento: departamento,
+      departamento_id: departamentoId,
+      fecha_registro: fechaRegistro
+    };
+
     this.usuario = usuario;
     this.contrasena = contrasena;
     this.departamento = departamento;
@@ -47,7 +64,7 @@ export class DepartamentosComponent implements OnInit {
       contrasena: this.contrasena,
       departamento: this.departamento,
       departamentoId: this.departamentoId,
-      fechaRegistro: this.fechaRegistro,
+      fechaRegistro: this.fechaRegistro
     };
 
     const authData = {
@@ -60,7 +77,7 @@ export class DepartamentosComponent implements OnInit {
     if (sessionAuthData) {
       const parsedData = JSON.parse(sessionAuthData);
       authData.tipo_usuario = parsedData.tipo_usuario ? parsedData.tipo_usuario.toLowerCase() : '';
-      authData.correo = parsedData.correo || ''; // En la DB el campo "correo" se llama "usuario"
+      authData.correo = parsedData.correo || '';
       authData.contrasena = parsedData.contrasena || '';
     }
 
@@ -72,7 +89,7 @@ export class DepartamentosComponent implements OnInit {
         console.log('Departamento autorizado con éxito:', res);
         alert('Departamento autorizado con éxito');
 
-        // Llamar a obtenerDepartamentosNoAutorizados para actualizar la lista
+        // Actualizamos la lista
         this.obtenerDepartamentosNoAutorizados();
       },
       (error) => {
@@ -82,4 +99,3 @@ export class DepartamentosComponent implements OnInit {
     );
   }
 }
-
