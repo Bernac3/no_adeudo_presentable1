@@ -8,7 +8,7 @@ import { Alumno } from '../interfaces/alumno.interface';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/login';
+  private apiUrl = 'https://no-adeudo-repositorio-7.onrender.com/auth/login';
 
   private userSubject = new BehaviorSubject<Alumno | null>(null);
 
