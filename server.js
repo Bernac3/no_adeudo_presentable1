@@ -19,7 +19,10 @@ app.post('/auth/login', (req, res) => {
 
   // Consulta para administradores
   const queryAdmin = `
-    SELECT idadministrador AS id, usuario, rol
+    SELECT
+      idadministrador AS id,
+      usuario,
+      rol
     FROM administrador
     WHERE usuario = ? AND contrasena = ?
   `;
@@ -31,13 +34,34 @@ app.post('/auth/login', (req, res) => {
     }
 
     if (results.length > 0) {
-      return res.status(200).json(results[0]);
+      console.log('Administrador autenticado:', results[0]);
+      return res.status(200).json(results[0]); // Enviar los datos del administrador
     }
 
     // Consulta para alumnos
     const queryAlumno = `
-      SELECT a.idalumnos AS id, a.nombre_completo, a.rol
+      SELECT
+        a.idalumnos AS id,
+        a.nombre_completo,
+        a.correo,
+        a.telefono,
+        a.no_control,
+        a.foto,
+        a.fecha_registro,
+        a.rol,
+        p.estatus_administracion_y_finanzas,
+        p.estatus_centro_de_informacion,
+        p.estatus_centro_de_computo,
+        p.estatus_recursos_materiales,
+        p.estatus_departamento_de_vinculacion,
+        p.comentario_administracion_y_finanzas,
+        p.comentario_centro_de_informacion,
+        p.comentario_centro_de_computo,
+        p.comentario_recursos_materiales,
+        p.comentario_departamento_de_vinculacion,
+        p.estatus_peticion
       FROM alumnos a
+      LEFT JOIN peticiones p ON a.no_control = p.no_control
       WHERE a.correo = ? AND a.contrasena = ?
     `;
 
@@ -48,14 +72,20 @@ app.post('/auth/login', (req, res) => {
       }
 
       if (results.length > 0) {
-        return res.status(200).json(results[0]);
+        console.log('Alumno autenticado:', results[0]);
+        return res.status(200).json(results[0]); // Enviar los datos del alumno
       }
 
       // Consulta para departamentos
       const queryDepartamento = `
-        SELECT iddepartamentos AS id, nombre_departamento, rol
-        FROM departamentos
-        WHERE usuario = ? AND contrasena = ?
+        SELECT
+          d.iddepartamentos AS id,
+          d.nombre_departamento,
+          d.usuario,
+          d.departamento_id,
+          d.rol
+        FROM departamentos d
+        WHERE d.usuario = ? AND d.contrasena = ?
       `;
 
       db.query(queryDepartamento, [correo, contrasena], (err, results) => {
@@ -65,15 +95,18 @@ app.post('/auth/login', (req, res) => {
         }
 
         if (results.length > 0) {
-          return res.status(200).json(results[0]);
+          console.log('Departamento autenticado:', results[0]);
+          return res.status(200).json(results[0]); // Enviar los datos del departamento
         }
 
         // Credenciales incorrectas
+        console.log('Credenciales incorrectas');
         return res.status(401).json({ error: 'Credenciales incorrectas' });
       });
     });
   });
 });
+
 
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // Ruta para obtener alumnos y peticiones
