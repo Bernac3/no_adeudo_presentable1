@@ -128,7 +128,7 @@ app.post('/auth/login', (req, res) => {
 
 
 // Suponiendo que estás utilizando Express
-app.get('/admin/list', (req, res) => {
+app.get('/alumno/alumnos-peticiones', (req, res) => {
   const query = `
     SELECT alumnos.*, peticiones.*
     FROM alumnos

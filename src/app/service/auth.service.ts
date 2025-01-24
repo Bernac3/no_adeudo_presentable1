@@ -96,7 +96,7 @@ export class AuthService {
    */
   getAlumnosYPeticiones(): Observable<Alumno[]> {
     // const url = 'https://no-adeudo-repositorio-1.onrender.com/alumno/alumnos-peticiones'; // Asegúrate de que este endpoint exista en el servidor
-    const url = 'https://no-adeudo-repositorio-1.onrender.com/admin/list'; // Asegúrate de que este endpoint exista en el servidor
+    const url = 'https://no-adeudo-repositorio-1.onrender.com/alumno/alumnos-peticiones'; // Asegúrate de que este endpoint exista en el servidor
     return this.http.get<Alumno[]>(url); // Obtiene los datos combinados de alumnos y peticiones
   }
 }
