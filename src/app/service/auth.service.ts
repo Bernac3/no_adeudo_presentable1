@@ -95,8 +95,9 @@ export class AuthService {
    * @returns Observable con un arreglo de alumnos y peticiones.
    */
   getAlumnosYPeticiones(): Observable<Alumno[]> {
-    const url = 'https://no-adeudo-repositorio-1.onrender.com/alumno/alumnos-peticiones';
-    return this.http.get<Alumno[]>(url, { responseType: 'json' }).pipe(
+    const urlAlumnosypeticiones = 'https://no-adeudo-repositorio-1.onrender.com/admin/list';
+    // const url = 'https://no-adeudo-repositorio-1.onrender.com/alumno/alumnos-peticiones';
+    return this.http.get<Alumno[]>(urlAlumnosypeticiones, { responseType: 'json' }).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Error al obtener los datos:', error);
         return throwError(() => new Error('Error al obtener los datos. Intenta nuevamente.'));

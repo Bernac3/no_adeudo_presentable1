@@ -129,7 +129,7 @@ app.post('/auth/login', (req, res) => {
 
 // Suponiendo que estás utilizando Express
 // Rutas específicas de API
-app.get('/alumno/alumnos-peticiones', (req, res) => {
+app.get('/admin/list', (req, res) => {
   const query = `
     SELECT alumnos.*, peticiones.*
     FROM alumnos
