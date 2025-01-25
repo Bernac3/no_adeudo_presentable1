@@ -756,6 +756,120 @@ app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
   });
 });
 
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Crear departamento desde admin (crear-departamento)
+
+app.post('/api/crear-departamento-admin', (req, res) => {
+  console.log('Datos recibidos en el cuerpo de la solicitud (req.body):', req.body);
+
+  // Desestructuramos los valores del cuerpo de la solicitud
+  const { nombre_departamento, usuario, contrasena, departamento_id } = req.body;
+
+  // Verificar que no haya valores nulos o vacíos
+  if (!nombre_departamento || !usuario || !contrasena || !departamento_id) {
+    return res.status(400).json({
+      error: 'Faltan datos necesarios para el departamento.',
+    });
+  }
+
+  // Verificar los datos del administrador en los headers de autorización
+  let authData;
+  try {
+    authData = JSON.parse(req.headers.authorization);
+  } catch (err) {
+    console.error('Error al parsear el encabezado de autorización:', err);
+    return res.status(400).json({
+      error: 'El encabezado de autorización no es válido.',
+      details: err.message,
+    });
+  }
+
+  const { correo, contrasena: contrasenaAdmin } = authData;
+
+  if (!correo || !contrasenaAdmin) {
+    return res.status(400).json({
+      error: 'Faltan los datos del administrador para la autorización.',
+    });
+  }
+
+  // Consulta para verificar si el administrador es válido
+  const queryAdmin = `
+    SELECT * FROM administrador
+    WHERE usuario = ? AND contrasena = ?
+    LIMIT 1
+  `;
+  db.query(queryAdmin, [correo, contrasenaAdmin], (err, results) => {
+    if (err) {
+      console.error('Error al verificar los datos del administrador:', err);
+      return res.status(500).json({
+        error: 'Error en el servidor al verificar el administrador.',
+        details: err.message,
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({
+        error: 'Los datos del administrador no son válidos o no existen.',
+      });
+    }
+
+    console.log('Administrador autenticado correctamente.');
+
+    // Comprobación de si el usuario ya existe en otras tablas
+    const checkUsuarioQueries = `
+      SELECT 'admin' AS tipo, usuario FROM administrador WHERE usuario = ?
+      UNION
+      SELECT 'departamento' AS tipo, usuario FROM departamentos WHERE usuario = ?
+      UNION
+      SELECT 'alumno' AS tipo, correo AS usuario FROM alumnos WHERE correo = ?
+    `;
+    db.query(checkUsuarioQueries, [usuario, usuario, usuario], (err, checkResults) => {
+      if (err) {
+        console.error('Error al verificar la disponibilidad del usuario:', err);
+        return res.status(500).json({
+          error: 'Error en el servidor al verificar el usuario.',
+          details: err.message,
+        });
+      }
+
+      if (checkResults.length > 0) {
+        const tipo = checkResults[0].tipo;
+        return res.status(400).json({
+          error: `El usuario ya está en uso por un ${tipo}.`,
+        });
+      }
+
+      // El usuario está disponible, proceder a insertar el nuevo departamento
+      const queryInsertDepartamento = `
+        INSERT INTO departamentos (nombre_departamento, usuario, contrasena, departamento_id, rol)
+        VALUES (?, ?, ?, ?, 'departamento')
+      `;
+      console.log('Datos que se insertarán en la base de datos:', {
+        nombre_departamento,
+        usuario,
+        contrasena,
+        departamento_id,
+      });
+
+      db.query(queryInsertDepartamento, [nombre_departamento, usuario, contrasena, departamento_id], (err, result) => {
+        if (err) {
+          console.error('Error al insertar el nuevo departamento:', err);
+          return res.status(500).json({
+            error: 'Error en el servidor al insertar el departamento.',
+            details: err.message,
+          });
+        }
+
+        console.log('Departamento creado exitosamente:', result);
+        res.status(201).json({
+          message: 'Departamento creado exitosamente.',
+          departamentoId: result.insertId,
+        });
+      });
+    });
+  });
+});
+
 
 
 // Sirve los archivos estáticos del proyecto Angular
