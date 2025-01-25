@@ -198,8 +198,8 @@ app.get('/admin/departamentos-no-autorizados', (req, res) => {
   });
 });
 
-
-// 📁 Configuración de multer para subir imágenes
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// configuracion de multer para subir imagenes
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, './uploads/'); // Carpeta donde se guardarán las imágenes
@@ -209,6 +209,73 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + path.extname(file.originalname)); // Nombre único para evitar colisiones
   }
 });
+const upload = multer({ storage: storage });
+
+// registrar alumnos
+
+app.post('/alumno/register', upload.single('foto'), (req, res) => {
+  const { nombre_completo, correo, telefono, no_control, contrasena } = req.body;
+  const foto = req.file ? req.file.filename : null; // Nombre de la imagen subida
+
+  // Verificar si el correo ya existe en la tabla `alumnos`
+  const checkAlumnoQuery = 'SELECT * FROM alumnos WHERE correo = ? OR no_control = ?';
+  db.query(checkAlumnoQuery, [correo, no_control], (err, result) => {
+    if (err) {
+      console.error('Error al verificar alumno:', err);
+      return res.status(500).json({ error: 'Error en el servidor al verificar el alumno' });
+    }
+
+    // Si se encuentra un alumno con el mismo correo o número de control
+    if (result.length > 0) {
+      return res.status(400).json({ error: 'El correo o número de control ya están registrados como alumno' });
+    }
+
+    // Verificar si el correo ya existe en la tabla `departamentos`
+    const checkDepartamentoQuery = 'SELECT * FROM departamentos WHERE usuario = ?';
+    db.query(checkDepartamentoQuery, [correo], (err, result) => {
+      if (err) {
+        console.error('Error al verificar departamento:', err);
+        return res.status(500).json({ error: 'Error en el servidor al verificar el departamento' });
+      }
+
+      // Si se encuentra un departamento con el mismo correo
+      if (result.length > 0) {
+        return res.status(400).json({ error: 'El correo ya está registrado como usuario de departamento' });
+      }
+
+      // Verificar si el correo ya existe en la tabla `administrador`
+      const checkAdminQuery = 'SELECT * FROM administrador WHERE usuario = ?';
+      db.query(checkAdminQuery, [correo], (err, result) => {
+        if (err) {
+          console.error('Error al verificar administrador:', err);
+          return res.status(500).json({ error: 'Error en el servidor al verificar el administrador' });
+        }
+
+        // Si se encuentra un administrador con el mismo correo
+        if (result.length > 0) {
+          return res.status(400).json({ error: 'El correo ya está registrado como usuario administrador' });
+        }
+
+        // Si no existen coincidencias, insertar el nuevo alumno
+        const insertAlumnoQuery = `
+          INSERT INTO alumnos (nombre_completo, correo, telefono, no_control, foto, contrasena, fecha_registro)
+          VALUES (?, ?, ?, ?, ?, ?, NOW())
+        `;
+
+        db.query(insertAlumnoQuery, [nombre_completo, correo, telefono, no_control, foto, contrasena], (err, result) => {
+          if (err) {
+            console.error('Error al registrar alumno:', err);
+            return res.status(500).json({ error: 'Error en el servidor al registrar el alumno' });
+          }
+
+          // Registro exitoso
+          res.status(201).json({ message: 'Alumno registrado exitosamente', alumnoId: result.insertId });
+        });
+      });
+    });
+  });
+});
+
 
 // Sirve los archivos estáticos del proyecto Angular
 app.use(express.static(path.join(__dirname, 'dist/no_adeudo/browser')));
