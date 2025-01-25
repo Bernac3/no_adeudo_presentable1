@@ -870,6 +870,99 @@ app.post('/admin/crear-departamento-admin', (req, res) => {
   });
 });
 
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Crear administrador desde admin (crear-admin)
+app.post('/admin/insertar-admin', (req, res) => {
+  const { usuario, contrasena } = req.body;
+
+  let authData;
+  try {
+    // Parsear los datos del encabezado de autorización
+    authData = JSON.parse(req.headers.authorization);
+  } catch (err) {
+    console.error('Error al parsear el encabezado de autorización:', err);
+    return res.status(400).json({
+      error: 'El encabezado de autorización no es válido.',
+      details: err.message,
+    });
+  }
+
+  if (!authData || !authData.usuario || !authData.contrasena) {
+    return res.status(400).json({
+      error: 'Faltan datos de autenticación del administrador actual.',
+    });
+  }
+
+  // Verificar credenciales del administrador actual
+  const queryAuth = `
+    SELECT * FROM administrador
+    WHERE usuario = ? AND contrasena = ?
+  `;
+  db.query(queryAuth, [authData.usuario, authData.contrasena], (error, results) => {
+    if (error) {
+      console.error('Error al verificar credenciales del administrador:', error);
+      return res.status(500).json({
+        error: 'Error interno del servidor al verificar el administrador.',
+        details: error.message,
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({
+        error: 'Credenciales del administrador no válidas.',
+      });
+    }
+
+    console.log('Administrador autenticado correctamente.');
+
+    // Comprobar si el usuario ya existe en las tablas
+    const checkUsuarioQuery = `
+      SELECT 'admin' AS tipo FROM administrador WHERE usuario = ?
+      UNION
+      SELECT 'departamento' AS tipo FROM departamentos WHERE usuario = ?
+      UNION
+      SELECT 'alumno' AS tipo FROM alumnos WHERE correo = ?
+    `;
+    db.query(checkUsuarioQuery, [usuario, usuario, usuario], (checkError, checkResults) => {
+      if (checkError) {
+        console.error('Error al verificar la disponibilidad del usuario:', checkError);
+        return res.status(500).json({
+          error: 'Error interno del servidor al verificar el usuario.',
+          details: checkError.message,
+        });
+      }
+
+      if (checkResults.length > 0) {
+        const tipo = checkResults[0].tipo;
+        return res.status(400).json({
+          error: `El usuario ya está en uso por un ${tipo}.`,
+        });
+      }
+
+      // Insertar nuevo administrador
+      const queryInsert = `
+        INSERT INTO administrador (usuario, contrasena, rol)
+        VALUES (?, ?, 'admin')
+      `;
+      db.query(queryInsert, [usuario, contrasena], (insertError, insertResults) => {
+        if (insertError) {
+          console.error('Error al insertar el administrador:', insertError);
+          return res.status(500).json({
+            error: 'Error interno del servidor al insertar el administrador.',
+            details: insertError.message,
+          });
+        }
+
+        console.log('Administrador creado exitosamente:', insertResults);
+        res.status(201).json({
+          success: true,
+          message: 'Administrador creado exitosamente.',
+        });
+      });
+    });
+  });
+});
+
 
 
 // Sirve los archivos estáticos del proyecto Angular

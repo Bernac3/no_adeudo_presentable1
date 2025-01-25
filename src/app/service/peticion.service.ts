@@ -15,7 +15,7 @@ export class PeticionesService {
 
   private apiUrlInsertarDepartamentosNoAutorizados = 'https://no-adeudo.onrender.com/admin/insertar-departamentos-no-autorizados';
 
-  private apiUrlInsertarAdmn = 'http://localhost:3000/api/insertar-admin'
+  private apiUrlInsertarAdmn = 'https://no-adeudo.onrender.com/admin/insertar-admin'
 
   constructor(private http: HttpClient) {}
 
@@ -49,7 +49,7 @@ export class PeticionesService {
 
     return this.http.post(`${this.apiUrlInsertarDepartamentosNoAutorizados}`, datosDepartamento, { headers });
   }
-  
+
   crearAdministrativo(datosAdmin: any, authData: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
