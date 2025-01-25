@@ -54,12 +54,19 @@ export class DepartamentosComponent implements OnInit {
   }
 
   permitirDepartamentoAutorizado(): void {
+    // const departamentoAutorizado = {
+    //   usuario: this.usuario,
+    //   contrasena: this.contrasena,
+    //   departamento: this.departamento,
+    //   departamentoId: this.departamentoId,
+    //   fechaRegistro: this.fechaRegistro
+    // };
     const departamentoAutorizado = {
-      usuario: this.usuario,
-      contrasena: this.contrasena,
-      departamento: this.departamento,
-      departamentoId: this.departamentoId,
-      fechaRegistro: this.fechaRegistro
+      usuario: 'luis',
+      contrasena: 'scarh123',
+      departamento: 'this.departamento',
+      departamentoId: 'this.departamentoId',
+      fechaRegistro: 'this.fechaRegistro'
     };
 
     const authData = {
