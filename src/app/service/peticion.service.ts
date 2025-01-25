@@ -13,7 +13,8 @@ export class PeticionesService {
 
   private apiUrlDepartamentosNoAutorizados = 'https://no-adeudo.onrender.com/admin/departamentos-no-autorizados';
 
-  private apiUrlInsertarDepartamentosNoAutorizados = 'http://localhost:3000/api/insertar-departamentos-no-autorizados';
+  private apiUrlInsertarDepartamentosNoAutorizados = 'https://no-adeudo.onrender.com/admin/insertar-departamentos-no-autorizados';
+
   private apiUrlInsertarAdmn = 'http://localhost:3000/api/insertar-admin'
 
   constructor(private http: HttpClient) {}
@@ -39,6 +40,7 @@ export class PeticionesService {
   obtenerDepartamentosNoAutorizados(): Observable<DepartamentosResponse> {
     return this.http.get<DepartamentosResponse>(this.apiUrlDepartamentosNoAutorizados);
   }
+
   insertarDepartamentoAutorizado(datosDepartamento: any, authData: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -47,6 +49,7 @@ export class PeticionesService {
 
     return this.http.post(`${this.apiUrlInsertarDepartamentosNoAutorizados}`, datosDepartamento, { headers });
   }
+  
   crearAdministrativo(datosAdmin: any, authData: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

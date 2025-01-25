@@ -651,6 +651,112 @@ app.post('/admin/eliminar-departamento-adm', (req, res) => {
   });
 });
 
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Insertar departamentos no autorizados (verificar departamento) admin
+app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
+  let authData;
+
+  try {
+    // Parseamos los datos del encabezado de autorización
+    authData = JSON.parse(req.headers.authorization);
+  } catch (err) {
+    console.error('Error al parsear el encabezado de autorización:', err);
+    return res.status(400).json({
+      error: 'El encabezado de autorización no es válido',
+      details: err.message,
+    });
+  }
+
+  const { correo, contrasena, tipo_usuario } = authData;
+  console.log('Datos de autenticación recibidos:', { correo, contrasena, tipo_usuario });
+
+  // Verificar si el usuario es administrador
+  if (tipo_usuario !== 'admin') {
+    return res.status(401).json({
+      error: 'No autorizado: Solo los administradores pueden realizar esta acción',
+    });
+  }
+
+  // Consulta para verificar al administrador
+  const queryAdmin = `
+    SELECT * FROM administrador
+    WHERE usuario = ? AND contrasena = ? AND rol = 'admin'
+  `;
+  console.log('Consulta para verificar administrador:', queryAdmin);
+
+  db.query(queryAdmin, [correo, contrasena], (err, adminResults) => {
+    if (err) {
+      console.error('Error al verificar administrador:', err);
+      return res.status(500).json({
+        error: 'Error al verificar administrador',
+        details: err.message,
+      });
+    }
+
+    if (adminResults.length === 0) {
+      return res.status(401).json({ error: 'Administrador no autorizado' });
+    }
+
+    console.log('Administrador autenticado correctamente:', adminResults);
+
+    // Datos del departamento a insertar
+    const { usuario: depUsuario, contrasena: depContrasena, departamento, departamentoId } = req.body;
+
+    // Inserción del departamento en la tabla `departamentos`
+    const queryInsertDepartamento = `
+      INSERT INTO departamentos (nombre_departamento, usuario, contrasena, departamento_id, rol)
+      VALUES (?, ?, ?, ?, 'departamento')
+    `;
+    console.log('Consulta para insertar departamento:', queryInsertDepartamento);
+
+    db.query(
+      queryInsertDepartamento,
+      [departamento, depUsuario, depContrasena, departamentoId],
+      (err, insertResults) => {
+        if (err) {
+          console.error('Error al insertar departamento:', err);
+          return res.status(500).json({
+            error: 'Error al insertar departamento',
+            details: err.message,
+          });
+        }
+
+        console.log('Departamento autorizado con éxito:', insertResults);
+
+        // Eliminación del registro en `departamentos_no_autorizados`
+        const queryDeleteDepartamentoNoAutorizado = `
+          DELETE FROM departamentos_no_autorizados
+          WHERE nombre_departamento = ? AND usuario = ? AND contrasena = ? AND departamento_id = ?
+        `;
+        console.log(
+          'Consulta para eliminar registro de departamentos_no_autorizados:',
+          queryDeleteDepartamentoNoAutorizado
+        );
+
+        db.query(
+          queryDeleteDepartamentoNoAutorizado,
+          [departamento, depUsuario, depContrasena, departamentoId],
+          (err, deleteResults) => {
+            if (err) {
+              console.error('Error al eliminar departamento de no autorizados:', err);
+              return res.status(500).json({
+                error: 'Error al eliminar departamento de no autorizados',
+                details: err.message,
+              });
+            }
+
+            console.log('Registro eliminado de departamentos_no_autorizados:', deleteResults);
+            res.status(201).json({
+              message: 'Departamento autorizado con éxito y eliminado de no autorizados',
+            });
+          }
+        );
+      }
+    );
+  });
+});
+
+
 
 // Sirve los archivos estáticos del proyecto Angular
 app.use(express.static(path.join(__dirname, 'dist/no_adeudo/browser')));
