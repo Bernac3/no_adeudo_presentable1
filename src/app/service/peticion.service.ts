@@ -9,7 +9,7 @@ import { DepartamentosResponse } from '../interfaces/departamentos-no-autorizado
 export class PeticionesService {
   private apiUrl = 'https://no-adeudo.onrender.com/departamento/insertar-peticion';  // API de inserción de peticiones
 
-  private apiUrlAdmin = 'https://no-adeudo-repositorio-1.onrender.com/admin/actualizar-peticion-Adm';  // API de inserción de peticiones
+  private apiUrlAdmin = 'https://no-adeudo.onrender.com/admin/actualizar-peticion-Adm';  // API de inserción de peticiones
 
   private apiUrlDepartamentosNoAutorizados = 'https://no-adeudo.onrender.com/admin/departamentos-no-autorizados';
 

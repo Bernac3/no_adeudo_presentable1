@@ -375,6 +375,121 @@ app.post('/departamento/insertar-peticion', (req, res) => {
   });
 });
 
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Petición para actualizar datos de un alumno (solo administradores)
+
+app.post('/admin/actualizar-peticion-Adm', (req, res) => {
+  // Recuperamos los datos del cuerpo de la solicitud
+  const datosAlumnoModalAdmin = req.body;
+  console.log('Datos del cuerpo de la solicitud:', datosAlumnoModalAdmin);
+
+  let user;
+  try {
+    // Verificar y parsear el encabezado de autorización
+    user = JSON.parse(req.headers.authorization);
+    console.log('Datos del usuario autenticado:', user);
+  } catch (err) {
+    console.error('Error al parsear el encabezado de autorización:', err);
+    return res.status(400).json({
+      mensaje: 'El encabezado de autorización no es válido',
+      error: err.message,
+    });
+  }
+
+  // Verificamos si el tipo de usuario es "Admin"
+  if (user.tipo_usuario !== 'admin') {
+    console.log('Acceso denegado: El tipo de usuario no es Admin');
+    return res.status(403).json({ mensaje: 'No autorizado, se requiere ser administrador' });
+  }
+
+  // Validar si el administrador existe en la base de datos
+  const queryAdmin = 'SELECT * FROM administrador WHERE usuario = ? AND contrasena = ?';
+  console.log('Verificando administrador:', queryAdmin, [user.correo, user.contrasena]);
+
+  db.query(queryAdmin, [user.correo, user.contrasena], (err, result) => {
+    if (err) {
+      console.error('Error al verificar el administrador:', err);
+      return res.status(500).json({
+        mensaje: 'Error al verificar el administrador',
+        error: err.message,
+      });
+    }
+
+    if (result.length === 0) {
+      console.log('Administrador no encontrado o contraseña incorrecta');
+      return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos' });
+    }
+
+    console.log('Administrador autenticado correctamente');
+
+    // Actualizar datos del alumno en la tabla `alumnos`
+    const updateAlumnoQuery = `
+      UPDATE alumnos
+      SET nombre_completo = ?, correo = ?, telefono = ?, contrasena = ?, fecha_registro = ?
+      WHERE no_control = ?
+    `;
+    console.log('Actualizando datos del alumno:', updateAlumnoQuery);
+
+    db.query(updateAlumnoQuery, [
+      datosAlumnoModalAdmin.alumnoNombre,
+      datosAlumnoModalAdmin.alumnoCorreo,
+      datosAlumnoModalAdmin.alumnoTelefono,
+      datosAlumnoModalAdmin.alumnoContrasena,
+      datosAlumnoModalAdmin.alumnoFechaRegistro,
+      datosAlumnoModalAdmin.alumnoNoControl,
+    ], (err, resultAlumno) => {
+      if (err) {
+        console.error('Error al actualizar datos del alumno:', err);
+        return res.status(500).json({
+          mensaje: 'Error al actualizar datos del alumno',
+          error: err.message,
+        });
+      }
+
+      console.log('Datos del alumno actualizados correctamente:', resultAlumno);
+
+      // Actualizar datos en la tabla `peticiones`
+      const updatePeticionQuery = `
+        UPDATE peticiones
+        SET estatus_administracion_y_finanzas = ?, estatus_centro_de_informacion = ?,
+            estatus_centro_de_computo = ?, estatus_recursos_materiales = ?,
+            estatus_departamento_de_vinculacion = ?, comentario_administracion_y_finanzas = ?,
+            comentario_centro_de_informacion = ?, comentario_centro_de_computo = ?,
+            comentario_recursos_materiales = ?, comentario_departamento_de_vinculacion = ?,
+            estatus_peticion = ?
+        WHERE no_control = ?
+      `;
+      console.log('Actualizando datos de la petición:', updatePeticionQuery);
+
+      db.query(updatePeticionQuery, [
+        datosAlumnoModalAdmin.alumnoEstatusAFModal,
+        datosAlumnoModalAdmin.alumnoEstatusCIModal,
+        datosAlumnoModalAdmin.alumnoEstatusCCModal,
+        datosAlumnoModalAdmin.alumnoEstatusRMModal,
+        datosAlumnoModalAdmin.alumnoEstatusDVModal,
+        datosAlumnoModalAdmin.alumnoComentarioAdministracionFinanzasModal,
+        datosAlumnoModalAdmin.alumnoComentarioCentroInformacionModal,
+        datosAlumnoModalAdmin.alumnoComentarioCentroComputo,
+        datosAlumnoModalAdmin.alumnoComentarioRecursosMateriales,
+        datosAlumnoModalAdmin.alumnoComentarioDepartamentoVinculacion,
+        'Pendiente',
+        datosAlumnoModalAdmin.alumnoNoControl,
+      ], (err, resultPeticion) => {
+        if (err) {
+          console.error('Error al actualizar datos de la petición:', err);
+          return res.status(500).json({
+            mensaje: 'Error al actualizar datos de la petición',
+            error: err.message,
+          });
+        }
+
+        console.log('Datos de la petición actualizados correctamente:', resultPeticion);
+        return res.status(200).json({ mensaje: 'Datos actualizados correctamente' });
+      });
+    });
+  });
+});
+
 
 
 // Sirve los archivos estáticos del proyecto Angular
