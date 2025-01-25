@@ -490,6 +490,166 @@ app.post('/admin/actualizar-peticion-Adm', (req, res) => {
   });
 });
 
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Guardar cambios departamento (gestionar departamento) desde admin
+app.post('/admin/guardar-departamento-adm', (req, res) => {
+  const departamento = req.body;
+
+  // Obtener datos del encabezado de autorización y parsearlos
+  let authData;
+  try {
+    authData = JSON.parse(req.headers.authorization);
+  } catch (err) {
+    console.error('Error al parsear el encabezado de autorización:', err);
+    return res.status(400).json({
+      error: 'El encabezado de autorización no es válido',
+      details: err.message,
+    });
+  }
+
+  const { usuario, contrasena, iddepartamentos } = departamento; // Datos del departamento
+  const { correo, contrasena: adminContrasena } = authData; // Datos del administrador
+
+  console.log('Datos recibidos del cuerpo de la solicitud:', departamento);
+  console.log('Datos de autenticación del administrador:', authData);
+
+  // Verificar si el administrador existe en la base de datos
+  const queryAdmin = `
+    SELECT * FROM administrador WHERE usuario = ? AND contrasena = ?
+  `;
+  console.log('Consulta para verificar administrador:', queryAdmin);
+  console.log('Parámetros de consulta del administrador:', [correo, adminContrasena]);
+
+  db.query(queryAdmin, [correo, adminContrasena], (error, results) => {
+    if (error) {
+      console.error('Error al verificar el administrador:', error);
+      return res.status(500).json({
+        error: 'Error al verificar las credenciales del administrador',
+        details: error.message,
+      });
+    }
+
+    if (results.length === 0) {
+      console.log('Administrador no encontrado.');
+      return res.status(404).json({ error: 'Administrador no encontrado' });
+    }
+
+    console.log('Administrador encontrado:', results);
+
+    // Si el administrador existe, realizar el UPDATE en la tabla `departamentos`
+    const queryUpdate = `
+      UPDATE departamentos
+      SET usuario = ?, contrasena = ?
+      WHERE iddepartamentos = ?
+    `;
+    console.log('Consulta para actualizar departamento:', queryUpdate);
+    console.log('Parámetros de consulta para actualización:', [usuario, contrasena, iddepartamentos]);
+
+    db.query(queryUpdate, [usuario, contrasena, iddepartamentos], (updateError, updateResults) => {
+      if (updateError) {
+        console.error('Error al actualizar el departamento:', updateError);
+        return res.status(500).json({
+          error: 'Error al actualizar el departamento',
+          details: updateError.message,
+        });
+      }
+
+      console.log('Resultado de la actualización del departamento:', updateResults);
+
+      if (updateResults.affectedRows === 0) {
+        console.log('No se actualizó ningún registro. Puede que el iddepartamentos no exista o los datos no coincidan.');
+        return res.status(404).json({
+          error: 'No se encontró el departamento o los datos no coinciden',
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Departamento actualizado correctamente',
+      });
+    });
+  });
+});
+
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Eliminar departamento (gestionar departamento) desde admin
+
+app.post('/admin/eliminar-departamento-adm', (req, res) => {
+  const { departamentoId } = req.body; // Extraemos directamente el ID del departamento desde el cuerpo
+  let authData;
+
+  try {
+    // Parseamos los datos del encabezado de autorización
+    authData = JSON.parse(req.headers.authorization);
+  } catch (err) {
+    console.error('Error al parsear el encabezado de autorización:', err);
+    return res.status(400).json({
+      error: 'El encabezado de autorización no es válido',
+      details: err.message,
+    });
+  }
+
+  const { correo, contrasena: adminContrasena } = authData; // Datos del administrador
+
+  console.log('Datos recibidos para eliminar departamento:', departamentoId);
+  console.log('Datos de autenticación del administrador:', authData);
+
+  // Verificar si el administrador existe en la base de datos
+  const queryAdmin = `
+    SELECT * FROM administrador WHERE usuario = ? AND contrasena = ?
+  `;
+  console.log('Consulta para verificar administrador:', queryAdmin);
+  console.log('Parámetros de consulta del administrador:', [correo, adminContrasena]);
+
+  db.query(queryAdmin, [correo, adminContrasena], (error, results) => {
+    if (error) {
+      console.error('Error al verificar el administrador:', error);
+      return res.status(500).json({
+        error: 'Error al verificar las credenciales del administrador',
+        details: error.message,
+      });
+    }
+
+    if (results.length === 0) {
+      console.log('Administrador no encontrado.');
+      return res.status(404).json({ error: 'Administrador no encontrado' });
+    }
+
+    console.log('Administrador encontrado:', results);
+
+    // Si el administrador es válido, proceder con la eliminación del departamento
+    const queryDelete = `
+      DELETE FROM departamentos
+      WHERE iddepartamentos = ?
+    `;
+    console.log('Consulta para eliminar departamento:', queryDelete);
+    console.log('Parámetros de consulta para eliminación:', [departamentoId]);
+
+    db.query(queryDelete, [departamentoId], (deleteError, deleteResults) => {
+      if (deleteError) {
+        console.error('Error al eliminar el departamento:', deleteError);
+        return res.status(500).json({
+          error: 'Error al eliminar el departamento',
+          details: deleteError.message,
+        });
+      }
+
+      console.log('Resultado de la eliminación del departamento:', deleteResults);
+
+      if (deleteResults.affectedRows === 0) {
+        console.log('No se encontró el departamento con el id proporcionado.');
+        return res.status(404).json({
+          error: 'No se encontró el departamento',
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Departamento eliminado correctamente',
+      });
+    });
+  });
+});
 
 
 // Sirve los archivos estáticos del proyecto Angular
