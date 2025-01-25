@@ -293,6 +293,88 @@ app.post('/alumno/register', upload.single('foto'), (req, res) => {
   });
 });
 
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Ruta para insertar peticion (desde departamento)
+app.post('/departamento/insertar-peticion', (req, res) => {
+  const {
+    alumnoNoControl,
+    peticionEstatus,
+    adeudoEstado,
+    usuarioDepartamento,
+    usuarioDepartamentoId,
+    alumnoComentario // Comentario del alumno
+  } = req.body;
+
+  // Verificar si el alumno existe
+  const queryAlumno = `SELECT * FROM alumnos WHERE no_control = ?`;
+  db.query(queryAlumno, [alumnoNoControl], (err, alumnoResults) => {
+    if (err) {
+      console.error('Error al verificar el alumno:', err);
+      return res.status(500).json({ error: 'Error al verificar el alumno' });
+    }
+
+    if (alumnoResults.length === 0) {
+      return res.status(404).json({ error: 'Alumno no encontrado' });
+    }
+
+    // Verificar si el usuario del departamento existe y tiene el rol adecuado
+    const queryDepartamento = `SELECT * FROM departamentos WHERE usuario = ? AND departamento_id = ?`;
+    db.query(queryDepartamento, [usuarioDepartamento, usuarioDepartamentoId], (err, departamentoResults) => {
+      if (err) {
+        console.error('Error al verificar el departamento:', err);
+        return res.status(500).json({ error: 'Error al verificar el departamento' });
+      }
+
+      if (departamentoResults.length === 0) {
+        return res.status(404).json({ error: 'Departamento no encontrado o no tiene los permisos adecuados' });
+      }
+
+      // Determinar la columna de comentario basada en el departamento
+      let columnaComentario = '';
+      switch (usuarioDepartamentoId) {
+        case 'administracion_finanzas':
+          columnaComentario = 'comentario_administracion_y_finanzas';
+          break;
+        case 'centro_informacion':
+          columnaComentario = 'comentario_centro_de_informacion';
+          break;
+        case 'centro_computo':
+          columnaComentario = 'comentario_centro_de_computo';
+          break;
+        case 'recursos_materiales':
+          columnaComentario = 'comentario_recursos_materiales';
+          break;
+        case 'departamento_vinculacion':
+          columnaComentario = 'comentario_departamento_de_vinculacion';
+          break;
+        default:
+          return res.status(400).json({ error: 'Departamento no válido' });
+      }
+
+      // Si todo es correcto, proceder a actualizar la tabla `peticiones`
+      const queryUpdatePeticion = `
+        UPDATE peticiones
+        SET ${peticionEstatus} = ?, ${columnaComentario} = ?, estatus_peticion = 'Actualizado'
+        WHERE no_control = ?
+      `;
+
+      // Ejecutar la consulta para actualizar el estado y el comentario
+      db.query(queryUpdatePeticion, [adeudoEstado, alumnoComentario, alumnoNoControl], (err, result) => {
+        if (err) {
+          console.error('Error al actualizar la petición:', err);
+          return res.status(500).json({ error: 'Error al actualizar la petición' });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'No se encontró la petición para actualizar' });
+        }
+
+        res.status(200).json({ message: 'Petición actualizada correctamente' });
+      });
+    });
+  });
+});
+
 
 
 // Sirve los archivos estáticos del proyecto Angular
