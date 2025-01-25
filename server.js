@@ -759,7 +759,7 @@ app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // Crear departamento desde admin (crear-departamento)
 
-app.post('/api/crear-departamento-admin', (req, res) => {
+app.post('/admin/crear-departamento-admin', (req, res) => {
   console.log('Datos recibidos en el cuerpo de la solicitud (req.body):', req.body);
 
   // Desestructuramos los valores del cuerpo de la solicitud
