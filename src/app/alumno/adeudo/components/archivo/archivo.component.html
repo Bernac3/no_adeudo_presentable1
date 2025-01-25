@@ -66,66 +66,96 @@
                   <tr>
                     <td class="p-4">ADMINISTRACIÓN Y FINANZAS</td>
                     <td class="p-4 d-flex justify-content-center align-items-center text-center">
-                      <p [ngClass]="{
-                            'btn-warning': alumno?.estatus_administracion_y_finanzas === 'Pendiente',
-                            'btn-danger': alumno?.estatus_administracion_y_finanzas === 'Con Adeudo',
-                            'btn-success': alumno?.estatus_administracion_y_finanzas === 'Sin Adeudo',
-                            'btn-secondary': !alumno?.estatus_administracion_y_finanzas
-                          }" class="m-0 py-2 px-3 rounded">
+                      <div
+                        [ngClass]="{
+                          'btn': true,
+                          'btn-toggle': true,
+                          'btn-warning': alumno?.estatus_administracion_y_finanzas === 'Pendiente',
+                          'btn-danger': alumno?.estatus_administracion_y_finanzas === 'Con Adeudo',
+                          'btn-success': alumno?.estatus_administracion_y_finanzas === 'Sin Adeudo',
+                          'btn-secondary': !alumno?.estatus_administracion_y_finanzas
+                        }"
+                        [style.pointer-events]="'none'"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         {{ alumno?.estatus_administracion_y_finanzas || 'Sin información' }}
-                      </p>
+                      </div>
                     </td>
                   </tr>
                   <tr>
                     <td class="p-4">CENTRO DE INFORMACIÓN</td>
                     <td class="p-4 d-flex justify-content-center align-items-center text-center">
-                      <p [ngClass]="{
-                            'btn-warning': alumno?.estatus_centro_de_informacion === 'Pendiente',
-                            'btn-danger': alumno?.estatus_centro_de_informacion === 'Con Adeudo',
-                            'btn-success': alumno?.estatus_centro_de_informacion === 'Sin Adeudo',
-                            'btn-secondary': !alumno?.estatus_centro_de_informacion
-                          }" class="m-0 py-2 px-3 rounded">
+                      <div
+                        [ngClass]="{
+                          'btn': true,
+                          'btn-toggle': true,
+                          'btn-warning': alumno?.estatus_centro_de_informacion === 'Pendiente',
+                          'btn-danger': alumno?.estatus_centro_de_informacion === 'Con Adeudo',
+                          'btn-success': alumno?.estatus_centro_de_informacion === 'Sin Adeudo',
+                          'btn-secondary': !alumno?.estatus_centro_de_informacion
+                        }"
+                        [style.pointer-events]="'none'"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         {{ alumno?.estatus_centro_de_informacion || 'Sin información' }}
-                      </p>
+                      </div>
                     </td>
                   </tr>
                   <tr>
                     <td class="p-4">CENTRO DE COMPUTO</td>
                     <td class="p-4 d-flex justify-content-center align-items-center text-center">
-                      <p [ngClass]="{
-                            'btn-warning': alumno?.estatus_centro_de_computo === 'Pendiente',
-                            'btn-danger': alumno?.estatus_centro_de_computo === 'Con Adeudo',
-                            'btn-success': alumno?.estatus_centro_de_computo === 'Sin Adeudo',
-                            'btn-secondary': !alumno?.estatus_centro_de_computo
-                          }" class="m-0 py-2 px-3 rounded">
+                      <div
+                        [ngClass]="{
+                          'btn': true,
+                          'btn-toggle': true,
+                          'btn-warning': alumno?.estatus_centro_de_computo === 'Pendiente',
+                          'btn-danger': alumno?.estatus_centro_de_computo === 'Con Adeudo',
+                          'btn-success': alumno?.estatus_centro_de_computo === 'Sin Adeudo',
+                          'btn-secondary': !alumno?.estatus_centro_de_computo
+                        }"
+                        [style.pointer-events]="'none'"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         {{ alumno?.estatus_centro_de_computo || 'Sin información' }}
-                      </p>
+                      </div>
                     </td>
                   </tr>
                   <tr>
                     <td class="p-4">RECURSOS MATERIALES</td>
                     <td class="p-4 d-flex justify-content-center align-items-center text-center">
-                      <p [ngClass]="{
-                            'btn-warning': alumno?.estatus_recursos_materiales === 'Pendiente',
-                            'btn-danger': alumno?.estatus_recursos_materiales === 'Con Adeudo',
-                            'btn-success': alumno?.estatus_recursos_materiales === 'Sin Adeudo',
-                            'btn-secondary': !alumno?.estatus_recursos_materiales
-                          }" class="m-0 py-2 px-3 rounded">
+                      <div
+                        [ngClass]="{
+                          'btn': true,
+                          'btn-toggle': true,
+                          'btn-warning': alumno?.estatus_recursos_materiales === 'Pendiente',
+                          'btn-danger': alumno?.estatus_recursos_materiales === 'Con Adeudo',
+                          'btn-success': alumno?.estatus_recursos_materiales === 'Sin Adeudo',
+                          'btn-secondary': !alumno?.estatus_recursos_materiales
+                        }"
+                        [style.pointer-events]="'none'"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         {{ alumno?.estatus_recursos_materiales || 'Sin información' }}
-                      </p>
+                      </div>
                     </td>
                   </tr>
                   <tr>
                     <td class="p-4">DEPARTAMENTO DE VINCULACIÓN</td>
                     <td class="p-4 d-flex justify-content-center align-items-center text-center">
-                      <p [ngClass]="{
-                            'btn-warning': alumno?.estatus_departamento_de_vinculacion === 'Pendiente',
-                            'btn-danger': alumno?.estatus_departamento_de_vinculacion === 'Con Adeudo',
-                            'btn-success': alumno?.estatus_departamento_de_vinculacion === 'Sin Adeudo',
-                            'btn-secondary': !alumno?.estatus_departamento_de_vinculacion
-                          }" class="m-0 py-2 px-3 rounded">
+                      <div
+                        [ngClass]="{
+                          'btn': true,
+                          'btn-toggle': true,
+                          'btn-warning': alumno?.estatus_departamento_de_vinculacion === 'Pendiente',
+                          'btn-danger': alumno?.estatus_departamento_de_vinculacion === 'Con Adeudo',
+                          'btn-success': alumno?.estatus_departamento_de_vinculacion === 'Sin Adeudo',
+                          'btn-secondary': !alumno?.estatus_departamento_de_vinculacion
+                        }"
+                        [style.pointer-events]="'none'"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         {{ alumno?.estatus_departamento_de_vinculacion || 'Sin información' }}
-                      </p>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
