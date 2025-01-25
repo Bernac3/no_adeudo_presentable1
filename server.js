@@ -198,6 +198,8 @@ app.get('/admin/departamentos-no-autorizados', (req, res) => {
   });
 });
 
+
+
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // configuracion de multer para subir imagenes
 const storage = multer.diskStorage({
@@ -211,8 +213,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// registrar alumnos
-
+// Registrar alumnos
 app.post('/alumno/register', upload.single('foto'), (req, res) => {
   const { nombre_completo, correo, telefono, no_control, contrasena } = req.body;
   const foto = req.file ? req.file.filename : null; // Nombre de la imagen subida
@@ -262,19 +263,36 @@ app.post('/alumno/register', upload.single('foto'), (req, res) => {
           VALUES (?, ?, ?, ?, ?, ?, NOW())
         `;
 
+        // Insertar también el no_control en la tabla peticiones
+        const insertAlumnoQueryPeticion = `
+          INSERT INTO peticiones (no_control) VALUES (?)
+        `;
+
         db.query(insertAlumnoQuery, [nombre_completo, correo, telefono, no_control, foto, contrasena], (err, result) => {
           if (err) {
             console.error('Error al registrar alumno:', err);
             return res.status(500).json({ error: 'Error en el servidor al registrar el alumno' });
           }
 
-          // Registro exitoso
-          res.status(201).json({ message: 'Alumno registrado exitosamente', alumnoId: result.insertId });
+          // Insertar en la tabla peticiones después de registrar al alumno
+          db.query(insertAlumnoQueryPeticion, [no_control], (err) => {
+            if (err) {
+              console.error('Error al insertar no_control en la tabla peticiones:', err);
+              return res.status(500).json({ error: 'Error en el servidor al registrar la petición del alumno' });
+            }
+
+            // Registro exitoso
+            res.status(201).json({
+              message: 'Alumno registrado exitosamente y petición creada',
+              alumnoId: result.insertId
+            });
+          });
         });
       });
     });
   });
 });
+
 
 
 // Sirve los archivos estáticos del proyecto Angular
