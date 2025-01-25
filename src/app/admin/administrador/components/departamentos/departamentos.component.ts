@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { PeticionesService } from '../../../../service/peticion.service';
 import { DepartamentosResponse } from '../../../../interfaces/departamentos-no-autorizados-interfade';
 
-
 @Component({
   selector: 'app-departamentos',
   templateUrl: './departamentos.component.html',
@@ -10,11 +9,6 @@ import { DepartamentosResponse } from '../../../../interfaces/departamentos-no-a
 })
 export class DepartamentosComponent implements OnInit {
   departamentos: any[] = [];
-  usuario: string = '';
-  contrasena: string = '';
-  departamento: string = '';
-  departamentoId: string = '';
-  fechaRegistro: string = '';
 
   departamentoSeleccionado: any = {
     usuario: '',
@@ -33,7 +27,6 @@ export class DepartamentosComponent implements OnInit {
   obtenerDepartamentosNoAutorizados(): void {
     this.peticionesService.obtenerDepartamentosNoAutorizados().subscribe(
       (response: DepartamentosResponse) => {
-        // Extrae la propiedad "departamentosNoAutorizados"
         this.departamentos = response.departamentosNoAutorizados || [];
         console.log('Departamentos actualizados:', this.departamentos);
       },
@@ -54,19 +47,13 @@ export class DepartamentosComponent implements OnInit {
   }
 
   permitirDepartamentoAutorizado(): void {
-    // const departamentoAutorizado = {
-    //   usuario: this.usuario,
-    //   contrasena: this.contrasena,
-    //   departamento: this.departamento,
-    //   departamentoId: this.departamentoId,
-    //   fechaRegistro: this.fechaRegistro
-    // };
+    // Obtenemos los datos directamente del objeto departamentoSeleccionado
     const departamentoAutorizado = {
-      usuario: 'luis',
-      contrasena: 'scarh123',
-      departamento: 'this.departamento',
-      departamentoId: 'this.departamentoId',
-      fechaRegistro: 'this.fechaRegistro'
+      usuario: this.departamentoSeleccionado.usuario,
+      contrasena: this.departamentoSeleccionado.contrasena,
+      departamento: this.departamentoSeleccionado.nombre_departamento,
+      departamentoId: this.departamentoSeleccionado.departamento_id,
+      fechaRegistro: this.departamentoSeleccionado.fecha_registro
     };
 
     const authData = {
