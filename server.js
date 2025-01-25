@@ -214,84 +214,140 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Registrar alumnos
-app.post('/alumno/register', upload.single('foto'), (req, res) => {
-  const { nombre_completo, correo, telefono, no_control, contrasena } = req.body;
-  const foto = req.file ? req.file.filename : null; // Nombre de la imagen subida
 
-  // Verificar si el correo ya existe en la tabla `alumnos`
-  const checkAlumnoQuery = 'SELECT * FROM alumnos WHERE correo = ? OR no_control = ?';
-  db.query(checkAlumnoQuery, [correo, no_control], (err, result) => {
-    if (err) {
-      console.error('Error al verificar alumno:', err);
-      return res.status(500).json({ error: 'Error en el servidor al verificar el alumno' });
-    }
+const AWS = require('aws-sdk');
 
-    // Si se encuentra un alumno con el mismo correo o número de control
-    if (result.length > 0) {
-      return res.status(400).json({ error: 'El correo o número de control ya están registrados como alumno' });
-    }
-
-    // Verificar si el correo ya existe en la tabla `departamentos`
-    const checkDepartamentoQuery = 'SELECT * FROM departamentos WHERE usuario = ?';
-    db.query(checkDepartamentoQuery, [correo], (err, result) => {
-      if (err) {
-        console.error('Error al verificar departamento:', err);
-        return res.status(500).json({ error: 'Error en el servidor al verificar el departamento' });
-      }
-
-      // Si se encuentra un departamento con el mismo correo
-      if (result.length > 0) {
-        return res.status(400).json({ error: 'El correo ya está registrado como usuario de departamento' });
-      }
-
-      // Verificar si el correo ya existe en la tabla `administrador`
-      const checkAdminQuery = 'SELECT * FROM administrador WHERE usuario = ?';
-      db.query(checkAdminQuery, [correo], (err, result) => {
-        if (err) {
-          console.error('Error al verificar administrador:', err);
-          return res.status(500).json({ error: 'Error en el servidor al verificar el administrador' });
-        }
-
-        // Si se encuentra un administrador con el mismo correo
-        if (result.length > 0) {
-          return res.status(400).json({ error: 'El correo ya está registrado como usuario administrador' });
-        }
-
-        // Si no existen coincidencias, insertar el nuevo alumno
-        const insertAlumnoQuery = `
-          INSERT INTO alumnos (nombre_completo, correo, telefono, no_control, foto, contrasena, fecha_registro)
-          VALUES (?, ?, ?, ?, ?, ?, NOW())
-        `;
-
-        // Insertar también el no_control en la tabla peticiones
-        const insertAlumnoQueryPeticion = `
-          INSERT INTO peticiones (no_control) VALUES (?)
-        `;
-
-        db.query(insertAlumnoQuery, [nombre_completo, correo, telefono, no_control, foto, contrasena], (err, result) => {
-          if (err) {
-            console.error('Error al registrar alumno:', err);
-            return res.status(500).json({ error: 'Error en el servidor al registrar el alumno' });
-          }
-
-          // Insertar en la tabla peticiones después de registrar al alumno
-          db.query(insertAlumnoQueryPeticion, [no_control], (err) => {
-            if (err) {
-              console.error('Error al insertar no_control en la tabla peticiones:', err);
-              return res.status(500).json({ error: 'Error en el servidor al registrar la petición del alumno' });
-            }
-
-            // Registro exitoso
-            res.status(201).json({
-              message: 'Alumno registrado exitosamente y petición creada',
-              alumnoId: result.insertId
-            });
-          });
-        });
-      });
-    });
-  });
+// Configuración de AWS S3
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
 });
+
+app.post('/alumno/register', upload.single('foto'), async (req, res) => {
+  const { nombre_completo, correo, telefono, no_control, contrasena } = req.body;
+  const foto = req.file;
+
+  // Verifica si se subió un archivo
+  if (!foto) {
+    return res.status(400).json({ error: 'La foto es obligatoria' });
+  }
+
+  // Configura los parámetros para subir la foto a S3
+  const uploadParams = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: `uploads/${Date.now()}-${foto.originalname}`,
+    Body: foto.buffer,
+    ContentType: foto.mimetype,
+  };
+
+  try {
+    // Sube la foto a S3
+    const result = await s3.upload(uploadParams).promise();
+    console.log('Foto subida a S3:', result.Location);
+
+    // Aquí puedes seguir con el resto del proceso (insertar en la BD)
+    const insertAlumnoQuery = `
+      INSERT INTO alumnos (nombre_completo, correo, telefono, no_control, foto, contrasena, fecha_registro)
+      VALUES (?, ?, ?, ?, ?, ?, NOW())
+    `;
+    db.query(
+      insertAlumnoQuery,
+      [nombre_completo, correo, telefono, no_control, result.Location, contrasena],
+      (err, result) => {
+        if (err) {
+          console.error('Error al registrar alumno:', err);
+          return res.status(500).json({ error: 'Error en el servidor al registrar el alumno' });
+        }
+
+        res.status(201).json({ message: 'Alumno registrado exitosamente', alumnoId: result.insertId });
+      }
+    );
+  } catch (err) {
+    console.error('Error al subir la foto a S3:', err);
+    res.status(500).json({ error: 'Error al subir la foto' });
+  }
+});
+
+
+// app.post('/alumno/register', upload.single('foto'), (req, res) => {
+//   const { nombre_completo, correo, telefono, no_control, contrasena } = req.body;
+//   const foto = req.file ? req.file.filename : null; // Nombre de la imagen subida
+
+//   // Verificar si el correo ya existe en la tabla `alumnos`
+//   const checkAlumnoQuery = 'SELECT * FROM alumnos WHERE correo = ? OR no_control = ?';
+//   db.query(checkAlumnoQuery, [correo, no_control], (err, result) => {
+//     if (err) {
+//       console.error('Error al verificar alumno:', err);
+//       return res.status(500).json({ error: 'Error en el servidor al verificar el alumno' });
+//     }
+
+//     // Si se encuentra un alumno con el mismo correo o número de control
+//     if (result.length > 0) {
+//       return res.status(400).json({ error: 'El correo o número de control ya están registrados como alumno' });
+//     }
+
+//     // Verificar si el correo ya existe en la tabla `departamentos`
+//     const checkDepartamentoQuery = 'SELECT * FROM departamentos WHERE usuario = ?';
+//     db.query(checkDepartamentoQuery, [correo], (err, result) => {
+//       if (err) {
+//         console.error('Error al verificar departamento:', err);
+//         return res.status(500).json({ error: 'Error en el servidor al verificar el departamento' });
+//       }
+
+//       // Si se encuentra un departamento con el mismo correo
+//       if (result.length > 0) {
+//         return res.status(400).json({ error: 'El correo ya está registrado como usuario de departamento' });
+//       }
+
+//       // Verificar si el correo ya existe en la tabla `administrador`
+//       const checkAdminQuery = 'SELECT * FROM administrador WHERE usuario = ?';
+//       db.query(checkAdminQuery, [correo], (err, result) => {
+//         if (err) {
+//           console.error('Error al verificar administrador:', err);
+//           return res.status(500).json({ error: 'Error en el servidor al verificar el administrador' });
+//         }
+
+//         // Si se encuentra un administrador con el mismo correo
+//         if (result.length > 0) {
+//           return res.status(400).json({ error: 'El correo ya está registrado como usuario administrador' });
+//         }
+
+//         // Si no existen coincidencias, insertar el nuevo alumno
+//         const insertAlumnoQuery = `
+//           INSERT INTO alumnos (nombre_completo, correo, telefono, no_control, foto, contrasena, fecha_registro)
+//           VALUES (?, ?, ?, ?, ?, ?, NOW())
+//         `;
+
+//         // Insertar también el no_control en la tabla peticiones
+//         const insertAlumnoQueryPeticion = `
+//           INSERT INTO peticiones (no_control) VALUES (?)
+//         `;
+
+//         db.query(insertAlumnoQuery, [nombre_completo, correo, telefono, no_control, foto, contrasena], (err, result) => {
+//           if (err) {
+//             console.error('Error al registrar alumno:', err);
+//             return res.status(500).json({ error: 'Error en el servidor al registrar el alumno' });
+//           }
+
+//           // Insertar en la tabla peticiones después de registrar al alumno
+//           db.query(insertAlumnoQueryPeticion, [no_control], (err) => {
+//             if (err) {
+//               console.error('Error al insertar no_control en la tabla peticiones:', err);
+//               return res.status(500).json({ error: 'Error en el servidor al registrar la petición del alumno' });
+//             }
+
+//             // Registro exitoso
+//             res.status(201).json({
+//               message: 'Alumno registrado exitosamente y petición creada',
+//               alumnoId: result.insertId
+//             });
+//           });
+//         });
+//       });
+//     });
+//   });
+// });
 
 
 
