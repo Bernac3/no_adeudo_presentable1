@@ -1057,6 +1057,112 @@ app.post('/admin/eliminar-alumno-adm', (req, res) => {
   });
 });
 
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Ruta para registrar departamentos
+app.post('/departamento/register-departamento', uploads.none(), (req, res) => {
+  const { nombre_completo, contrasena, tipo_usuario, fecha_registro } = req.body;
+
+  const usuario = nombre_completo; // Renombrar nombre_completo a usuario
+  const departamento_id = tipo_usuario; // Renombrar tipo_usuario a departamento_id
+
+  console.log('Datos recibidos en el servidor:', {
+    usuario,
+    contrasena,
+    departamento_id,
+    fecha_registro,
+  });
+
+  // Verificar que todos los campos estén presentes
+  if (!usuario || !contrasena || !departamento_id || !fecha_registro) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+  }
+
+  // Verificar si el usuario ya existe en otras tablas
+  const checkUsuarioQuery = `
+    SELECT 'administrador' AS origen FROM administrador WHERE usuario = ?
+    UNION
+    SELECT 'departamentos' AS origen FROM departamentos WHERE usuario = ?
+    UNION
+    SELECT 'alumnos' AS origen FROM alumnos WHERE correo = ?
+    UNION
+    SELECT 'departamentos_no_autorizados' AS origen FROM departamentos_no_autorizados WHERE usuario = ?
+  `;
+
+  db.query(checkUsuarioQuery, [usuario, usuario, usuario, usuario], (err, results) => {
+    if (err) {
+      console.error('Error al verificar la existencia del usuario:', err);
+      return res.status(500).json({ error: 'Error en el servidor al verificar el usuario.' });
+    }
+
+    // Verificar si el usuario ya está en uso
+    if (results.length > 0) {
+      const origen = results[0].origen;
+      let mensaje = '';
+
+      switch (origen) {
+        case 'administrador':
+          mensaje = 'El usuario ya está en uso por un administrador.';
+          break;
+        case 'departamentos':
+          mensaje = 'El usuario ya está en uso por un departamento.';
+          break;
+        case 'alumnos':
+          mensaje = 'El correo ya está en uso por un alumno.';
+          break;
+        case 'departamentos_no_autorizados':
+          mensaje = 'El usuario ya está en uso.';
+          break;
+        default:
+          mensaje = 'El usuario ya está en uso.';
+      }
+
+      return res.status(400).json({ error: mensaje });
+    }
+
+    // Asignar nombre del departamento según el departamento_id
+    let nombre_departamento = '';
+    switch (departamento_id) {
+      case 'administracion_finanzas':
+        nombre_departamento = 'Administración y Finanzas';
+        break;
+      case 'centro_informacion':
+        nombre_departamento = 'Centro de Información';
+        break;
+      case 'centro_computo':
+        nombre_departamento = 'Centro de Cómputo';
+        break;
+      case 'recursos_materiales':
+        nombre_departamento = 'Recursos Materiales';
+        break;
+      case 'departamento_vinculacion':
+        nombre_departamento = 'Departamento de Vinculación';
+        break;
+      default:
+        return res.status(400).json({ error: 'El departamento_id proporcionado no es válido.' });
+    }
+
+    // Insertar el registro en la tabla departamentos_no_autorizados
+    const insertQuery = `
+      INSERT INTO departamentos_no_autorizados
+      (nombre_departamento, usuario, contrasena, departamento_id, fecha_registro)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    db.query(insertQuery, [nombre_departamento, usuario, contrasena, departamento_id, fecha_registro], (err, result) => {
+      if (err) {
+        console.error('Error al registrar el departamento:', err);
+        return res.status(500).json({ error: 'Error en el servidor al registrar el departamento.' });
+      }
+
+      console.log('Departamento registrado exitosamente:', result);
+
+      res.status(201).json({
+        message:
+          'Petición exitosa. Es necesario que el personal encargado del sitio autorice su cuenta para poder iniciar sesión.',
+      });
+    });
+  });
+});
 
 
 // Sirve los archivos estáticos del proyecto Angular
