@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { CrearDepartamentoComponent } from './administrador/components/crear-departamento/crear-departamento.component';
 import { GestionDepartamentoComponent } from './administrador/components/gestion-departamento/gestion-departamento.component';
 import { CrearAdminComponent } from './administrador/components/crear-admin/crear-admin.component';
+import { InfoComponent } from './administrador/components/info/info.component';
 
 
 
@@ -21,6 +22,7 @@ import { CrearAdminComponent } from './administrador/components/crear-admin/crea
     CrearDepartamentoComponent,
     GestionDepartamentoComponent,
     CrearAdminComponent,
+    InfoComponent,
   ],
   imports: [
     CommonModule,

@@ -7,6 +7,7 @@ import { DepartamentosComponent } from './administrador/components/departamentos
 import { CrearDepartamentoComponent } from './administrador/components/crear-departamento/crear-departamento.component';
 import { GestionDepartamentoComponent } from './administrador/components/gestion-departamento/gestion-departamento.component';
 import { CrearAdminComponent } from './administrador/components/crear-admin/crear-admin.component';
+import { InfoComponent } from './administrador/components/info/info.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,10 @@ const routes: Routes = [
         path: 'crear-admin',
         component: CrearAdminComponent
       },
+      {
+        path: 'info-admin',
+        component: InfoComponent
+      }
 
     ]
   }
