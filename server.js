@@ -965,7 +965,7 @@ app.post('/admin/insertar-admin', (req, res) => {
 
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // Eliminar Alumno desde Admin
-app.post('/api/eliminar-alumno-adm', (req, res) => {
+app.post('/admin/eliminar-alumno-adm', (req, res) => {
   const { alumnoId } = req.body; // ID del alumno (no_control)
   let authData;
 
