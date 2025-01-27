@@ -1,1 +1,78 @@
-<p>info works!</p>
+<div class="container mt-5 home-container">
+  <div class="card">
+    <div class="card-header bg-primary text-white text-center">
+      <h2 class="text-center">Información</h2>
+    </div>
+    <div class="card-body">
+      <div class="container mt-5">
+        <div class="card-body">
+          <h5 class="text-center mt-4">Manual de Uso</h5>
+          <p>
+            Este formato incluye varios elementos que permiten al usuario determinar el estado de no adeudo de los alumnos de manera eficiente:
+          </p>
+          <ol>
+            <li>
+              <strong>Lista de Alumnos:</strong> En este apartado se encuentra la ventana principal denominada <em>"Lista de Alumnos"</em>, la cual consta de dos componentes principales:
+              <ul>
+                <li>
+                  <strong>Buscador:</strong> Diseñado para buscar alumnos registrados en la lista. Incluye un menú desplegable con las siguientes opciones de búsqueda:
+                  <ul>
+                    <li><em>Por Nombre A-Z:</em> Ordena los nombres de los alumnos en orden alfabético ascendente.</li>
+                    <li><em>Por Nombre Z-A:</em> Ordena los nombres en orden alfabético descendente.</li>
+                    <li><em>Nuevas Peticiones:</em> Ordena las solicitudes por fecha más reciente, haciendo referencia a la fecha de creación de la petición.</li>
+                    <li><em>Antiguas Peticiones:</em> Ordena las solicitudes por las fechas más antiguas.</li>
+                  </ul>
+                  Además del menú desplegable, se incluye un buscador que permite buscar alumnos por su nombre, correo electrónico o número de control. Este buscador es dinámico, ofreciendo resultados en tiempo real mientras se escribe.
+                </li>
+                <li>
+                  <strong>Tabla de Alumnos:</strong> Esta tabla muestra la información registrada por los alumnos. Incluye seis datos visibles, además de un botón que despliega una ventana modal (<em>"Ver Alumno"</em>). Dependiendo de la resolución de la pantalla, se pueden mostrar hasta tres datos principales: nombre, número de control y el botón <em>"Ver Alumno"</em>.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Ventana de Información del Alumno (Modal):</strong> El modal proporciona todos los datos necesarios para la correcta identificación del alumno, mostrando la misma información previamente visible en la tabla. Además, incluye herramientas para establecer el estado de adeudo del alumno.
+              <p>En la parte inferior de la ventana se encuentran:</p>
+              <ul>
+                <li><strong>Botones de Estado:</strong> <em>"Sin Adeudos"</em> y <em>"Con Adeudos"</em>. Estos botones permiten determinar el estado del adeudo del alumno. Inicialmente, el estado de todos los alumnos es <em>Pendiente</em>. Al seleccionar una de estas opciones, se define su estado.</li>
+                <li><strong>Área de Comentarios:</strong> Un campo opcional para agregar notas o comentarios relevantes que complementen el estado de adeudo, proporcionando mayor claridad en la respuesta al alumno.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Botones Inferiores del Modal (Guardar y Cerrar):</strong> Estos botones son esenciales para concretar el establecimiento del estado de adeudo del alumno. Al guardar, el sistema registra el estado y los comentarios, si los hubiera. Cabe mencionar que el estado de adeudo y los comentarios pueden ser modificados posteriormente si es necesario.
+            </li>
+            <li>
+              <strong>En caso de un inconveniente:</strong> Si la información proporcionada por esta plataforma no es suficiente o se presenta un problema técnico, comuníquese de inmediato con las oficinas o departamentos correspondientes para recibir asistencia.
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  Este formato cuenta con algunos elementos que ayudaran al usuario a determinar el estado de no adeudo del alumno:
+  1. en el apartado Lista Alumnos contamos con una ventana principal "lista de Alumnos", esta ventana cuenta con dos componentes principales:
+  Buscador: este buscador esta disenado para buscar a los alumnos que se encuentren en la lista, primero contamos con un dropdown, este cuenta con cuatro
+  opsiones de busqueda: por Nombre A-Z, que nos ordena en orden alfavetico por el nombre del alumno, por Nombre Z-A, que nos ordena los nombres en orden alfavetico
+  invertido, Nuevas Peticiones: que nos ordena la lista por la fecha mas reciente (haciendo alusion a la fecha de creacion de la peticion) y por Antiguas Peticiones
+  que nos ordena la lista por las peticiones mas antiguas,
+  Ademas del dropdown se cuenta con un buscador, el cual pertime buscar a los alumnos por Nombre, correo Electronico  No.de Control, el buscador tiene
+  la funcionalidad de ser automatico, lo cual nos permite buscar en al tabla de forma dinamica.
+
+  2. Tabla de Alumnos: enesta tabla se presentan los datos que fueron previamente registrados por los alumnos,la tabla cuenta con 6 datos visibles mas el boton
+  para desplegar la ventana modal(Ver Alumno), dependiendo de la resulucion del equipo dicha pantalla puede llegar a mostrar hasta 3 datos, nombre, no. de Control y el boton(ver Alumno)
+
+  3. Ventana de informacion del Alumno(modal): El modal cuenta con todos los datos necesarios para la correcta identificacion, teniendo en si todos los datos
+  que se muestran previemente en la tabla de alumnos;
+  En el se muestran ademas las herramientas necesarias para establecer el estado de adeudo del alumno, en la parte inferior de la tabla contamos con dos
+  botones (Sin Adeudos y Con Adeudos), cada boton determinara el estado de adeudo del alumno, el alumno por defecto tiene como Pendiente su estado de adeudo
+  a la hora de elejir cualquiera de las dos opsiones, esetaremos determinando el estado de adeudo;
+  text area (recuadro para agregar un nota rapida), este apartado es parte del estado de adeudo, ya que en el es opsional el agregar una nota de ser necesario
+  para vrindar una mejor respuesta de adeudo al alumno.
+
+  4. Botones inferiores del modal(Guardar y Cerrar): estos botones son necesarios para concretar con el establecimiento del adeudo en el alumno
+  despues de que se determine su estado y una nota (de ser necesario), al guardar el estado de adeudo este sera establecido al alumno;
+  Notece que el estado de adeudo puede ser reescrito de sernecesario asi como el comentario.
+
+-->
