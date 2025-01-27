@@ -4,6 +4,7 @@ const cors = require('cors');
 const db = require('./src/app/db/db'); // Asegúrate de que este archivo apunta correctamente a tu conexión con la base de datos
 const path = require('path');
 const multer = require('multer');
+const uploads = multer();
 
 const app = express();
 
@@ -1059,7 +1060,7 @@ app.post('/admin/eliminar-alumno-adm', (req, res) => {
 
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // Ruta para registrar departamentos
-app.post('/departamento/register-departamento', (req, res) => {
+app.post('/departamento/register-departamento', uploads.none(), (req, res) => {
   const { nombre_completo, contrasena, tipo_usuario, fecha_registro } = req.body;
 
   const usuario = nombre_completo; // Renombrar nombre_completo a usuario
