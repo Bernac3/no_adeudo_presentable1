@@ -963,6 +963,100 @@ app.post('/admin/insertar-admin', (req, res) => {
   });
 });
 
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Eliminar Alumno desde Admin
+app.post('/api/eliminar-alumno-adm', (req, res) => {
+  const { alumnoId } = req.body; // ID del alumno (no_control)
+  let authData;
+
+  try {
+    // Parsear el encabezado de autorización
+    authData = JSON.parse(req.headers.authorization);
+  } catch (err) {
+    console.error('Error al parsear el encabezado de autorización:', err);
+    return res.status(400).json({
+      error: 'El encabezado de autorización no es válido.',
+      details: err.message,
+    });
+  }
+
+  if (!authData || !authData.correo || !authData.contrasena) {
+    return res.status(400).json({
+      error: 'Faltan datos de autenticación del administrador.',
+    });
+  }
+
+  if (!alumnoId) {
+    return res.status(400).json({
+      error: 'Falta el ID del alumno (no_control).',
+    });
+  }
+
+  // Verificar credenciales del administrador
+  const queryAdmin = `
+    SELECT * FROM administrador WHERE usuario = ? AND contrasena = ?
+  `;
+  db.query(queryAdmin, [authData.correo, authData.contrasena], (error, results) => {
+    if (error) {
+      console.error('Error al verificar el administrador:', error);
+      return res.status(500).json({
+        error: 'Error interno al verificar las credenciales del administrador.',
+        details: error.message,
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        error: 'Administrador no encontrado o credenciales incorrectas.',
+      });
+    }
+
+    console.log('Administrador autenticado correctamente.');
+
+    // Eliminar registros relacionados en la tabla `peticiones`
+    const queryDeletePeticiones = `
+      DELETE FROM peticiones WHERE no_control = ?
+    `;
+    db.query(queryDeletePeticiones, [alumnoId], (deleteError) => {
+      if (deleteError) {
+        console.error('Error al eliminar registros relacionados en peticiones:', deleteError);
+        return res.status(500).json({
+          error: 'Error al eliminar registros relacionados en peticiones.',
+          details: deleteError.message,
+        });
+      }
+
+      console.log('Registros relacionados en la tabla peticiones eliminados.');
+
+      // Eliminar el alumno
+      const queryDeleteAlumno = `
+        DELETE FROM alumnos WHERE no_control = ?
+      `;
+      db.query(queryDeleteAlumno, [alumnoId], (deleteAlumnoError, deleteAlumnoResults) => {
+        if (deleteAlumnoError) {
+          console.error('Error al eliminar el alumno:', deleteAlumnoError);
+          return res.status(500).json({
+            error: 'Error al eliminar el alumno.',
+            details: deleteAlumnoError.message,
+          });
+        }
+
+        if (deleteAlumnoResults.affectedRows === 0) {
+          return res.status(404).json({
+            error: 'Alumno no encontrado.',
+          });
+        }
+
+        console.log('Alumno eliminado correctamente.');
+        res.status(200).json({
+          success: true,
+          message: 'Alumno eliminado correctamente.',
+        });
+      });
+    });
+  });
+});
+
 
 
 // Sirve los archivos estáticos del proyecto Angular
