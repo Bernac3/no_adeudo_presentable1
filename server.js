@@ -1059,7 +1059,7 @@ app.post('/admin/eliminar-alumno-adm', (req, res) => {
 
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // Ruta para registrar departamentos
-app.post('/departamento/register-departamento', uploads.none(), (req, res) => {
+app.post('/departamento/register-departamento', (req, res) => {
   const { nombre_completo, contrasena, tipo_usuario, fecha_registro } = req.body;
 
   const usuario = nombre_completo; // Renombrar nombre_completo a usuario
