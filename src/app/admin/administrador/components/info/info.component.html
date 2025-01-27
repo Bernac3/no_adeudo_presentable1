@@ -1,1 +1,197 @@
-<p>info works!</p>
+<div class="container mt-5 home-container">
+  <div class="card">
+    <div class="card-header bg-primary text-white text-center">
+      <h2 class="text-center">Información</h2>
+    </div>
+    <div class="card-body">
+      <div class="container mt-5">
+        <div class="card-body">
+          <h5 class="text-center mt-4">Manual de Uso</h5>
+          <p>
+            Este formato incluye cinco apartados principales que permiten a los administradores y departamentos gestionar la información y solicitudes de los alumnos de manera eficiente:
+          </p>
+          <ol>
+            <li>
+              <strong>Lista de Alumnos:</strong> Este apartado administrativo está enfocado en la gestión de los alumnos y se compone de dos áreas clave:
+              <ul>
+                <li>
+                  <strong>Buscador:</strong> Herramienta diseñada para localizar alumnos dentro de la lista. Incluye un menú desplegable con cuatro opciones de ordenamiento:
+                  <ul>
+                    <li><em>Por Nombre A-Z:</em> Ordena los nombres de los alumnos en orden alfabético ascendente.</li>
+                    <li><em>Por Nombre Z-A:</em> Ordena los nombres en orden alfabético descendente.</li>
+                    <li><em>Nuevas Peticiones:</em> Ordena las solicitudes por la fecha de creación más reciente.</li>
+                    <li><em>Antiguas Peticiones:</em> Ordena las solicitudes por las fechas más antiguas.</li>
+                  </ul>
+                  Además, cuenta con un campo de búsqueda que permite filtrar dinámicamente a los alumnos por nombre, correo electrónico o número de control.
+                </li>
+                <li>
+                  <strong>Tabla de Alumnos:</strong> Muestra la información registrada de los alumnos, incluyendo cinco columnas visibles y un botón <em>"Ver Alumno"</em> que despliega un modal con detalles adicionales. Dependiendo de la resolución de la pantalla, puede mostrar hasta tres columnas: nombre, número de control y el botón <em>"Ver Alumno"</em>.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Tabla Detalles del Alumno (Modal):</strong> Diseñada para presentar los datos del alumno de forma clara y concisa. Está dividida en dos columnas:
+              <ul>
+                <li>
+                  <strong>Columna Izquierda (Datos Generales):</strong> Muestra los datos del alumno seleccionado, incluyendo nombre, correo electrónico, teléfono, número de control, fecha de registro y contraseña (esta última está oculta por defecto, pero puede visualizarse al presionar un botón).
+                  <p>En la parte inferior de esta columna, se encuentran los siguientes botones:</p>
+                  <ul>
+                    <li><strong>Guardar:</strong> Permite guardar los cambios realizados tanto en los datos generales como en el estado del alumno.</li>
+                    <li><strong>Cerrar:</strong> Cierra el modal, al igual que el botón <em>"X"</em> en la esquina superior derecha.</li>
+                    <li><strong>Eliminar Alumno:</strong> Elimina al alumno de los registros del sistema.</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Columna Derecha (Estado de Adeudo):</strong> Incluye una tabla con tres columnas:
+                  <ul>
+                    <li><strong>Departamento:</strong> Muestra el nombre del departamento correspondiente.</li>
+                    <li>
+                      <strong>Estatus:</strong> Incluye un menú desplegable con tres opciones:
+                      <ul>
+                        <li><span class="text-warning">Pendiente:</span> Indica que el estado de no adeudo aún no ha sido procesado.</li>
+                        <li><span class="text-danger">Con Adeudo:</span> Indica que existe un adeudo en el departamento seleccionado.</li>
+                        <li><span class="text-success">Sin Adeudo:</span> Indica que no hay adeudo en el departamento correspondiente.</li>
+                      </ul>
+                    </li>
+                    <li><strong>Comentarios:</strong> Campo opcional para agregar notas relacionadas con el estado del alumno.</li>
+                  </ul>
+                  <p>
+                    Es importante destacar que los campos <em>Número de Control</em> y <em>Fecha de Registro</em> no son modificables, ya que garantizan la unicidad y la integridad del registro.
+                  </p>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Gestión de Departamentos:</strong> Permite administrar los departamentos registrados en el sistema:
+              <ul>
+                <li>
+                  <strong>Tabla de Departamentos:</strong> Muestra los departamentos registrados con tres columnas visibles: nombre del departamento, usuario y un botón <em>"Ver Detalles"</em> que abre un modal.
+                </li>
+                <li>
+                  <strong>Formulario del Departamento (Modal):</strong> Permite editar los datos del departamento seleccionado. Contiene cuatro campos: nombre, usuario, contraseña y fecha de registro (estos últimos dos son modificables). Los botones disponibles son:
+                  <ul>
+                    <li><strong>Guardar:</strong> Guarda los cambios realizados.</li>
+                    <li><strong>Cerrar:</strong> Cierra el modal.</li>
+                    <li><strong>Eliminar Departamento:</strong> Elimina el registro del departamento.</li>
+                  </ul>
+                  <p>
+                    Nota: Los campos <em>Departamento</em> y <em>Fecha de Registro</em> no son modificables.
+                  </p>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Verificación de Departamentos:</strong> Apartado dirigido a la validación de cuentas de departamentos. Incluye:
+              <ul>
+                <li>
+                  <strong>Tabla de Verificación:</strong> Muestra las cuentas de departamentos pendientes de autorización, con tres columnas visibles: usuario, departamento y fecha de registro, además de un botón <em>"Ver Datos"</em> que despliega un modal.
+                </li>
+                <li>
+                  <strong>Modal de Verificación:</strong> Muestra los detalles de la cuenta seleccionada y un botón <em>"Permitir Cuenta"</em> para autorizar su uso.
+                </li>
+              </ul>
+              <p>
+                Nota: Todas las cuentas de departamentos deben ser autorizadas por un administrador para garantizar el control adecuado.
+              </p>
+            </li>
+            <li>
+              <strong>Creación de Departamentos y Administradores:</strong>
+              <ul>
+                <li>
+                  <strong>Nuevo Departamento:</strong> Formulario con cuatro campos: nombre del departamento, usuario, contraseña y confirmación de contraseña. La contraseña debe tener al menos seis caracteres.
+                  Este apartado está restringido al administrador y garantiza que solo se registren departamentos autorizados.
+                </li>
+                <li>
+                  <strong>Nuevo Administrador:</strong> Formulario con tres campos: usuario, contraseña y confirmación de contraseña. Para crear una cuenta de administrador, es necesario autenticar las credenciales del administrador actual.
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Este formato cuenta con 5 apartados (opsiones en el sidebar),
+ Lista Alumnos: apartado administrativo dirigido hacia los alumnos;
+    Cuenta on dos areas importantes:
+    Buscador: este buscador esta disenado para buscar a los alumnos que se encuentren en la lista, primero contamos con un dropdown, este cuenta con cuatro
+      opsiones de busqueda: por Nombre A-Z, que nos ordena en orden alfavetico por el nombre del alumno, por Nombre Z-A, que nos ordena los nombres en orden alfavetico
+      invertido, Nuevas Peticiones: que nos ordena la lista por la fecha mas reciente (haciendo alusion a la fecha de creacion de la peticion) y por Antiguas Peticiones
+      que nos ordena la lista por las peticiones mas antiguas,
+      Ademas del dropdown se cuenta con un buscador, el cual pertime buscar a los alumnos por Nombre, correo Electronico  No.de Control, el buscador tiene
+      la funcionalidad de ser automatico, lo cual nos permite buscar en al tabla de forma dinamica.
+
+    tabla de Alumnos: enesta tabla se presentan los datos que fueron previamente registrados por los alumnos,la tabla cuenta con 5 datos visibles mas el boton
+      para desplegar la ventana modal(Ver Alumno), dependiendo de la resulucion del equipo dicha pantalla puede llegar a mostrar hasta 3 datos, nombre, no. de Control y el boton(ver Alumno)
+
+    Tabla Detalles del Alumno (modal): Esta tabla disenada para mostrar los datos del alumno de forma clara y concisa, cuenta con dos partes principales:
+    columna izqueirda(datos generales del Alumno): Este formulario contiene los datos del alumno previamente seleccionado de la tabla Lista Alumnos
+    cuenta con los sigientes datos: Nombre, Correo Electronico, Numero de Telefono, No. de Control, fecha de registro y contrasena(contrasena al ser un
+    dato delicado por default se muestra oculta, con el boton de la derecha del campo es posible divisarla).
+    el la parte inferior de esta columna ocntamos con 3 botones:
+    Guardar: nos permite guardar los cambios realizados tanto en los datos generales como en los datos de estatus (columna derecha).
+    Cerrar: nos pertmite cerrar el modal al igual como lo hace el boton 'X' en la parte superior derecha
+    Eliminar Alumno: Nos permite elimiar el alumno de los registros del sitio web.
+
+    columna derecha(datos de estado de adeudo del alumno): Esta tabla compuesta por 3 columnas nos muestran los datos necesarios para determinar el estado
+    del alumno: en la primera columna: Departamento, visualisamos el nombre del departamento, el la segunda columna Estatus: se visualisa un dropdown, este
+    dropdawn cuenta con 3 opsiones:
+    Pendiente (amarillo): Este estado es el que se da por default al alumno en los departamentos donde no se ha establecido el estatus de no-adeudo.
+    Con Adeudo (rojo): Este estado es el que determina que hay un inconveniente o un Adeudo el el departamento marcado.
+    Sin Adeudo (verde): este estado es el que determina que no existe un Adeudo en el departamento marcado
+
+    la tercera columna Comentarios (comentario sobre el estatus): esta es una nota que sirve para complementar el estatus del alumno, dicha nota
+    es opsional con el fin de aclarar mas el estado de estatus.
+
+    Importante: No. de Control y fecha de registro No son campos modificables, dado que No. de control es un dato unico y la fecha de registro establece
+    verasidad al perfil de alumno
+
+Gestionar Departamento: apartado administrativo dirigido hacia los alumnos;
+  tabla de Departamentos: enesta tabla se presentan los datos que fueron previamente registrados por los departamentos,la tabla cuenta con 3 datos visibles mas el boton
+    para desplegar la ventana modal(Ver Detalles), dependiendo de la resulucion del equipo dicha pantalla puede llegar a mostrar hasta 3 datos, nombre, Departamento y el boton(ver detalles)
+
+
+  formulario de departamento(modal): Esta formulario cuenta unicamente con una sola columna, la columna cuentra con 4 datos (nombre, Departamento, fecha de registro y contrasena)
+  dentro de este formulario unicamente los datos mofificables son nombre y contrasena (contrasena al ser un
+    dato delicado por default se muestra oculta, con el boton de la derecha del campo es posible divisarla).
+  contraseña
+
+  Boton Guardar: nos permite guardar los cambios realizados en el departamento seleccionado
+  Boton Cerrar: cierra el modal al igual que el boton 'X' establecido en la parte superior derecha.
+  boton Eliminar Departamento: este boton elimina el departamento de los registros del sitio web
+
+  Importante: los Campos del Modal Departamento y Fecha de registro No son campos modificables dada la estructura de la base de datos
+
+Verificar Departamento: apartado de verificacion didirigo a los departamentos.
+tabla Verificacion de Departamentos: esta tabla se presentan los datos que fueron previamente registrados por usuarios Departamento.
+  esta tabla cuenta con 3 datos de usuario departamento(usuario, Departamento, Fecha de registro) mas el boton de ver Datos(modal)
+
+  El modal(verificar Departamento): cuenta con una tabla que dispone con los datos del departamento seleccionado y en su parte inferior cuenta con
+  un boton (Permitir Cuenta) con el cual se da permiso a esa cuenta para ser utilizada y poder responder a las solisitudes de los alumnos
+
+  Importante: Todos las cuentas de Departamento tienen que ser permitidas por un administrador, esto con el fin de tener un control sobre los departamentos.
+
+
+Nuevo Departamento:
+Este cuenta con un formulario, dicho formulario cuenta con 4 campos(nombre del departamento, usuario o correo, contrasena y confirmar contrasena)
+El sistema permite crear usuarios Departamento de dos formas: usuando el registro y en el apartado Nuevo Departamento(accesible solo desde el panel de admin)
+Para ello es necesario introducir los siguientes datos:
+Nombre del departamento: para ello en necesario elejir el nombre del departamento en el dropdown que ya cuenta con los departamentos.
+Usuario: Para ello es necesario introducir una cadena de texto: puede ser tanto un Usuario, Nombre Completo o un Correo electronico.
+Contraseña: En el campo contrasena sera determinado por el departamento y el administrador, cuenta con una validacion de 6 caracteres y con un
+campo adicional para confirmar la contrase;a.
+
+Crear Admin:
+Este cuenta con un formulario, dicho formilario cuenta con 3 campos necesarios para crear una cuenta de Administrador.
+  Usuario: este puede ser un Usuario, nombre o un correo electronico.
+  contrasena: cuenta con una validacion de 6 digitos, recomendable usar numeros, letras y simbolos.
+
+  A la hora de crear una Cuenta de admin(boton Crear Administrador), sera necesario ingresar las credenciales de administrador, esto con el fin
+  de hacer una validacion en el lado la base de datos para determinar si es posible crear dicha cuenta.
+
+-->
