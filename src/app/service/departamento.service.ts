@@ -15,8 +15,8 @@ export class DepartamentoService {
 
   private apiUrlEliminarDepartamentoAdmin = 'https://no-adeudo.onrender.com/admin/eliminar-departamento-adm'
 
-  private apiUrlEliminarAlumnoAdmin = 'https://no-adeudo-repositorio-1.onrender.com/admin/eliminar-alumno-adm'
-  
+  private apiUrlEliminarAlumnoAdmin = 'https://no-adeudo.onrender.com/admin/eliminar-alumno-adm'
+
   private apiUrlCrearDepartamentoAdmin = 'https://no-adeudo.onrender.com/admin/crear-departamento-admin';
 
   constructor(private http: HttpClient) {}
