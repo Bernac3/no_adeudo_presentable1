@@ -218,6 +218,9 @@ export class ListaAdminComponent implements OnInit {
       response => {
         console.log('Petición insertada correctamente');
 
+        // Mostrar alerta de éxito
+        alert("Datos guardados con éxito");
+
         // Recargar los datos de alumnos y peticiones después de insertar
         this.authService.getAlumnosYPeticiones().subscribe(
           updatedData => {
@@ -234,6 +237,7 @@ export class ListaAdminComponent implements OnInit {
         console.log('Error al insertar petición:', error);
       }
     );
+
   }
 
   eliminarAlumnoAdminModal(): void {
