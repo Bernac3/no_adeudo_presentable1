@@ -17,7 +17,7 @@ pool.query('SELECT * FROM alumnos', (err, results) => {
     console.error('Error en la consulta:', err);
     return;
   }
-  console.log('Resultados:', results);
+
 });
 
 // Exportar el pool para usarlo en otros archivos
