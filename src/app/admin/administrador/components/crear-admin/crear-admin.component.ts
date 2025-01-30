@@ -43,17 +43,14 @@ export class CrearAdminComponent {
       alert('Por favor, ingrese sus credenciales en el modal.');
       return;
     }
-
     if (this.departamentoForm.invalid) {
       alert('Por favor, complete correctamente el formulario.');
       return;
     }
-
     const nuevoAdmin = {
       usuario: this.departamentoForm.get('usuario')?.value,
       contrasena: this.departamentoForm.get('contrasena')?.value,
     };
-
     const authData = {
       usuario: this.authModal.usuario,
       contrasena: this.authModal.contrasena,
@@ -61,7 +58,6 @@ export class CrearAdminComponent {
 
     this.peticionesService.crearAdministrativo(nuevoAdmin, authData).subscribe(
       (res) => {
-        console.log('Administrador creado exitosamente:', res);
         alert('Administrador creado exitosamente.');
         this.departamentoForm.reset();
         this.authModal = { usuario: '', contrasena: '' };

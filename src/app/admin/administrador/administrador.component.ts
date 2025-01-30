@@ -53,7 +53,6 @@ export class AdministradorComponent implements OnInit{
     },
   ];
 
-
   constructor(private authService: AuthService) {}
 
   usuario: Alumno | null = null;

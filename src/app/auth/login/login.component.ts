@@ -15,10 +15,7 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   login(): void {
-    console.log('Iniciando login...');
-    console.log('Correo:', this.correo);
-    console.log('Contraseña:', this.contrasena);
-
+    
     this.authService.login(this.correo, this.contrasena).subscribe(
       (user) => {
         console.log('Respuesta del servidor:', user);

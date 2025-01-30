@@ -32,8 +32,3 @@ export class ArchivoComponent implements OnInit {
     return 'badge text-bg-secondary'; // Por si hay algún valor inesperado
   }
 }
-
-
-
-
-// }

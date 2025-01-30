@@ -25,7 +25,7 @@ export class NavComponent {
     this.selectedLink = link;
   }
 
-  // 🚀 Nueva función: Cerrar sesión
+  // Cerrar sesión
   logout(): void {
     this.authService.logout();  // Llamar al método logout del servicio
     this.router.navigate(['/login']);  // Redirigir al usuario a la página de login (ajusta la ruta según tu configuración)

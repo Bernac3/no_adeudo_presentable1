@@ -8,15 +8,10 @@ import { Observable } from 'rxjs';
 })
 export class DepartamentoService {
   private apiUrl = 'https://no-adeudo.onrender.com/departamento/register-departamento';
-
   private apiUrlObtenerDepartamentos = 'https://no-adeudo.onrender.com/admin/obtener-departamento'
-
   private apiUrlGuardarDepartamentoAdmin = 'https://no-adeudo.onrender.com/admin/guardar-departamento-adm'
-
   private apiUrlEliminarDepartamentoAdmin = 'https://no-adeudo.onrender.com/admin/eliminar-departamento-adm'
-
   private apiUrlEliminarAlumnoAdmin = 'https://no-adeudo.onrender.com/admin/eliminar-alumno-adm'
-
   private apiUrlCrearDepartamentoAdmin = 'https://no-adeudo.onrender.com/admin/crear-departamento-admin';
 
   constructor(private http: HttpClient) {}

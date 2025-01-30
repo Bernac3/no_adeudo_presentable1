@@ -4,10 +4,10 @@ import { Router, NavigationEnd } from '@angular/router';
 @Component({
   selector: 'shared-sidebar',
   templateUrl: './sidebar.component.html',
- 
+
 })
 export class SidebarComponent implements OnInit {
-  
+
   @Input() menuOptions: Array<{
     click: string;
     routerLink: string;
@@ -15,13 +15,13 @@ export class SidebarComponent implements OnInit {
     iconPath: string;
     label: string;
   }> = []; // Arreglo de objetos para la lista de enlaces
-  
+
   selectedLink: string = ''; // Para resaltar la opción seleccionada
 
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // 🚀 Detectar cambios de ruta para resaltar el enlace activo
+    // Detectar cambios de ruta para resaltar el enlace activo
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.selectedLink = this.getActiveRoute();

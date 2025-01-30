@@ -5,7 +5,6 @@ import { AuthService } from '../../../../service/auth.service';
 import { Alumno as Usuario } from '../../../../interfaces/alumno.interface';
 import { PeticionesService } from '../../../../service/peticion.service';
 
-
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
@@ -95,8 +94,7 @@ export class ListComponent implements OnInit {
       break;
     }
 
-    // Asignar el comentario del alumno al campo del modal
-    //this.alumnoComentario = alumno.comentario_administracion_y_finanzas || ''; // Asume que 'comentario' está en los datos del alumno.
+
   }
 
   clearComment(): void {
@@ -141,11 +139,11 @@ export class ListComponent implements OnInit {
 
   // Funcion para Establecer Campo Adeudo a Alumno
   setEstadoAdeudoAlumno(): void {
-    const alumnoNoControl = document.getElementById('alumnoNoControl')?.textContent
+    const alumnoNoControl = document.getElementById('alumnoNoControl')?.textContent;
 
-    console.log('comentario: ' + this.alumnoComentario)
-    const usuarioDepartamento = this.usuario?.usuario
-    const usuarioDepartamentoId = this.usuario?.departamento_id
+    console.log('comentario: ' + this.alumnoComentario);
+    const usuarioDepartamento = this.usuario?.usuario;
+    const usuarioDepartamentoId = this.usuario?.departamento_id;
 
     let peticionEstatus;
 
@@ -166,46 +164,42 @@ export class ListComponent implements OnInit {
         peticionEstatus = 'estatus_departamento_de_vinculacion';
         break;
     }
-    // Datos del Alumno y Usuario para hacer la insercion
-    console.log('-----Datos-----')
-    console.log(`
-      No_control: ${alumnoNoControl}
-      Peticion_Estatus: ${peticionEstatus}
-      Estado_adeudo ${this.adeudoEstado}
-      Comentario : ${this.alumnoComentario}
 
-      Usuario_Departamento: ${usuarioDepartamento}
-      Usuario_Departamento_id: ${usuarioDepartamentoId}
-      `)
+    const alumnoComentario = this.alumnoComentario;
+    const datos = {
+      alumnoNoControl,
+      peticionEstatus,
+      adeudoEstado: this.adeudoEstado,
+      usuarioDepartamento,
+      usuarioDepartamentoId,
+      alumnoComentario
+    };
 
-    this.guardarDatosEstado();
-      const alumnoComentario = this.alumnoComentario
-      const datos = {
-        alumnoNoControl, // No de control de alumno, usalo para saber donde insertar en la tabla peticiones (esta dato no se inserta, es solo para referencia)
-        peticionEstatus, // Este es el nombre de la columna donde se insertara el dato de adeudoEstado ej: este dato se llama estatus_administracion_y_finanzas y el dato de adeudo se insertarea en esta col
-        adeudoEstado: this.adeudoEstado, // Este es el valor que ira en el col peticionEstatus(ej: estatus_administracion_y_finanzas, estatos_centro_de_informacion)
-        usuarioDepartamento, // Este es el nombre del usuario De Departamento Logeado actualmente (este dato nos sirve como comporovacion para insertar los datos)
-        usuarioDepartamentoId,
-        alumnoComentario
+    console.log(datos);
 
-        // Este nos pertime saber que tipo de usuaro Departamento es ej: si es administracion_finanzas, el solo puede modificar de la tabla peticiones
-        // estatus_administracion_y_finanzas
-        // resumiendo, alumnoNoControl = para saber la fila a modificar de peticiones, peticionEstatus = nombre de la col de peticiones, adeudoEstado = valor a insertar en peticionEstatus
-        // usuarioDepartamento = nombre del ususario de departamento logeado y usuarioDepartamentId = tipo de usuario de departamento: de estos son 5 tipos en total:
-        // administracion_finanzas, centro_informacion, centro_computo, recursos_materiales, departamento_vinculacion
-      };
-      console.log(datos)
+    this.peticionesService.insertarPeticion(datos).subscribe(
+      response => {
+        console.log('Petición insertada correctamente');
 
-      this.peticionesService.insertarPeticion(datos).subscribe(
-        response => {
-          console.log('Peticon insertada correctamente')
-        },
-        error => {
-          console.log('Error al insertar peticion')
-        }
-      )
-    this.adeudoEstado = ''
-}
+        // Llamar nuevamente al servicio para actualizar los datos
+        this.authService.getAlumnosYPeticiones().subscribe(
+          (data) => {
+            this.alumnosConPeticiones = data;
+            this.alumnosOriginales = [...data];
+            console.log('Datos actualizados de alumnos con peticiones:', this.alumnosConPeticiones);
+          },
+          (error) => {
+            console.error('Error al actualizar los datos de los alumnos:', error);
+          }
+        );
+      },
+      error => {
+        console.log('Error al insertar petición');
+      }
+    );
+
+    this.adeudoEstado = '';
+  }
 
 
 guardarDatosEstado(): void {

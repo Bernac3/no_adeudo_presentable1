@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const db = require('./src/app/db/db'); // Asegúrate de que este archivo apunta correctamente a tu conexión con la base de datos
+const db = require('./src/app/db/db'); 
 const path = require('path');
 const multer = require('multer');
 const uploads = multer();

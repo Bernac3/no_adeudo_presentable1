@@ -43,10 +43,6 @@ export class AuthService {
       })
     );
   }
-
-
-
-
   /**
    * Actualizar el usuario actual.
    * @param user Datos del usuario.
