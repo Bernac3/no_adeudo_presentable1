@@ -179,7 +179,8 @@ export class ListComponent implements OnInit {
 
     this.peticionesService.insertarPeticion(datos).subscribe(
       response => {
-        console.log('Petición insertada correctamente');
+        // Mostrar alerta de éxito
+        alert("Datos guardados con éxito");
 
         // Llamar nuevamente al servicio para actualizar los datos
         this.authService.getAlumnosYPeticiones().subscribe(
