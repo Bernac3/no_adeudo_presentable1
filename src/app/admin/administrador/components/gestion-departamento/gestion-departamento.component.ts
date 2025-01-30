@@ -7,11 +7,9 @@ import { DepartamentoService } from '../../../../service/departamento.service';
   styleUrls: ['./gestion-departamento.component.css']
 })
 export class GestionDepartamentoComponent implements OnInit {
-  departamentos: any[] = []; // Arreglo para almacenar los datos de los departamentos
-  departamentoSeleccionado: any = null; // Propiedad para almacenar los datos del departamento seleccionado
+  departamentos: any[] = [];
+  departamentoSeleccionado: any = null;
   mostrarContrasena: boolean = false;
-
-
 
   constructor(private departamentoService: DepartamentoService) {}
 
@@ -20,13 +18,7 @@ export class GestionDepartamentoComponent implements OnInit {
   }
 
   obtenerDepartamentos(): void {
-
-    const authData = {
-      usuario: '',
-      contrasena: ''
-    };
-
-    // Recuperar datos del administrador desde sessionStorage
+    const authData = { usuario: '', contrasena: '' };
     const sessionAuthData = sessionStorage.getItem('user');
     if (sessionAuthData) {
       const parsedData = JSON.parse(sessionAuthData);
@@ -34,10 +26,9 @@ export class GestionDepartamentoComponent implements OnInit {
       authData.contrasena = parsedData.contrasena || '';
     }
 
-    // Llamar al servicio para obtener los departamentos
     this.departamentoService.obtenerDepartamentos(authData).subscribe(
       (response) => {
-        this.departamentos = response.departamentos; // Guardar los datos en el arreglo
+        this.departamentos = response.departamentos;
         console.log('Departamentos obtenidos:', this.departamentos);
       },
       (error) => {
@@ -45,49 +36,30 @@ export class GestionDepartamentoComponent implements OnInit {
       }
     );
   }
+
   mostrarDetalles(departamento: any): void {
-    this.departamentoSeleccionado = departamento; // Asignar el departamento seleccionado
+    this.departamentoSeleccionado = departamento;
   }
 
   guardarDepartamentoAdmin(): void {
-    // Obtener los valores actuales de los campos del modal
     const usuario = (document.getElementById('departamentoNombre') as HTMLInputElement).value;
     const contrasena = (document.getElementById('alumnoContrasena') as HTMLInputElement).value;
 
-    // Verificar que los campos no estén vacíos
     if (!usuario || !contrasena) {
       alert('Por favor, complete todos los campos.');
-      return; // Si falta algún campo, no se guarda
+      return;
     }
 
-    // Crear el objeto con los datos que se van a guardar
-    const {iddepartamentos} = this.departamentoSeleccionado;
-    const nuevoDepartamento = {
-      usuario: usuario,
-      contrasena: contrasena,
-      iddepartamentos
-    };
+    const { iddepartamentos } = this.departamentoSeleccionado;
+    const nuevoDepartamento = { usuario, contrasena, iddepartamentos };
 
-    const authData = {
-      tipo_usuario: '',
-      correo: '',
-      contrasena: ''
-    };
+    const authData = this.obtenerAuthData();
 
-    // Recuperar datos del administrador desde sessionStorage
-    const sessionAuthData = sessionStorage.getItem('user');
-    if (sessionAuthData) {
-      const parsedData = JSON.parse(sessionAuthData);
-      authData.tipo_usuario = parsedData.tipo_usuario ? parsedData.tipo_usuario.toLowerCase() : '';
-      authData.correo = parsedData.correo || ''; // En la DB el campo "correo" se llama "usuario"
-      authData.contrasena = parsedData.contrasena || '';
-    }
-
-    // Llamar al servicio para verificar al admin y guardar el departamento
     this.departamentoService.guardarDepartamentoAdmin(nuevoDepartamento, authData).subscribe(
       (res) => {
         console.log('Departamento autorizado con éxito:', res);
         alert('Departamento autorizado con éxito');
+        this.obtenerDepartamentos(); // Actualizar la lista de departamentos
       },
       (error) => {
         console.error('Error al autorizar el departamento:', error);
@@ -95,44 +67,24 @@ export class GestionDepartamentoComponent implements OnInit {
       }
     );
   }
+
   eliminarDepartamentoAdmin(): void {
     const departamentoId = (document.getElementById('departamentoid') as HTMLInputElement).value;
 
-    // Verificar que el id del departamento sea válido
     if (!departamentoId) {
       alert('No se ha seleccionado un departamento válido para eliminar.');
       return;
     }
 
-    // Mostrar el cuadro de confirmación antes de proceder con la eliminación
-    const confirmacion = window.confirm('¿Desea eliminar el departamento?');
+    if (window.confirm('¿Desea eliminar el departamento?')) {
+      const departamentoData = { departamentoId };
+      const authData = this.obtenerAuthData();
 
-    if (confirmacion) {
-      // Si el usuario confirma, crear el objeto de datos del departamento
-      const departamentoData = {
-        departamentoId
-      };
-
-      const authData = {
-        tipo_usuario: '',
-        correo: '',
-        contrasena: ''
-      };
-
-      // Recuperar datos del administrador desde sessionStorage
-      const sessionAuthData = sessionStorage.getItem('user');
-      if (sessionAuthData) {
-        const parsedData = JSON.parse(sessionAuthData);
-        authData.tipo_usuario = parsedData.tipo_usuario ? parsedData.tipo_usuario.toLowerCase() : '';
-        authData.correo = parsedData.correo || ''; // En la DB el campo "correo" se llama "usuario"
-        authData.contrasena = parsedData.contrasena || '';
-      }
-
-      // Llamar al servicio para eliminar el departamento
       this.departamentoService.eliminarDepartamentoAdmin(departamentoData, authData).subscribe(
         (res) => {
           console.log('Departamento Eliminado:', res);
           alert('Departamento Eliminado');
+          this.obtenerDepartamentos(); // Actualizar la lista de departamentos
         },
         (error) => {
           console.error('Error Eliminar Departamento:', error);
@@ -140,12 +92,21 @@ export class GestionDepartamentoComponent implements OnInit {
         }
       );
     } else {
-      // Si el usuario cancela la eliminación
       console.log('Eliminación del departamento cancelada.');
     }
-    this.obtenerDepartamentos();
   }
 
+  obtenerAuthData() {
+    const authData = { tipo_usuario: '', correo: '', contrasena: '' };
+    const sessionAuthData = sessionStorage.getItem('user');
+    if (sessionAuthData) {
+      const parsedData = JSON.parse(sessionAuthData);
+      authData.tipo_usuario = parsedData.tipo_usuario ? parsedData.tipo_usuario.toLowerCase() : '';
+      authData.correo = parsedData.correo || '';
+      authData.contrasena = parsedData.contrasena || '';
+    }
+    return authData;
+  }
 
   toggleMostrarContrasena(): void {
     this.mostrarContrasena = !this.mostrarContrasena;

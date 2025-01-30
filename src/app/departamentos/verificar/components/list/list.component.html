@@ -33,7 +33,6 @@
               <th scope="col" class="d-none d-xl-table-cell">TEL</th>
               <th scope="col">No. DE CONTROL</th>
               <th scope="col" class="d-none d-xl-table-cell">Fecha de Registro</th>
-              <th scope="col" class="d-none d-xl-table-cell">Adeudo Actual</th>
               <th scope="col">Ventana</th>
             </tr>
           </thead>
@@ -44,7 +43,6 @@
               <td class="p-2 d-none d-xl-table-cell">{{ alumno.telefono }}</td>
               <td class="p-2">{{ alumno.no_control }}</td>
               <td class="p-2 d-none d-xl-table-cell">{{ alumno.fecha_registro | date:'dd/MM/yyyy' }}</td>
-              <td class="p-2 d-none d-xl-table-cell">{{ alumno.estatus_administracion_y_finanzas }}</td>
               <td class="p-2">
                 <button type="button" class="btn btn-primary ver-alumno"
                         data-bs-toggle="modal" data-bs-target="#alumnoModal"

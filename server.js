@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const db = require('./src/app/db/db'); 
+const db = require('./src/app/db/db');
 const path = require('path');
 const multer = require('multer');
 const uploads = multer();
@@ -17,6 +17,12 @@ app.use(bodyParser.json());
 // Ruta para el login
 app.post('/auth/login', (req, res) => {
   const { correo, contrasena } = req.body;
+
+  // Validar que los campos no estén vacíos
+  if (!correo || !contrasena) {
+    console.log('Campos vacíos en el login');
+    return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
+  }
 
   // Consulta para administradores
   const queryAdmin = `
