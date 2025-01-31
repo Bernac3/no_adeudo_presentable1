@@ -25,6 +25,7 @@ export class DepartamentoService {
       'Content-Type': 'application/json',
       'Authorization': JSON.stringify(authData)
     });
+    console.log('')
 
     // Enviar los datos como JSON
     return this.http.post(`${this.apiUrlCrearDepartamentoAdmin}`, nuevoDepartamentoAdmin, { headers });

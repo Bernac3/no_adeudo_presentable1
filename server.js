@@ -1020,6 +1020,7 @@ app.post('/departamento/register-departamento', uploads.none(), (req, res) => {
     UNION
     SELECT 'departamentos_no_autorizados' AS origen FROM departamentos_no_autorizados WHERE usuario = ?
   `;
+  console.log('')
 
   db.query(checkUsuarioQuery, [usuario, usuario, usuario, usuario], (err, results) => {
     if (err) {

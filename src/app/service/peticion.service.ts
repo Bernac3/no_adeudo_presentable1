@@ -51,3 +51,4 @@ export class PeticionesService {
     return this.http.post(`${this.apiUrlInsertarAdmn}`, datosAdmin, { headers });
   }
 }
+console.log('')
