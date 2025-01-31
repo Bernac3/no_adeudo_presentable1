@@ -31,7 +31,6 @@ export class ListComponent implements OnInit {
       (data) => {
         this.alumnosConPeticiones = data;
         this.alumnosOriginales = [...data];  // Guardamos una copia de los datos completos
-        console.log('Datos de alumnos con peticiones:', this.alumnosConPeticiones);
       },
       (error) => {
         console.error('Error al obtener los datos de los alumnos:', error);
@@ -48,7 +47,6 @@ export class ListComponent implements OnInit {
     // Obtener los datos del Usuaro Departamento
     this.authService.getUser().subscribe((data) => {
       this.usuario = data; // Asignamos los datos del alumno
-      console.log(`Datos List.component: User: ${this.usuario?.usuario} Departamento: ${this.usuario?.departamento_id}`)
     });
   }
 
@@ -141,7 +139,6 @@ export class ListComponent implements OnInit {
   setEstadoAdeudoAlumno(): void {
     const alumnoNoControl = document.getElementById('alumnoNoControl')?.textContent;
 
-    console.log('comentario: ' + this.alumnoComentario);
     const usuarioDepartamento = this.usuario?.usuario;
     const usuarioDepartamentoId = this.usuario?.departamento_id;
 
@@ -175,7 +172,6 @@ export class ListComponent implements OnInit {
       alumnoComentario
     };
 
-    console.log(datos);
 
     this.peticionesService.insertarPeticion(datos).subscribe(
       response => {
@@ -187,16 +183,13 @@ export class ListComponent implements OnInit {
           (data) => {
             this.alumnosConPeticiones = data;
             this.alumnosOriginales = [...data];
-            console.log('Datos actualizados de alumnos con peticiones:', this.alumnosConPeticiones);
           },
           (error) => {
             console.error('Error al actualizar los datos de los alumnos:', error);
           }
         );
       },
-      error => {
-        console.log('Error al insertar petición');
-      }
+
     );
 
     this.adeudoEstado = '';
@@ -208,7 +201,6 @@ guardarDatosEstado(): void {
   const etiquetaEstadoSpan = document.getElementById('etiquetaEstadoSpan'); // <span> específico
 
 
-  console.log(this.adeudoEstado)
   if (etiquetaEstado && etiquetaEstadoSpan && this.adeudoEstado) {
     // Configurar texto del span
     etiquetaEstadoSpan.textContent = this.adeudoEstado;
@@ -238,12 +230,10 @@ guardarDatosEstado(): void {
 
 setConAdeudoAlumno(): void {
   this.adeudoEstado = 'Con Adeudo';
-  console.log('Con adeudo seleccionado');
 }
 
 setSinAdeudoAlumno(): void {
   this.adeudoEstado = 'Sin Adeudo';
-  console.log('Sin adeudo seleccionado');
 }
 
 }

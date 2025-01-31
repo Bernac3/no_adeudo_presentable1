@@ -28,7 +28,6 @@ export class DepartamentosComponent implements OnInit {
     this.peticionesService.obtenerDepartamentosNoAutorizados().subscribe(
       (response: DepartamentosResponse) => {
         this.departamentos = response.departamentosNoAutorizados || [];
-        console.log('Departamentos actualizados:', this.departamentos);
       },
       (error) => {
         console.error('Error al obtener los departamentos:', error);
@@ -70,12 +69,8 @@ export class DepartamentosComponent implements OnInit {
       authData.contrasena = parsedData.contrasena || '';
     }
 
-    console.log('Auth Data:', authData);
-    console.log('Departamento autorizado:', departamentoAutorizado);
-
     this.peticionesService.insertarDepartamentoAutorizado(departamentoAutorizado, authData).subscribe(
       (res) => {
-        console.log('Departamento autorizado con éxito:', res);
         alert('Departamento autorizado con éxito');
 
         // Actualizamos la lista

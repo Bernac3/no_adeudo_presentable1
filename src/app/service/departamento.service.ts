@@ -17,12 +17,6 @@ export class DepartamentoService {
   constructor(private http: HttpClient) {}
 
   registrarDepartamento(formData: FormData): Observable<any> {
-    // Console.log para imprimir cada clave y valor de formData
-    console.log('Datos enviados en formData:');
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
-
     return this.http.post<any>(this.apiUrl, formData);
   }
   // En tu archivo departamento.service.ts

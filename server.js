@@ -20,7 +20,6 @@ app.post('/auth/login', (req, res) => {
 
   // Validar que los campos no estén vacíos
   if (!correo || !contrasena) {
-    console.log('Campos vacíos en el login');
     return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
   }
 
@@ -41,7 +40,6 @@ app.post('/auth/login', (req, res) => {
     }
 
     if (results.length > 0) {
-      console.log('Administrador autenticado:', results[0]);
       return res.status(200).json(results[0]); // Enviar los datos del administrador
     }
 
@@ -79,7 +77,6 @@ app.post('/auth/login', (req, res) => {
       }
 
       if (results.length > 0) {
-        console.log('Alumno autenticado:', results[0]);
         return res.status(200).json(results[0]); // Enviar los datos del alumno
       }
 
@@ -102,12 +99,10 @@ app.post('/auth/login', (req, res) => {
         }
 
         if (results.length > 0) {
-          console.log('Departamento autenticado:', results[0]);
           return res.status(200).json(results[0]); // Enviar los datos del departamento
         }
 
         // Credenciales incorrectas
-        console.log('Credenciales incorrectas');
         return res.status(401).json({ error: 'Credenciales incorrectas' });
       });
     });
@@ -388,13 +383,11 @@ app.post('/departamento/insertar-peticion', (req, res) => {
 app.post('/admin/actualizar-peticion-Adm', (req, res) => {
   // Recuperamos los datos del cuerpo de la solicitud
   const datosAlumnoModalAdmin = req.body;
-  console.log('Datos del cuerpo de la solicitud:', datosAlumnoModalAdmin);
 
   let user;
   try {
     // Verificar y parsear el encabezado de autorización
     user = JSON.parse(req.headers.authorization);
-    console.log('Datos del usuario autenticado:', user);
   } catch (err) {
     console.error('Error al parsear el encabezado de autorización:', err);
     return res.status(400).json({
@@ -405,14 +398,11 @@ app.post('/admin/actualizar-peticion-Adm', (req, res) => {
 
   // Verificamos si el tipo de usuario es "Admin"
   if (user.tipo_usuario !== 'admin') {
-    console.log('Acceso denegado: El tipo de usuario no es Admin');
     return res.status(403).json({ mensaje: 'No autorizado, se requiere ser administrador' });
   }
 
   // Validar si el administrador existe en la base de datos
   const queryAdmin = 'SELECT * FROM administrador WHERE usuario = ? AND contrasena = ?';
-  console.log('Verificando administrador:', queryAdmin, [user.correo, user.contrasena]);
-
   db.query(queryAdmin, [user.correo, user.contrasena], (err, result) => {
     if (err) {
       console.error('Error al verificar el administrador:', err);
@@ -423,11 +413,8 @@ app.post('/admin/actualizar-peticion-Adm', (req, res) => {
     }
 
     if (result.length === 0) {
-      console.log('Administrador no encontrado o contraseña incorrecta');
       return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos' });
     }
-
-    console.log('Administrador autenticado correctamente');
 
     // Actualizar datos del alumno en la tabla `alumnos`
     const updateAlumnoQuery = `
@@ -435,7 +422,6 @@ app.post('/admin/actualizar-peticion-Adm', (req, res) => {
       SET nombre_completo = ?, correo = ?, telefono = ?, contrasena = ?, fecha_registro = ?
       WHERE no_control = ?
     `;
-    console.log('Actualizando datos del alumno:', updateAlumnoQuery);
 
     db.query(updateAlumnoQuery, [
       datosAlumnoModalAdmin.alumnoNombre,
@@ -453,8 +439,6 @@ app.post('/admin/actualizar-peticion-Adm', (req, res) => {
         });
       }
 
-      console.log('Datos del alumno actualizados correctamente:', resultAlumno);
-
       // Actualizar datos en la tabla `peticiones`
       const updatePeticionQuery = `
         UPDATE peticiones
@@ -466,7 +450,6 @@ app.post('/admin/actualizar-peticion-Adm', (req, res) => {
             estatus_peticion = ?
         WHERE no_control = ?
       `;
-      console.log('Actualizando datos de la petición:', updatePeticionQuery);
 
       db.query(updatePeticionQuery, [
         datosAlumnoModalAdmin.alumnoEstatusAFModal,
@@ -490,7 +473,6 @@ app.post('/admin/actualizar-peticion-Adm', (req, res) => {
           });
         }
 
-        console.log('Datos de la petición actualizados correctamente:', resultPeticion);
         return res.status(200).json({ mensaje: 'Datos actualizados correctamente' });
       });
     });
@@ -517,15 +499,11 @@ app.post('/admin/guardar-departamento-adm', (req, res) => {
   const { usuario, contrasena, iddepartamentos } = departamento; // Datos del departamento
   const { correo, contrasena: adminContrasena } = authData; // Datos del administrador
 
-  console.log('Datos recibidos del cuerpo de la solicitud:', departamento);
-  console.log('Datos de autenticación del administrador:', authData);
 
   // Verificar si el administrador existe en la base de datos
   const queryAdmin = `
     SELECT * FROM administrador WHERE usuario = ? AND contrasena = ?
   `;
-  console.log('Consulta para verificar administrador:', queryAdmin);
-  console.log('Parámetros de consulta del administrador:', [correo, adminContrasena]);
 
   db.query(queryAdmin, [correo, adminContrasena], (error, results) => {
     if (error) {
@@ -537,11 +515,9 @@ app.post('/admin/guardar-departamento-adm', (req, res) => {
     }
 
     if (results.length === 0) {
-      console.log('Administrador no encontrado.');
       return res.status(404).json({ error: 'Administrador no encontrado' });
     }
 
-    console.log('Administrador encontrado:', results);
 
     // Si el administrador existe, realizar el UPDATE en la tabla `departamentos`
     const queryUpdate = `
@@ -549,8 +525,7 @@ app.post('/admin/guardar-departamento-adm', (req, res) => {
       SET usuario = ?, contrasena = ?
       WHERE iddepartamentos = ?
     `;
-    console.log('Consulta para actualizar departamento:', queryUpdate);
-    console.log('Parámetros de consulta para actualización:', [usuario, contrasena, iddepartamentos]);
+
 
     db.query(queryUpdate, [usuario, contrasena, iddepartamentos], (updateError, updateResults) => {
       if (updateError) {
@@ -561,10 +536,8 @@ app.post('/admin/guardar-departamento-adm', (req, res) => {
         });
       }
 
-      console.log('Resultado de la actualización del departamento:', updateResults);
 
       if (updateResults.affectedRows === 0) {
-        console.log('No se actualizó ningún registro. Puede que el iddepartamentos no exista o los datos no coincidan.');
         return res.status(404).json({
           error: 'No se encontró el departamento o los datos no coinciden',
         });
@@ -598,15 +571,10 @@ app.post('/admin/eliminar-departamento-adm', (req, res) => {
 
   const { correo, contrasena: adminContrasena } = authData; // Datos del administrador
 
-  console.log('Datos recibidos para eliminar departamento:', departamentoId);
-  console.log('Datos de autenticación del administrador:', authData);
-
   // Verificar si el administrador existe en la base de datos
   const queryAdmin = `
     SELECT * FROM administrador WHERE usuario = ? AND contrasena = ?
   `;
-  console.log('Consulta para verificar administrador:', queryAdmin);
-  console.log('Parámetros de consulta del administrador:', [correo, adminContrasena]);
 
   db.query(queryAdmin, [correo, adminContrasena], (error, results) => {
     if (error) {
@@ -618,19 +586,14 @@ app.post('/admin/eliminar-departamento-adm', (req, res) => {
     }
 
     if (results.length === 0) {
-      console.log('Administrador no encontrado.');
       return res.status(404).json({ error: 'Administrador no encontrado' });
     }
-
-    console.log('Administrador encontrado:', results);
 
     // Si el administrador es válido, proceder con la eliminación del departamento
     const queryDelete = `
       DELETE FROM departamentos
       WHERE iddepartamentos = ?
     `;
-    console.log('Consulta para eliminar departamento:', queryDelete);
-    console.log('Parámetros de consulta para eliminación:', [departamentoId]);
 
     db.query(queryDelete, [departamentoId], (deleteError, deleteResults) => {
       if (deleteError) {
@@ -641,10 +604,7 @@ app.post('/admin/eliminar-departamento-adm', (req, res) => {
         });
       }
 
-      console.log('Resultado de la eliminación del departamento:', deleteResults);
-
       if (deleteResults.affectedRows === 0) {
-        console.log('No se encontró el departamento con el id proporcionado.');
         return res.status(404).json({
           error: 'No se encontró el departamento',
         });
@@ -675,7 +635,6 @@ app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
   }
 
   const { correo, contrasena, tipo_usuario } = authData;
-  console.log('Datos de autenticación recibidos:', { correo, contrasena, tipo_usuario });
 
   // Verificar si el usuario es administrador
   if (tipo_usuario !== 'admin') {
@@ -689,7 +648,6 @@ app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
     SELECT * FROM administrador
     WHERE usuario = ? AND contrasena = ? AND rol = 'admin'
   `;
-  console.log('Consulta para verificar administrador:', queryAdmin);
 
   db.query(queryAdmin, [correo, contrasena], (err, adminResults) => {
     if (err) {
@@ -704,8 +662,6 @@ app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
       return res.status(401).json({ error: 'Administrador no autorizado' });
     }
 
-    console.log('Administrador autenticado correctamente:', adminResults);
-
     // Datos del departamento a insertar
     const { usuario: depUsuario, contrasena: depContrasena, departamento, departamentoId } = req.body;
 
@@ -714,7 +670,6 @@ app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
       INSERT INTO departamentos (nombre_departamento, usuario, contrasena, departamento_id, rol)
       VALUES (?, ?, ?, ?, 'departamento')
     `;
-    console.log('Consulta para insertar departamento:', queryInsertDepartamento);
 
     db.query(
       queryInsertDepartamento,
@@ -728,17 +683,12 @@ app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
           });
         }
 
-        console.log('Departamento autorizado con éxito:', insertResults);
 
         // Eliminación del registro en `departamentos_no_autorizados`
         const queryDeleteDepartamentoNoAutorizado = `
           DELETE FROM departamentos_no_autorizados
           WHERE nombre_departamento = ? AND usuario = ? AND contrasena = ? AND departamento_id = ?
         `;
-        console.log(
-          'Consulta para eliminar registro de departamentos_no_autorizados:',
-          queryDeleteDepartamentoNoAutorizado
-        );
 
         db.query(
           queryDeleteDepartamentoNoAutorizado,
@@ -752,7 +702,6 @@ app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
               });
             }
 
-            console.log('Registro eliminado de departamentos_no_autorizados:', deleteResults);
             res.status(201).json({
               message: 'Departamento autorizado con éxito y eliminado de no autorizados',
             });
@@ -767,7 +716,6 @@ app.post('/admin/insertar-departamentos-no-autorizados', (req, res) => {
 // Crear departamento desde admin (crear-departamento)
 
 app.post('/admin/crear-departamento-admin', (req, res) => {
-  console.log('Datos recibidos en el cuerpo de la solicitud (req.body):', req.body);
 
   // Desestructuramos los valores del cuerpo de la solicitud
   const { nombre_departamento, usuario, contrasena, departamento_id } = req.body;
@@ -820,8 +768,6 @@ app.post('/admin/crear-departamento-admin', (req, res) => {
       });
     }
 
-    console.log('Administrador autenticado correctamente.');
-
     // Comprobación de si el usuario ya existe en otras tablas
     const checkUsuarioQueries = `
       SELECT 'admin' AS tipo, usuario FROM administrador WHERE usuario = ?
@@ -851,12 +797,6 @@ app.post('/admin/crear-departamento-admin', (req, res) => {
         INSERT INTO departamentos (nombre_departamento, usuario, contrasena, departamento_id, rol)
         VALUES (?, ?, ?, ?, 'departamento')
       `;
-      console.log('Datos que se insertarán en la base de datos:', {
-        nombre_departamento,
-        usuario,
-        contrasena,
-        departamento_id,
-      });
 
       db.query(queryInsertDepartamento, [nombre_departamento, usuario, contrasena, departamento_id], (err, result) => {
         if (err) {
@@ -867,7 +807,6 @@ app.post('/admin/crear-departamento-admin', (req, res) => {
           });
         }
 
-        console.log('Departamento creado exitosamente:', result);
         res.status(201).json({
           message: 'Departamento creado exitosamente.',
           departamentoId: result.insertId,
@@ -920,7 +859,6 @@ app.post('/admin/insertar-admin', (req, res) => {
       });
     }
 
-    console.log('Administrador autenticado correctamente.');
 
     // Comprobar si el usuario ya existe en las tablas
     const checkUsuarioQuery = `
@@ -960,7 +898,6 @@ app.post('/admin/insertar-admin', (req, res) => {
           });
         }
 
-        console.log('Administrador creado exitosamente:', insertResults);
         res.status(201).json({
           success: true,
           message: 'Administrador creado exitosamente.',
@@ -1018,7 +955,6 @@ app.post('/admin/eliminar-alumno-adm', (req, res) => {
       });
     }
 
-    console.log('Administrador autenticado correctamente.');
 
     // Eliminar registros relacionados en la tabla `peticiones`
     const queryDeletePeticiones = `
@@ -1032,8 +968,6 @@ app.post('/admin/eliminar-alumno-adm', (req, res) => {
           details: deleteError.message,
         });
       }
-
-      console.log('Registros relacionados en la tabla peticiones eliminados.');
 
       // Eliminar el alumno
       const queryDeleteAlumno = `
@@ -1054,7 +988,6 @@ app.post('/admin/eliminar-alumno-adm', (req, res) => {
           });
         }
 
-        console.log('Alumno eliminado correctamente.');
         res.status(200).json({
           success: true,
           message: 'Alumno eliminado correctamente.',
@@ -1071,13 +1004,6 @@ app.post('/departamento/register-departamento', uploads.none(), (req, res) => {
 
   const usuario = nombre_completo; // Renombrar nombre_completo a usuario
   const departamento_id = tipo_usuario; // Renombrar tipo_usuario a departamento_id
-
-  console.log('Datos recibidos en el servidor:', {
-    usuario,
-    contrasena,
-    departamento_id,
-    fecha_registro,
-  });
 
   // Verificar que todos los campos estén presentes
   if (!usuario || !contrasena || !departamento_id || !fecha_registro) {
@@ -1160,8 +1086,6 @@ app.post('/departamento/register-departamento', uploads.none(), (req, res) => {
         console.error('Error al registrar el departamento:', err);
         return res.status(500).json({ error: 'Error en el servidor al registrar el departamento.' });
       }
-
-      console.log('Departamento registrado exitosamente:', result);
 
       res.status(201).json({
         message:

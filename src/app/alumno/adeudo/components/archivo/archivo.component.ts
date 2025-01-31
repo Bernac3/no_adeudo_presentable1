@@ -19,7 +19,6 @@ export class ArchivoComponent implements OnInit {
   ngOnInit(): void {
     this.authService.getUser().subscribe((data) => {
       this.alumno = data;
-      console.log('Datos de alumno + peticiones:', this.alumno); // 🚀 Verifica los datos en la consola
     });
   }
 

@@ -15,14 +15,12 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   login(): void {
-    
+
     this.authService.login(this.correo, this.contrasena).subscribe(
       (user) => {
-        console.log('Respuesta del servidor:', user);
 
         this.authService.setUser(user);
 
-        console.log('TIPO DE USUARIO DEL LOGIN: ' + user.rol)
 
         // Redirigir según el rol del usuario
         if (user.rol === 'alumno') {

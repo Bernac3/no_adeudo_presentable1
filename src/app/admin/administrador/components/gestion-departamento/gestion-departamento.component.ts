@@ -29,7 +29,6 @@ export class GestionDepartamentoComponent implements OnInit {
     this.departamentoService.obtenerDepartamentos(authData).subscribe(
       (response) => {
         this.departamentos = response.departamentos;
-        console.log('Departamentos obtenidos:', this.departamentos);
       },
       (error) => {
         console.error('Error al obtener los departamentos:', error);
@@ -57,7 +56,6 @@ export class GestionDepartamentoComponent implements OnInit {
 
     this.departamentoService.guardarDepartamentoAdmin(nuevoDepartamento, authData).subscribe(
       (res) => {
-        console.log('Departamento autorizado con éxito:', res);
         alert('Departamento autorizado con éxito');
         this.obtenerDepartamentos(); // Actualizar la lista de departamentos
       },
@@ -82,7 +80,6 @@ export class GestionDepartamentoComponent implements OnInit {
 
       this.departamentoService.eliminarDepartamentoAdmin(departamentoData, authData).subscribe(
         (res) => {
-          console.log('Departamento Eliminado:', res);
           alert('Departamento Eliminado');
           this.obtenerDepartamentos(); // Actualizar la lista de departamentos
         },
@@ -92,7 +89,6 @@ export class GestionDepartamentoComponent implements OnInit {
         }
       );
     } else {
-      console.log('Eliminación del departamento cancelada.');
     }
   }
 

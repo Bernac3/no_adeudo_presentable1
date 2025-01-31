@@ -52,7 +52,6 @@ export class ListaAdminComponent implements OnInit {
       (data) => {
         this.alumnosConPeticiones = data;
         this.alumnosOriginales = [...data];  // Guardamos una copia de los datos completos
-        console.log('Datos de alumnos con peticiones:', this.alumnosConPeticiones);
       },
       (error) => {
         console.error('Error al obtener los datos de los alumnos:', error);
@@ -69,7 +68,6 @@ export class ListaAdminComponent implements OnInit {
     // Obtener los datos del Usuario Departamento
     this.authService.getUser().subscribe((data) => {
       this.usuario = data; // Asignamos los datos del alumno
-      console.log(`Datos List.component: User: ${this.usuario?.usuario} Departamento: ${this.usuario?.departamento_id}`);
     });
   }
 
@@ -109,7 +107,6 @@ export class ListaAdminComponent implements OnInit {
 
     if (alumnoFoto) {
       alumnoFoto.src = `https://no-adeudo.onrender.com/uploads/${alumno.foto}`;
-      console.log("Foto del Alumno desde list: " + alumnoFoto + alumno.foto)
     }
     if (alumnoContrasena) alumnoContrasena.value = alumno.contrasena;
   }
@@ -188,7 +185,6 @@ export class ListaAdminComponent implements OnInit {
         alumnoComentarioDepartamentoVinculacion
     };
 
-    console.log(datosAlumnoModalAdmin);
 
     // Llamada al servicio: estos datos aun falta obtenerlos del localstorage, pero los tengo asi por el momento
     // Creamos el objeto authData con los valores por defecto
@@ -212,11 +208,9 @@ export class ListaAdminComponent implements OnInit {
       authData.contrasena = parsedData.contrasena || '';
     }
 
-    console.log(authData); // Muestra el objeto authData con los valores correctos
 
     this.peticionesService.insertarPeticionAdmin(datosAlumnoModalAdmin, authData).subscribe(
       response => {
-        console.log('Petición insertada correctamente');
 
         // Mostrar alerta de éxito
         alert("Datos guardados con éxito");
@@ -226,7 +220,6 @@ export class ListaAdminComponent implements OnInit {
           updatedData => {
             this.alumnosConPeticiones = updatedData;
             this.alumnosOriginales = [...updatedData]; // Actualizar la copia original
-            console.log('Datos actualizados:', this.alumnosConPeticiones);
           },
           error => {
             console.error('Error al recargar los datos de los alumnos:', error);
@@ -242,15 +235,7 @@ export class ListaAdminComponent implements OnInit {
 
   eliminarAlumnoAdminModal(): void {
     const alumnoIdModal = (document.getElementById('alumnoNoControl') as HTMLInputElement).value;
-    console.log("Id a eliminar: " + alumnoIdModal);
 
-    // Mostrar alerta de confirmación
-    const confirmacion = window.confirm(`¿Estás seguro de que deseas eliminar al alumno?`);
-
-    if (!confirmacion) {
-      console.log('Eliminación cancelada por el usuario');
-      return; // Salir de la función si el usuario cancela
-    }
 
     const authData = {
       tipo_usuario: '',
@@ -266,8 +251,7 @@ export class ListaAdminComponent implements OnInit {
       authData.contrasena = parsedData.contrasena || '';
     }
 
-    console.log('Auth Data:', authData);
-    console.log('Departamento autorizado:', alumnoIdModal);
+
 
     this.departamentoService.eliminarAlumnoAdminModal(alumnoIdModal, authData).subscribe(
       (res) => {
@@ -376,7 +360,6 @@ export class ListaAdminComponent implements OnInit {
       (data) => {
         this.alumnosConPeticiones = data; // Actualizar la lista visible
         this.alumnosOriginales = [...data]; // Actualizar la copia de seguridad
-        console.log('Lista de alumnos actualizada:', this.alumnosConPeticiones);
       },
       (error) => {
         console.error('Error al actualizar la lista de alumnos:', error);
