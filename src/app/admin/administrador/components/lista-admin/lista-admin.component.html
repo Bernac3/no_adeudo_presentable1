@@ -84,41 +84,55 @@
       <div class="modal-body">
         <div class="row d-flex flex-column flex-xl-row">
           <!-- Columna Izquierda -->
-           <!-- Columna Izquierda -->
             <div class="col-12 col-xl-3 mb-4 mb-xl-0">
+              <!-- Imagen -->
+              <!-- <div class="mb-3 text-center">
+                <img src="" alt="Foto del alumno" class="img-fluid rounded" id="alumnoFoto" style="width: 250px; height: 250px;">
+              </div> -->
+
               <!-- Campos con Input y Botón -->
               <div class="mb-3">
                 <div class="input-group">
-                  <input type="text" class="form-control" id="alumnoNombre" placeholder="Nombre" autocomplete="off">
+                  <input type="text" class="form-control" id="alumnoNombre" placeholder="Nombre">
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group">
-                  <input type="email" class="form-control" id="alumnoCorreo" placeholder="Correo" autocomplete="off">
+                  <input type="email" class="form-control" id="alumnoCorreo" placeholder="Correo">
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group">
-                  <input type="tel" class="form-control" id="alumnoTelefono" placeholder="Teléfono" autocomplete="off">
+                  <input type="tel" class="form-control" id="alumnoTelefono" placeholder="Teléfono">
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group">
-                  <input type="text" class="form-control" id="alumnoNoControl" placeholder="No. Control" readonly autocomplete="off">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="alumnoNoControl"
+                    placeholder="No. Control"
+                    readonly>
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group">
-                  <input type="text" class="form-control" id="alumnoFechaRegistro" placeholder="Fecha de Registro" readonly autocomplete="off">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="alumnoFechaRegistro"
+                    placeholder="Fecha de Registro"
+                    readonly>
                 </div>
               </div>
 
               <div class="mb-3">
                 <div class="input-group">
                   <!-- Campo de contraseña -->
-                  <input type="text" class="form-control" id="alumnoContrasena" placeholder="Contraseña" autocomplete="new-password">
+                  <input type="password" class="form-control" id="alumnoContrasena" placeholder="Contraseña">
                   <!-- Botón para mostrar/ocultar la contraseña -->
-                  <button class="btn btn-primary border-start-0" type="button" id="mostrarContrasena" onclick="togglePasswordVisibility()" style="border-top-right-radius: .375rem; border-bottom-right-radius: .375rem;">
+                  <button class="btn btn-primary border-start-0" type="button" id="mostrarContrasena" (click)="togglePasswordVisibility()" style="border-top-right-radius: .375rem; border-bottom-right-radius: .375rem;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
                       <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
                       <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
@@ -127,25 +141,14 @@
                 </div>
               </div>
 
+
               <!-- Botones -->
               <div class="d-grid gap-2">
-                <button type="button" class="btn btn-primary" id="guardarCambios" onclick="guardarCambiosModal()">Guardar</button>
+                <button type="button" class="btn btn-primary" id="guardarCambios" (click)="guardarCambiosModal()">Guardar</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-danger" id="eliminarAlumno" onclick="eliminarAlumnoAdminModal()">Eliminar Alumno</button>
+                <button type="button" class="btn btn-danger" id="eliminarAlumno" (click)="eliminarAlumnoAdminModal()">Eliminar Alumno</button>
               </div>
             </div>
-
-            <script>
-              function togglePasswordVisibility() {
-                var input = document.getElementById("alumnoContrasena");
-                if (input.type === "text") {
-                  input.type = "password";
-                } else {
-                  input.type = "text";
-                }
-              }
-            </script>
-
           <!-- Columna Derecha -->
           <div class="col-12 col-xl-9">
             <!-- Tabla -->
