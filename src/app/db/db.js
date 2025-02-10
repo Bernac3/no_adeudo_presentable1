@@ -21,4 +21,3 @@ pool.query('SELECT * FROM alumnos', (err, results) => {
 
 // Exportar el pool para usarlo en otros archivos
 module.exports = pool;
-console.log('')

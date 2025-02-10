@@ -14,4 +14,3 @@ export class AlumnoService {
     return this.http.post<any>(this.apiUrl, formData);
   }
 }
-console.log('')
