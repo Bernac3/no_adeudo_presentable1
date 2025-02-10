@@ -190,11 +190,6 @@ app.get('/admin/departamentos-no-autorizados', (req, res) => {
       return res.status(500).json({ error: 'Error al obtener los datos de la base de datos' });
     }
 
-    // Si no hay resultados, enviar un mensaje claro
-    if (results.length === 0) {
-      return res.status(404).json({ message: 'No se encontraron departamentos no autorizados' });
-    }
-
     // Respuesta exitosa con los datos
     return res.status(200).json({ departamentosNoAutorizados: results });
   });

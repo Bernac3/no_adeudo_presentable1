@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { PeticionesService } from '../../../../service/peticion.service';
 import { DepartamentosResponse } from '../../../../interfaces/departamentos-no-autorizados-interfade';
+
+declare var bootstrap: any; // Importación de Bootstrap
 
 @Component({
   selector: 'app-departamentos',
   templateUrl: './departamentos.component.html',
   styleUrls: ['./departamentos.component.css']
 })
-export class DepartamentosComponent implements OnInit {
+export class DepartamentosComponent implements OnInit, AfterViewInit {
   departamentos: any[] = [];
 
   departamentoSeleccionado: any = {
@@ -22,6 +24,17 @@ export class DepartamentosComponent implements OnInit {
 
   ngOnInit(): void {
     this.obtenerDepartamentosNoAutorizados();
+  }
+
+  ngAfterViewInit(): void {
+    const modalElement = document.getElementById('alumnoModal');
+
+    if (modalElement) {
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        // Quitamos el foco de los botones o elementos internos al cerrar el modal
+        (document.activeElement as HTMLElement)?.blur();
+      });
+    }
   }
 
   obtenerDepartamentosNoAutorizados(): void {
@@ -43,7 +56,6 @@ export class DepartamentosComponent implements OnInit {
   }
 
   permitirDepartamentoAutorizado(): void {
-    // Obtenemos los datos directamente del objeto departamentoSeleccionado
     const departamentoAutorizado = {
       usuario: this.departamentoSeleccionado.usuario,
       contrasena: this.departamentoSeleccionado.contrasena,
@@ -69,9 +81,14 @@ export class DepartamentosComponent implements OnInit {
     this.peticionesService.insertarDepartamentoAutorizado(departamentoAutorizado, authData).subscribe(
       (res) => {
         alert('Departamento autorizado con éxito');
-
-        // Actualizamos la lista
         this.obtenerDepartamentosNoAutorizados();
+
+        // Cerrar el modal manualmente después de autorizar
+        const modalElement = document.getElementById('alumnoModal');
+        if (modalElement) {
+          const modalInstance = bootstrap.Modal.getInstance(modalElement);
+          modalInstance?.hide();
+        }
       },
       (error) => {
         console.error('Error al autorizar el departamento:', error);
