@@ -28,9 +28,6 @@ export class DepartamentosComponent implements OnInit {
     this.peticionesService.obtenerDepartamentosNoAutorizados().subscribe(
       (response: DepartamentosResponse) => {
         this.departamentos = response.departamentosNoAutorizados || [];
-      },
-      (error) => {
-        console.error('Error al obtener los departamentos:', error);
       }
     );
   }

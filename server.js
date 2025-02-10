@@ -167,6 +167,7 @@ app.post('/admin/obtener-departamento', (req, res) => {
 
     db.query(queryDepartamentos, (error, departamentos) => {
       if (error) {
+        console.error('Error al obtener los departamentos:', error);
         return res.status(500).json({ error: 'Error al obtener los departamentos' });
       }
       // Retornar los departamentos en formato JSON
@@ -185,6 +186,7 @@ app.get('/admin/departamentos-no-autorizados', (req, res) => {
 
   db.query(query, (err, results) => {
     if (err) {
+      console.error('Error al obtener los departamentos no autorizados:', err);
       return res.status(500).json({ error: 'Error al obtener los datos de la base de datos' });
     }
 

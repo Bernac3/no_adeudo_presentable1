@@ -1,14 +1,14 @@
 <div class="container mt-5 home-container">
   <div class="card">
     <div class="card-header bg-primary text-white text-center">
-      <h2>Gestion De Departamentos</h2>
+      <h2>Gestión De Departamentos</h2>
     </div>
     <div class="card-body">
       <div class="d-flex gap-2 my-3"></div>
 
       <!-- Contenedor para aplicar el scroll solo a la tabla -->
       <div class="table-responsive flex-grow-1" style="overflow-y: auto; height: calc(100vh - 350px);">
-        <table class="table table-bordered">
+        <table class="table table-bordered" *ngIf="departamentos.length > 0; else noDepartamentos">
           <thead>
             <tr>
               <th scope="col">USUARIO</th>
@@ -38,6 +38,11 @@
             </tr>
           </tbody>
         </table>
+
+        <!-- Mensaje cuando no hay departamentos -->
+        <ng-template #noDepartamentos>
+          <p class="text-center">No hay departamentos pendientes de autorización.</p>
+        </ng-template>
       </div>
     </div>
   </div>
