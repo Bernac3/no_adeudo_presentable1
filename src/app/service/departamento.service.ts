@@ -2,17 +2,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from '../../app/config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DepartamentoService {
-  private apiUrl = `${window.location.origin}/departamento/register-departamento`
-  private apiUrlObtenerDepartamentos = `${window.location.origin}/admin/obtener-departamento`
-  private apiUrlGuardarDepartamentoAdmin = `${window.location.origin}/admin/guardar-departamento-adm`
-  private apiUrlEliminarDepartamentoAdmin = `${window.location.origin}/admin/eliminar-departamento-adm`
-  private apiUrlEliminarAlumnoAdmin = `${window.location.origin}/admin/eliminar-alumno-adm`
-  private apiUrlCrearDepartamentoAdmin = `${window.location.origin}/admin/crear-departamento-admin`
+  private apiUrl = `${API_BASE_URL}/departamento/register-departamento`;
+
+  private apiUrlObtenerDepartamentos = `${API_BASE_URL}/admin/obtener-departamento`
+  private apiUrlGuardarDepartamentoAdmin = `${API_BASE_URL}/admin/guardar-departamento-adm`
+  private apiUrlEliminarDepartamentoAdmin = `${API_BASE_URL}/admin/eliminar-departamento-adm`
+  private apiUrlEliminarAlumnoAdmin = `${API_BASE_URL}/admin/eliminar-alumno-adm`
+  private apiUrlCrearDepartamentoAdmin = `${API_BASE_URL}/admin/crear-departamento-admin`
+
+  // private apiUrl = 'https://no-adeudo.onrender.com/departamento/register-departamento';
+  // private apiUrlObtenerDepartamentos = 'https://no-adeudo.onrender.com/admin/obtener-departamento'
+  // private apiUrlGuardarDepartamentoAdmin = 'https://no-adeudo.onrender.com/admin/guardar-departamento-adm'
+  // private apiUrlEliminarDepartamentoAdmin = 'https://no-adeudo.onrender.com/admin/eliminar-departamento-adm'
+  // private apiUrlEliminarAlumnoAdmin = 'https://no-adeudo.onrender.com/admin/eliminar-alumno-adm'
+  // private apiUrlCrearDepartamentoAdmin = 'https://no-adeudo.onrender.com/admin/crear-departamento-admin';
 
   constructor(private http: HttpClient) {}
 

@@ -3,15 +3,13 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Alumno } from '../interfaces/alumno.interface';
+import { API_BASE_URL } from '../../app/config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrlAngular = `${window.location.origin}/auth/login`;
-  private apiUrl = `${window.location.origin}/auth/login`;
-  // private apiUrl = 'https://no-adeudo.onrender.com/auth/login';
-
+  private apiUrl = `${API_BASE_URL}/auth/login`;
 
   private userSubject = new BehaviorSubject<Alumno | null>(null);
 
@@ -30,7 +28,6 @@ export class AuthService {
    * @param tipo_usuario Tipo de usuario (Alumno, Departamento, Admin).
    */
   login(correo: string, contrasena: string): Observable<any> {
-    console.log("Url de Angular: " + this.apiUrlAngular)
     return this.http.post<any>(this.apiUrl, { correo, contrasena }).pipe(
       map((user) => {
         // Guardar los datos completos en localStorage
@@ -96,7 +93,7 @@ export class AuthService {
    */
   getAlumnosYPeticiones(): Observable<Alumno[]> {
     //problema aqui
-    const urlAlumnosypeticiones = `${window.location.origin}/common/alumnos-peticiones`;
+    const urlAlumnosypeticiones = `${API_BASE_URL}/common/alumnos-peticiones`;
     // const url = 'https://no-adeudo-repositorio-1.onrender.com/alumno/alumnos-peticiones';
     return this.http.get<Alumno[]>(urlAlumnosypeticiones, { responseType: 'json' }).pipe(
       catchError((error: HttpErrorResponse) => {
