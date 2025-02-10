@@ -236,38 +236,38 @@ export class ListaAdminComponent implements OnInit {
   eliminarAlumnoAdminModal(): void {
     const alumnoIdModal = (document.getElementById('alumnoNoControl') as HTMLInputElement).value;
 
-
-    const authData = {
-      tipo_usuario: '',
-      correo: '',
-      contrasena: ''
-    };
-
-    const sessionAuthData = sessionStorage.getItem('user');
-    if (sessionAuthData) {
-      const parsedData = JSON.parse(sessionAuthData);
-      authData.tipo_usuario = parsedData.tipo_usuario ? parsedData.tipo_usuario.toLowerCase() : '';
-      authData.correo = parsedData.correo || ''; // En la DB el campo "correo" se llama "usuario"
-      authData.contrasena = parsedData.contrasena || '';
+    if (!alumnoIdModal) {
+        alert('No se ha seleccionado un alumno válido para eliminar.');
+        return;
     }
 
+    if (window.confirm('¿Desea eliminar este alumno?')) {
+        const authData = {
+            tipo_usuario: '',
+            correo: '',
+            contrasena: ''
+        };
 
+        const sessionAuthData = sessionStorage.getItem('user');
+        if (sessionAuthData) {
+            const parsedData = JSON.parse(sessionAuthData);
+            authData.tipo_usuario = parsedData.tipo_usuario ? parsedData.tipo_usuario.toLowerCase() : '';
+            authData.correo = parsedData.correo || '';
+            authData.contrasena = parsedData.contrasena || '';
+        }
 
-    this.departamentoService.eliminarAlumnoAdminModal(alumnoIdModal, authData).subscribe(
-      (res) => {
-
-
-        // Actualizar la lista de alumnos
-        this.actualizarListaAlumnos();
-      },
-      (error) => {
-        console.error('Error al Eliminar el Alumno:', error);
-        alert('Error al Eliminar el Alumno');
-      }
-    );
-  }
-
-
+        this.departamentoService.eliminarAlumnoAdminModal(alumnoIdModal, authData).subscribe(
+            (res) => {
+                alert('Alumno Eliminado');
+                this.actualizarListaAlumnos(); // Actualizar la lista de alumnos
+            },
+            (error) => {
+                console.error('Error al eliminar el alumno:', error);
+                alert('Error al eliminar el alumno');
+            }
+        );
+    }
+}
 
 
   ordenarAlumnos(opcion: string, event: Event): void {
