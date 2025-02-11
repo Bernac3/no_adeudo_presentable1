@@ -199,17 +199,46 @@ app.get('/admin/departamentos-no-autorizados', (req, res) => {
 
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 
-// configuracion de multer para subir imagenes
+// configuracion de multer para subir imagenes en hostLocal
+// Configuración de almacenamiento para Multer
+
 const storage = multer.diskStorage({
+  // Directorio donde se guardarán las imágenes subidas
   destination: (req, file, cb) => {
-    cb(null, './uploads/'); // Carpeta donde se guardarán las imágenes
+    cb(null, path.join(__dirname, 'uploads')); // Guarda en la carpeta "uploads" en la raíz del proyecto
   },
+
+  // Configuración del nombre del archivo para evitar duplicados
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Nombre único para evitar colisiones
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Agrega un identificador único al nombre del archivo
   }
 });
-const upload = multer({ storage: storage });
+
+// Configuración de Multer con restricciones opcionales
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // Tamaño máximo permitido (10MB, para fotos de alta calidad)
+  fileFilter: (req, file, cb) => {
+    // Validar que el archivo sea una imagen (jpg, png, jpeg)
+    const filetypes = /jpeg|jpg|png/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      return cb(new Error('Solo se permiten imágenes en formato JPG, JPEG o PNG'));
+    }
+  }
+});
+
+// Middleware para manejar la subida de archivos en una ruta específica
+const uploadSingleImage = upload.single('foto'); // 'foto' debe coincidir con el campo del formulario
+
+module.exports = { uploadSingleImage };
+
+
 
 // Registrar alumnos
 app.post('/alumno/register', upload.single('foto'), (req, res) => {

@@ -25,7 +25,8 @@ export class RegisterComponent implements OnInit {
       no_control: ['', [Validators.required]],
       contrasena: ['', [Validators.required]],
       confirmarContrasena: ['', [Validators.required]],
-      foto: ['foto'] // Se eliminó la validación requerida y se estableció un valor por defecto
+      // foto: [null, [Validators.required]]
+      foto: [''] // Se eliminó la validación requerida y se estableció un valor por defecto
     });
   }
 
