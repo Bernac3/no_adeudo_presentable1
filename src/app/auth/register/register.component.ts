@@ -25,17 +25,20 @@ export class RegisterComponent implements OnInit {
       no_control: ['', [Validators.required]],
       contrasena: ['', [Validators.required]],
       confirmarContrasena: ['', [Validators.required]],
-      foto: [null, [Validators.required]]
+      // Campo de imagen deshabilitado
+      foto: [''] // En lugar de null, se almacena una cadena vacía
     });
   }
 
+  // Función de carga de archivo deshabilitada
+  /*
   onFileChange(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      // Aquí se agrega el archivo al control, sin usar `patchValue` en el input de tipo `file`.
       this.registerForm.get('foto')?.setValue(file);
     }
   }
+  */
 
   onSubmit(): void {
     if (this.registerForm.invalid) return;
@@ -51,9 +54,8 @@ export class RegisterComponent implements OnInit {
         this.router.navigate(['/auth/login']);
       },
       error: (err) => {
-        // Manejo del error basado en la respuesta del servidor
         if (err.error.error) {
-          alert(err.error.error);  // Mostrar mensaje de error del servidor
+          alert(err.error.error);
         } else {
           console.error('Error al registrar el alumno:', err);
           alert('Hubo un error en el servidor. Intente más tarde.');
