@@ -547,6 +547,75 @@ app.post('/admin/guardar-departamento-adm', (req, res) => {
 });
 
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+// Eliminar departamento no autlrizado desde admin
+// Eliminar departamento no autorizado (solo administradores)
+app.post('/admin/eliminar-departamento-no-autorizado', (req, res) => {
+  const departamento = req.body;
+
+  // Obtener datos del encabezado de autorización y parsearlos
+  let authData;
+  try {
+    authData = JSON.parse(req.headers.authorization);
+  } catch (err) {
+    console.error('Error al parsear el encabezado de autorización:', err);
+    return res.status(400).json({
+      error: 'El encabezado de autorización no es válido',
+      details: err.message,
+    });
+  }
+
+  const { usuario, departamentoId } = departamento; // Datos del departamento a eliminar
+  const { correo, contrasena } = authData; // Datos del administrador
+
+  // Verificar si el administrador existe en la base de datos
+  const queryAdmin = `
+    SELECT * FROM administrador WHERE usuario = ? AND contrasena = ?
+  `;
+
+  db.query(queryAdmin, [correo, contrasena], (error, results) => {
+    if (error) {
+      console.error('Error al verificar el administrador:', error);
+      return res.status(500).json({
+        error: 'Error al verificar las credenciales del administrador',
+        details: error.message,
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(403).json({ error: 'Acceso denegado. No tienes permisos para realizar esta acción.' });
+    }
+
+    // Si el administrador existe, proceder con la eliminación del departamento no autorizado
+    const queryDelete = `
+      DELETE FROM departamentos_no_autorizados
+      WHERE usuario = ? AND departamento_id = ?
+    `;
+
+    db.query(queryDelete, [usuario, departamentoId], (deleteError, deleteResults) => {
+      if (deleteError) {
+        console.error('Error al eliminar el departamento no autorizado:', deleteError);
+        return res.status(500).json({
+          error: 'Error al eliminar el departamento no autorizado',
+          details: deleteError.message,
+        });
+      }
+
+      if (deleteResults.affectedRows === 0) {
+        return res.status(404).json({
+          error: 'No se encontró el departamento no autorizado con los datos proporcionados',
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Departamento no autorizado eliminado correctamente',
+      });
+    });
+  });
+});
+
+
+//------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
 // Eliminar departamento (gestionar departamento) desde admin
 
 app.post('/admin/eliminar-departamento-adm', (req, res) => {
