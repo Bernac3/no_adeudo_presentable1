@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PeticionesService } from '../../../../service/peticion.service';
 import { DepartamentosResponse } from '../../../../interfaces/departamentos-no-autorizados-interfade';
+import { DepartamentoService } from '../../../../service/departamento.service';
 
 @Component({
   selector: 'app-departamentos',
@@ -18,7 +19,7 @@ export class DepartamentosComponent implements OnInit {
     fecha_registro: ''
   };
 
-  constructor(private peticionesService: PeticionesService) {}
+  constructor(private peticionesService: PeticionesService, private departamentoService: DepartamentoService) {}
 
   ngOnInit(): void {
     this.obtenerDepartamentosNoAutorizados();
@@ -76,6 +77,40 @@ export class DepartamentosComponent implements OnInit {
       (error) => {
         console.error('Error al autorizar el departamento:', error);
         alert('Error al autorizar el departamento');
+      }
+    );
+  }
+  eliminarDepartamentoAutorizado(): void {
+
+    const departamentoNoAutorizadoEliminar = {
+      usuario: this.departamentoSeleccionado.usuario,
+      departamentoId: this.departamentoSeleccionado.departamento_id,
+    };
+
+    const authData = {
+      tipo_usuario: '',
+      correo: '',
+      contrasena: ''
+    };
+
+    const sessionAuthData = sessionStorage.getItem('user');
+    if (sessionAuthData) {
+      const parsedData = JSON.parse(sessionAuthData);
+      authData.tipo_usuario = parsedData.tipo_usuario ? parsedData.tipo_usuario.toLowerCase() : '';
+      authData.correo = parsedData.correo || '';
+      authData.contrasena = parsedData.contrasena || '';
+    }
+
+    this.departamentoService.eliminarDepartamentoNoAutorizadoAdmin(departamentoNoAutorizadoEliminar, authData).subscribe(
+      (res) => {
+        alert('Departamento eliminado con éxito');
+
+        // Actualizamos la lista
+        this.obtenerDepartamentosNoAutorizados();
+      },
+      (error) => {
+        console.error('Error al eliminar el departamento:', error);
+        alert('Error al eliminar el departamento');
       }
     );
   }

@@ -15,6 +15,7 @@ export class DepartamentoService {
   private apiUrlEliminarDepartamentoAdmin = `${API_BASE_URL}/admin/eliminar-departamento-adm`
   private apiUrlEliminarAlumnoAdmin = `${API_BASE_URL}/admin/eliminar-alumno-adm`
   private apiUrlCrearDepartamentoAdmin = `${API_BASE_URL}/admin/crear-departamento-admin`
+  private apiUrlEliminarDepartamentoNoAutorizado = `${API_BASE_URL}/admin/eliminar-departamento-no-autorizado`
 
   // private apiUrl = 'https://no-adeudo.onrender.com/departamento/register-departamento';
   // private apiUrlObtenerDepartamentos = 'https://no-adeudo.onrender.com/admin/obtener-departamento'
@@ -77,6 +78,14 @@ export class DepartamentoService {
     const body = { alumnoId: idAlumno };
 
     return this.http.post(this.apiUrlEliminarAlumnoAdmin, body, { headers });
+  }
+  eliminarDepartamentoNoAutorizadoAdmin(idDepartamento: any, authData: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': JSON.stringify(authData)
+    });
+
+    return this.http.post(`${this.apiUrlEliminarDepartamentoNoAutorizado}`, idDepartamento, { headers });
   }
 
 }
