@@ -198,6 +198,7 @@ app.get('/admin/departamentos-no-autorizados', (req, res) => {
 
 
 //------------------------------------------------------------Nueva Ruta------------------------------------------------------------//
+
 // configuracion de multer para subir imagenes
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
